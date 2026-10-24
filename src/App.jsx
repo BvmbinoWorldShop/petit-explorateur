@@ -1,148 +1,222 @@
 import React, { useState, useEffect } from 'react';
-import TeacherMascot from './components/TeacherMascot';
+import TeacherPixarGuide from './components/TeacherPixarGuide';
+import World3D from './components/World3D';
+import SchoolLocation from './locations/SchoolLocation';
+import GroceryLocation from './locations/GroceryLocation';
+import MallLocation from './locations/MallLocation';
+import RestaurantLocation from './locations/RestaurantLocation';
+import FireStationLocation from './locations/FireStationLocation';
+import DrivingGame from './games/DrivingGame';
+import SortingGame from './games/SortingGame';
 import ColorsActivity from './activities/ColorsActivity';
 import LettersActivity from './activities/LettersActivity';
 import FruitsActivity from './activities/FruitsActivity';
-import DailyObjectsActivity from './activities/DailyObjectsActivity';
-import CookingGame from './games/CookingGame';
-import DrivingGame from './games/DrivingGame';
-import FirefighterGame from './games/FirefighterGame';
-import SortingGame from './games/SortingGame';
 import { sounds } from './utils/audio';
 import { teacher } from './utils/speech';
 import {
-  Palette,
-  Type,
-  Apple,
-  Home,
-  Utensils,
+  Compass,
+  School,
+  ShoppingCart,
+  ShoppingBag,
+  UtensilsCrossed,
+  Flame,
   Car,
-  Droplet,
   BrainCircuit,
+  Star,
+  Sparkles,
+  Palette,
   Volume2
 } from 'lucide-react';
 
-const TABS = [
-  { id: 'colors', label: 'Couleurs', icon: Palette, color: '#ff4757', emoji: '🎨' },
-  { id: 'letters', label: 'Lettres', icon: Type, color: '#3742fa', emoji: '🔤' },
-  { id: 'fruits', label: 'Fruits', icon: Apple, color: '#2ed573', emoji: '🍎' },
-  { id: 'objects', label: 'Objets', icon: Home, color: '#ffa502', emoji: '🧸' },
-  { id: 'cooking', label: 'Cuisine', icon: Utensils, color: '#e056fd', emoji: '🍲' },
-  { id: 'driving', label: 'Voiture', icon: Car, color: '#ff7f50', emoji: '🚗' },
-  { id: 'firefighter', label: 'Pompier', icon: Droplet, color: '#0984e3', emoji: '🚒' },
-  { id: 'sorting', label: 'Énigmes', icon: BrainCircuit, color: '#00b894', emoji: '🧩' },
-];
-
 export default function App() {
-  const [activeTab, setActiveTab] = useState('colors');
+  const [currentView, setCurrentView] = useState('world'); // 'world' or location ID
+  const [stars, setStars] = useState(3);
   const [teacherMessage, setTeacherMessage] = useState(
-    "Bonjour mon petit trésor ! Bienvenue dans ton monde magique ! Choisis un jeu ou une activité !"
+    "Bonjour mon petit trésor ! Je suis Maîtresse Nia ! Viens explorer la ville avec moi !"
   );
 
   useEffect(() => {
-    // Initial welcome voice in French
-    const welcome = "Bonjour mon petit trésor ! Bienvenue dans ton monde magique ! Choisis une activité !";
-    teacher.speakBilingual(welcome, "Hello little treasure! Welcome to your magical world!");
+    const welcome = "Bonjour mon petit trésor ! Je suis Maîtresse Nia ! Viens explorer la ville magique avec moi ! Où veux-tu aller ?";
+    teacher.speakBilingual(welcome, "Hello little treasure! I am Teacher Nia! Come explore the magical town with me!");
   }, []);
 
-  const handleTabChange = (tabId) => {
+  const handleSelectLocation = (loc) => {
+    sounds.playSuccess();
+    setCurrentView(loc.id);
+    const msg = `Nous arrivons à ${loc.nameFr} ! ${loc.description}`;
+    setTeacherMessage(msg);
+    teacher.speakBilingual(msg, `Welcome to the ${loc.nameEn}!`);
+  };
+
+  const handleBackToWorld = () => {
     sounds.playPop();
-    setActiveTab(tabId);
-    let msg = "";
-    switch (tabId) {
-      case 'colors':
-        msg = "Regarde toutes ces belles couleurs ! Laquelle préfères-tu ?";
-        break;
-      case 'letters':
-        msg = "C'est l'alphabet des tout-petits ! Répète les lettres après moi !";
-        break;
-      case 'fruits':
-        msg = "Miam ! Découvrons de délicieux fruits colorés et sains !";
-        break;
-      case 'objects':
-        msg = "Voici les objets magiques de ta maison !";
-        break;
-      case 'cooking':
-        msg = "Bienvenue dans la cuisine ! Mettons de bons ingrédients dans la marmite !";
-        break;
-      case 'driving':
-        msg = "Attention au volant ! Allons rouler et klaxonner sur la route ! Tut-tut !";
-        break;
-      case 'firefighter':
-        msg = "Au secours, il y a un feu ! Prends la lance d'eau et éteins-le vite !";
-        break;
-      case 'sorting':
-        msg = "C'est l'heure des énigmes ! Trouve la bonne forme et la bonne couleur !";
-        break;
-      default:
-        msg = "Amusons-nous ensemble !";
-    }
+    setCurrentView('world');
+    const msg = "De retour dans la ville ! Balade-toi et choisis un nouvel endroit magique !";
     setTeacherMessage(msg);
     teacher.speakFrench(msg);
   };
 
-  const repeatTeacherMessage = () => {
-    sounds.playPop();
+  const addStar = () => {
+    setStars((s) => s + 1);
+  };
+
+  const repeatVoice = () => {
     teacher.speakFrench(teacherMessage);
   };
 
   return (
-    <div className="app-viewport">
-      {/* Top Header */}
-      <header className="app-header">
-        <div className="header-brand">
-          <span className="logo-sparkle">🌟</span>
-          <div className="logo-titles">
-            <h1 className="brand-name">Le Petit Explorateur</h1>
-            <p className="brand-subtitle">Apprendre le français & l'anglais en s'amusant (3 ans)</p>
+    <div className="pixar-world-app">
+      {/* Top Header Bar */}
+      <header className="main-navbar">
+        <div className="nav-brand-section">
+          <span className="brand-logo-icon animate-bounce-soft">🌍</span>
+          <div className="brand-text-wrap">
+            <h1 className="brand-heading">Le Monde de Maîtresse Nia 🌟</h1>
+            <p className="brand-subheading">Aventure 3D interactive bilingue (Français & Anglais)</p>
           </div>
         </div>
 
-        {/* Teacher Mascot with live speech bubble */}
-        <TeacherMascot 
-          message={teacherMessage} 
-          onRepeat={repeatTeacherMessage} 
-        />
+        {/* Global Stars Count */}
+        <div className="header-stars-pill">
+          <Star size={24} fill="#ffd32a" color="#ffa502" />
+          <span className="stars-number">{stars}</span>
+        </div>
+
+        {/* Home / World View Button */}
+        {currentView !== 'world' && (
+          <button onClick={handleBackToWorld} className="return-world-nav-btn">
+            🌍 Revenir à la Ville 3D
+          </button>
+        )}
       </header>
 
-      {/* Main Toddler Navigation Menu Bar (Extra Large Touch Targets) */}
-      <nav className="toddler-nav-bar">
-        {TABS.map((tab) => {
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => handleTabChange(tab.id)}
-              className={`nav-tab-btn ${isActive ? 'active' : ''}`}
-              style={{
-                backgroundColor: isActive ? tab.color : '#ffffff',
-                borderColor: tab.color,
-                color: isActive ? '#ffffff' : '#2d3436'
-              }}
-            >
-              <span className="tab-emoji">{tab.emoji}</span>
-              <span className="tab-label">{tab.label}</span>
-            </button>
-          );
-        })}
-      </nav>
+      {/* Main Interactive Stage */}
+      <main className="stage-area">
+        {currentView === 'world' && (
+          <div className="world-experience-container">
+            {/* 3D Interactive Town */}
+            <World3D
+              onSelectLocation={handleSelectLocation}
+              onTeacherSpeech={setTeacherMessage}
+              starsCount={stars}
+              onCollectStar={addStar}
+            />
+          </div>
+        )}
 
-      {/* Dynamic Activity/Game Canvas View */}
-      <main className="content-container">
-        {activeTab === 'colors' && <ColorsActivity onTeacherPrompt={setTeacherMessage} />}
-        {activeTab === 'letters' && <LettersActivity onTeacherPrompt={setTeacherMessage} />}
-        {activeTab === 'fruits' && <FruitsActivity onTeacherPrompt={setTeacherMessage} />}
-        {activeTab === 'objects' && <DailyObjectsActivity onTeacherPrompt={setTeacherMessage} />}
-        {activeTab === 'cooking' && <CookingGame onTeacherPrompt={setTeacherMessage} />}
-        {activeTab === 'driving' && <DrivingGame onTeacherPrompt={setTeacherMessage} />}
-        {activeTab === 'firefighter' && <FirefighterGame onTeacherPrompt={setTeacherMessage} />}
-        {activeTab === 'sorting' && <SortingGame onTeacherPrompt={setTeacherMessage} />}
+        {/* Destination Modals / Screens */}
+        {currentView === 'school' && (
+          <SchoolLocation
+            onTeacherSpeech={setTeacherMessage}
+            onClose={handleBackToWorld}
+            onRewardStar={addStar}
+          />
+        )}
+
+        {currentView === 'grocery' && (
+          <GroceryLocation
+            onTeacherSpeech={setTeacherMessage}
+            onClose={handleBackToWorld}
+            onRewardStar={addStar}
+          />
+        )}
+
+        {currentView === 'mall' && (
+          <MallLocation
+            onTeacherSpeech={setTeacherMessage}
+            onClose={handleBackToWorld}
+            onRewardStar={addStar}
+          />
+        )}
+
+        {currentView === 'restaurant' && (
+          <RestaurantLocation
+            onTeacherSpeech={setTeacherMessage}
+            onClose={handleBackToWorld}
+            onRewardStar={addStar}
+          />
+        )}
+
+        {currentView === 'firefighter' && (
+          <FireStationLocation
+            onTeacherSpeech={setTeacherMessage}
+            onClose={handleBackToWorld}
+            onRewardStar={addStar}
+          />
+        )}
+
+        {currentView === 'driving' && (
+          <div className="location-modal-card">
+            <div className="location-modal-header fire-theme">
+              <h2>🚗 La Voiture en Ville</h2>
+              <button onClick={handleBackToWorld} className="close-modal-btn">✖ Retour</button>
+            </div>
+            <DrivingGame onTeacherPrompt={setTeacherMessage} />
+          </div>
+        )}
+
+        {currentView === 'sorting' && (
+          <div className="location-modal-card">
+            <div className="location-modal-header mall-theme">
+              <h2>🧩 Les Énigmes Faciles</h2>
+              <button onClick={handleBackToWorld} className="close-modal-btn">✖ Retour</button>
+            </div>
+            <SortingGame onTeacherPrompt={setTeacherMessage} />
+          </div>
+        )}
       </main>
 
-      {/* Kid-Safe Footer */}
-      <footer className="app-footer">
-        <p>🇫🇷 Parle en français &bull; 🇬🇧 English &bull; Conçu avec amour pour les petits aventuriers de 3 ans</p>
-      </footer>
+      {/* Bottom Bar: Quick Destination Shortcuts */}
+      <nav className="bottom-quick-bar">
+        <button
+          onClick={() => { sounds.playPop(); setCurrentView('world'); }}
+          className={`quick-bar-btn ${currentView === 'world' ? 'active' : ''}`}
+        >
+          <span className="q-emoji">🌍</span>
+          <span className="q-label">Ville 3D</span>
+        </button>
+        <button
+          onClick={() => handleSelectLocation({ id: 'school', nameFr: "L'École", nameEn: "School", description: "Lettres et chiffres !" })}
+          className={`quick-bar-btn ${currentView === 'school' ? 'active' : ''}`}
+        >
+          <span className="q-emoji">🏫</span>
+          <span className="q-label">École</span>
+        </button>
+        <button
+          onClick={() => handleSelectLocation({ id: 'grocery', nameFr: "L'Épicerie", nameEn: "Grocery Store", description: "Faisons les courses !" })}
+          className={`quick-bar-btn ${currentView === 'grocery' ? 'active' : ''}`}
+        >
+          <span className="q-emoji">🛒</span>
+          <span className="q-label">Épicerie</span>
+        </button>
+        <button
+          onClick={() => handleSelectLocation({ id: 'mall', nameFr: "Le Centre Commercial", nameEn: "Mall", description: "Jouets et vêtements !" })}
+          className={`quick-bar-btn ${currentView === 'mall' ? 'active' : ''}`}
+        >
+          <span className="q-emoji">🛍️</span>
+          <span className="q-label">Magasins</span>
+        </button>
+        <button
+          onClick={() => handleSelectLocation({ id: 'restaurant', nameFr: "Le Restaurant", nameEn: "Restaurant", description: "Cuisinons ensemble !" })}
+          className={`quick-bar-btn ${currentView === 'restaurant' ? 'active' : ''}`}
+        >
+          <span className="q-emoji">🍽️</span>
+          <span className="q-label">Restaurant</span>
+        </button>
+        <button
+          onClick={() => handleSelectLocation({ id: 'firefighter', nameFr: "Les Pompiers", nameEn: "Fire Station", description: "De l'eau sur le feu !" })}
+          className={`quick-bar-btn ${currentView === 'firefighter' ? 'active' : ''}`}
+        >
+          <span className="q-emoji">🚒</span>
+          <span className="q-label">Pompiers</span>
+        </button>
+      </nav>
+
+      {/* 3D Pixar Teacher Mascot Guide Widget */}
+      <TeacherPixarGuide 
+        message={teacherMessage} 
+        onRepeat={repeatVoice}
+      />
     </div>
   );
 }
