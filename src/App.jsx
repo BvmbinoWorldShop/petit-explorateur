@@ -5,6 +5,12 @@ import NumbersActivity from './activities/NumbersActivity';
 import AnimalsActivity from './activities/AnimalsActivity';
 import ColoringActivity from './activities/ColoringActivity';
 import PuzzleMemoryActivity from './activities/PuzzleMemoryActivity';
+import BalloonsPopGame from './games/BalloonsPopGame';
+import DuckMazeGame from './games/DuckMazeGame';
+import FeedAnimalsGame from './games/FeedAnimalsGame';
+import MusicXylophoneGame from './games/MusicXylophoneGame';
+import NiaDressingRoom from './components/NiaDressingRoom';
+import StickerBook from './components/StickerBook';
 import FirefighterGame from './games/FirefighterGame';
 import DrivingGame from './games/DrivingGame';
 import CookingGame from './games/CookingGame';
@@ -16,7 +22,9 @@ import {
   ArrowLeft,
   Volume2,
   VolumeX,
-  Heart
+  Languages,
+  Shirt,
+  BookOpen
 } from 'lucide-react';
 
 const MENU_CARDS = [
@@ -26,9 +34,7 @@ const MENU_CARDS = [
     subtitle: 'Lettres & Mots',
     emoji: '🔤',
     badge: 'EDUCATIONAL',
-    color: '#FF6B6B',
     bgGrad: 'linear-gradient(135deg, #FF6B6B, #FFA07A)',
-    thumbBg: '#FFEAA7',
     iconText: 'A B C'
   },
   {
@@ -37,9 +43,7 @@ const MENU_CARDS = [
     subtitle: 'Compter les étoiles',
     emoji: '🔢',
     badge: 'COUNTING',
-    color: '#4DABF7',
     bgGrad: 'linear-gradient(135deg, #4DABF7, #74C0FC)',
-    thumbBg: '#D0EBFF',
     iconText: '1 2 3'
   },
   {
@@ -48,20 +52,52 @@ const MENU_CARDS = [
     subtitle: 'Grand, marron & cris',
     emoji: '🦁',
     badge: 'INTERACTIVE',
-    color: '#FF922B',
     bgGrad: 'linear-gradient(135deg, #FF922B, #FFC078)',
-    thumbBg: '#FFE8CC',
     iconText: '🐘 🐭 🐻'
   },
   {
+    id: 'balloons',
+    title: 'Éclate-Ballons',
+    subtitle: 'Pop ! Pop ! Pop !',
+    emoji: '🎈',
+    badge: 'TAP GAMES',
+    bgGrad: 'linear-gradient(135deg, #FF7675, #FAB1A0)',
+    iconText: '🎈 ⭐ 💥'
+  },
+  {
+    id: 'maze',
+    title: 'Labyrinthe Canard',
+    subtitle: 'Direction le bain !',
+    emoji: '🦆',
+    badge: 'MAZE GAMES',
+    bgGrad: 'linear-gradient(135deg, #2ED573, #7BED9F)',
+    iconText: '🦆 🛁 🌿'
+  },
+  {
+    id: 'feed',
+    title: 'Nourrir Animaux',
+    subtitle: 'Carottes, os & bananes',
+    emoji: '🥕',
+    badge: 'DRAG & DROP',
+    bgGrad: 'linear-gradient(135deg, #FF9F43, #FECA57)',
+    iconText: '🐰 🥕 🐶 🦴'
+  },
+  {
+    id: 'music',
+    title: 'Xylophone Musical',
+    subtitle: 'Do, Ré, Mi, Fa, Sol',
+    emoji: '🎵',
+    badge: 'MUSIC',
+    bgGrad: 'linear-gradient(135deg, #A29BFE, #6C5CE7)',
+    iconText: '🎶 🎹 🌈'
+  },
+  {
     id: 'coloring',
-    title: 'Coloriage',
+    title: 'Coloriage Magique',
     subtitle: 'Pompier & Canard',
     emoji: '🎨',
     badge: 'COLORING',
-    color: '#20C997',
     bgGrad: 'linear-gradient(135deg, #20C997, #63E6BE)',
-    thumbBg: '#D3F9D8',
     iconText: '🦆 🚒 🖌️'
   },
   {
@@ -70,9 +106,7 @@ const MENU_CARDS = [
     subtitle: 'Chiens, chats & doudous',
     emoji: '🧩',
     badge: 'MEMORY',
-    color: '#FCC419',
     bgGrad: 'linear-gradient(135deg, #FCC419, #FFE066)',
-    thumbBg: '#FFF3BF',
     iconText: '🐶 🐾 🐱'
   },
   {
@@ -81,9 +115,7 @@ const MENU_CARDS = [
     subtitle: 'De l\'eau sur le feu !',
     emoji: '🚒',
     badge: 'ACTION',
-    color: '#FA5252',
     bgGrad: 'linear-gradient(135deg, #FA5252, #FF8787)',
-    thumbBg: '#FFE3E3',
     iconText: '💦 🔥 🚒'
   },
   {
@@ -91,10 +123,8 @@ const MENU_CARDS = [
     title: 'Petite Voiture',
     subtitle: 'Vroum vroum & feux',
     emoji: '🚗',
-    badge: 'TAP GAMES',
-    color: '#339AF0',
+    badge: 'DRIVING',
     bgGrad: 'linear-gradient(135deg, #339AF0, #74C0FC)',
-    thumbBg: '#D0EBFF',
     iconText: '🚗 🚦 💨'
   },
   {
@@ -102,24 +132,23 @@ const MENU_CARDS = [
     title: 'Petite Cuisine',
     subtitle: 'Soupe du chef',
     emoji: '🍲',
-    badge: 'DRAG & DROP',
-    color: '#845EF7',
+    badge: 'COOKING',
     bgGrad: 'linear-gradient(135deg, #845EF7, #B197FC)',
-    thumbBg: '#EEBFA8',
     iconText: '🍅 🥕 🥣'
   },
 ];
 
 export default function App() {
-  const [activeGame, setActiveGame] = useState(null); // null = Home Portal
-  const [stars, setStars] = useState(5);
+  const [activeGame, setActiveGame] = useState(null);
+  const [stars, setStars] = useState(8);
   const [muted, setMuted] = useState(false);
+  const [langMode, setLangMode] = useState('fr'); // 'fr' or 'bilingual'
+  const [niaAccessory, setNiaAccessory] = useState('crown');
   const [niaMessage, setNiaMessage] = useState(
-    "Coucou ! C'est moi, Nia ! Touche un jeu pour t'amuser et apprendre avec moi !"
+    "Coucou mon ami ! C'est moi, Nia ! Touche un jeu pour t'amuser et apprendre avec moi !"
   );
 
   useEffect(() => {
-    // Initial cheerful welcome voice like Dora
     const welcome = "Coucou mon ami ! C'est moi, Nia ! Que veux-tu apprendre aujourd'hui ? Choisis un jeu !";
     doraVoice.speak(welcome);
   }, []);
@@ -138,6 +167,18 @@ export default function App() {
       case 'animals':
         prompt = "Bienvenue au zoo ! Trouvons le grand animal et l'animal marron !";
         break;
+      case 'balloons':
+        prompt = "Éclate un maximum de ballons avec ton doigt ! Pop pop !";
+        break;
+      case 'maze':
+        prompt = "Aide le petit canard à traverser le labyrinthe pour rejoindre son bain !";
+        break;
+      case 'feed':
+        prompt = "Les animaux ont faim ! Donne la carotte au lapin et l'os au chien !";
+        break;
+      case 'music':
+        prompt = "Touche les lames du xylophone pour jouer une belle chanson !";
+        break;
       case 'coloring':
         prompt = "Sortons les pinceaux magiques ! Peins le canard et le pompier !";
         break;
@@ -152,6 +193,12 @@ export default function App() {
         break;
       case 'cooking':
         prompt = "Miam ! Préparons une bonne soupe chaude avec de bons légumes !";
+        break;
+      case 'dressing':
+        prompt = "Choisis un joli chapeau pour me déguiser !";
+        break;
+      case 'stickers':
+        prompt = "Regarde ton beau carnet d'autocollants ! Colle de jolies images !";
         break;
       default:
         prompt = "Amusons-nous ensemble !";
@@ -184,6 +231,18 @@ export default function App() {
     if (next) doraVoice.stop();
   };
 
+  const toggleLanguageMode = () => {
+    sounds.playPop();
+    const nextMode = langMode === 'fr' ? 'bilingual' : 'fr';
+    setLangMode(nextMode);
+    doraVoice.mode = nextMode;
+    const alertMsg = nextMode === 'bilingual'
+      ? "Mode Bilingue activé ! Français et Anglais !"
+      : "Mode 100% Français activé !";
+    setNiaMessage(alertMsg);
+    doraVoice.speak(alertMsg);
+  };
+
   return (
     <div className="learning-center-viewport">
       {/* Top Friendly Header Bar */}
@@ -192,16 +251,46 @@ export default function App() {
           <span className="brand-star-icon animate-bounce-soft">⭐</span>
           <div className="brand-text-block">
             <h1 className="brand-title">Le Monde Magique de Nia</h1>
-            <p className="brand-tagline">Éveil & Jeux pour les tout-petits (3 ans)</p>
+            <p className="brand-tagline">Centre d'Éveil & Jeux pour tout-petits (3 ans)</p>
           </div>
         </div>
 
         <div className="navbar-controls">
           {/* Stars Collected Badge */}
-          <div className="stars-counter-badge animate-pop">
+          <div className="stars-counter-badge animate-pop" title="Étoiles gagnées !">
             <Star size={24} fill="#FFD43B" color="#F59F00" />
             <span className="stars-count-text">{stars}</span>
           </div>
+
+          {/* Language Toggle Button */}
+          <button
+            onClick={toggleLanguageMode}
+            className={`lang-toggle-pill ${langMode === 'bilingual' ? 'is-bilingual' : ''}`}
+            title="Changer de langue"
+          >
+            <Languages size={18} />
+            <span>{langMode === 'bilingual' ? '🇫🇷+🇬🇧 Bilingue' : '🇫🇷 100% Français'}</span>
+          </button>
+
+          {/* Quick Dressing Room Button */}
+          <button
+            onClick={() => handleSelectGame('dressing')}
+            className={`quick-header-action-btn ${activeGame === 'dressing' ? 'active' : ''}`}
+            title="Habiller Nia"
+          >
+            <Shirt size={20} />
+            <span className="btn-label-hide-mobile">Dressing</span>
+          </button>
+
+          {/* Quick Sticker Book Button */}
+          <button
+            onClick={() => handleSelectGame('stickers')}
+            className={`quick-header-action-btn ${activeGame === 'stickers' ? 'active' : ''}`}
+            title="Carnet d'autocollants"
+          >
+            <BookOpen size={20} />
+            <span className="btn-label-hide-mobile">Autocollants</span>
+          </button>
 
           {/* Sound Toggle */}
           <button 
@@ -212,7 +301,7 @@ export default function App() {
             {muted ? <VolumeX size={22} /> : <Volume2 size={22} />}
           </button>
 
-          {/* Back Button (When inside a game) */}
+          {/* Back Button */}
           {activeGame && (
             <button onClick={handleBackToMenu} className="back-portal-btn animate-pop">
               <ArrowLeft size={22} /> Menu des Jeux
@@ -221,13 +310,14 @@ export default function App() {
         </div>
       </header>
 
-      {/* Main Content Layout with Nia Animated Mini-Me directly interacting */}
+      {/* Main Content Layout */}
       <div className="center-main-layout">
         {/* Animated Nia Character Side Host */}
         <aside className="nia-host-column">
           <NiaCharacter
             message={niaMessage}
             onRepeat={repeatVoice}
+            accessory={niaAccessory}
             size={activeGame ? 'small' : 'large'}
           />
         </aside>
@@ -235,7 +325,7 @@ export default function App() {
         {/* Activity Area or Learning Center Grid */}
         <main className="center-stage-column">
           {!activeGame ? (
-            /* --- The Toddler Learning Center Portal Grid (inspired by user reference image) --- */
+            /* --- The Toddler Learning Center Portal Grid (12 games!) --- */
             <div className="portal-grid-container">
               {MENU_CARDS.map((card) => (
                 <div
@@ -268,11 +358,36 @@ export default function App() {
               {activeGame === 'animals' && (
                 <AnimalsActivity onNiaSpeak={setNiaMessage} onRewardStar={handleRewardStar} />
               )}
+              {activeGame === 'balloons' && (
+                <BalloonsPopGame onNiaSpeak={setNiaMessage} onRewardStar={handleRewardStar} />
+              )}
+              {activeGame === 'maze' && (
+                <DuckMazeGame onNiaSpeak={setNiaMessage} onRewardStar={handleRewardStar} />
+              )}
+              {activeGame === 'feed' && (
+                <FeedAnimalsGame onNiaSpeak={setNiaMessage} onRewardStar={handleRewardStar} />
+              )}
+              {activeGame === 'music' && (
+                <MusicXylophoneGame onNiaSpeak={setNiaMessage} />
+              )}
               {activeGame === 'coloring' && (
                 <ColoringActivity onNiaSpeak={setNiaMessage} onRewardStar={handleRewardStar} />
               )}
               {activeGame === 'memory' && (
                 <PuzzleMemoryActivity onNiaSpeak={setNiaMessage} onRewardStar={handleRewardStar} />
+              )}
+              {activeGame === 'dressing' && (
+                <NiaDressingRoom
+                  currentAccessory={niaAccessory}
+                  onSelectAccessory={setNiaAccessory}
+                  onNiaSpeak={setNiaMessage}
+                />
+              )}
+              {activeGame === 'stickers' && (
+                <StickerBook
+                  starsCount={stars}
+                  onNiaSpeak={setNiaMessage}
+                />
               )}
               {activeGame === 'firefighter' && (
                 <FirefighterGame onTeacherPrompt={setNiaMessage} />
@@ -288,9 +403,8 @@ export default function App() {
         </main>
       </div>
 
-      {/* Cheerful Footer */}
       <footer className="center-footer">
-        <p>🌟 Avec la voix chaleureuse de Nia en français &bull; Conçu spécialement pour les 3 ans</p>
+        <p>🌟 Avec la voix enjouée de Nia &bull; Conçu avec amour pour les tout-petits de 3 ans</p>
       </footer>
     </div>
   );
