@@ -1,222 +1,297 @@
 import React, { useState, useEffect } from 'react';
-import TeacherPixarGuide from './components/TeacherPixarGuide';
-import World3D from './components/World3D';
-import SchoolLocation from './locations/SchoolLocation';
-import GroceryLocation from './locations/GroceryLocation';
-import MallLocation from './locations/MallLocation';
-import RestaurantLocation from './locations/RestaurantLocation';
-import FireStationLocation from './locations/FireStationLocation';
+import NiaCharacter from './components/NiaCharacter';
+import AlphabetActivity from './activities/AlphabetActivity';
+import NumbersActivity from './activities/NumbersActivity';
+import AnimalsActivity from './activities/AnimalsActivity';
+import ColoringActivity from './activities/ColoringActivity';
+import PuzzleMemoryActivity from './activities/PuzzleMemoryActivity';
+import FirefighterGame from './games/FirefighterGame';
 import DrivingGame from './games/DrivingGame';
-import SortingGame from './games/SortingGame';
-import ColorsActivity from './activities/ColorsActivity';
-import LettersActivity from './activities/LettersActivity';
-import FruitsActivity from './activities/FruitsActivity';
+import CookingGame from './games/CookingGame';
+import { doraVoice } from './utils/speech';
 import { sounds } from './utils/audio';
-import { teacher } from './utils/speech';
 import {
-  Compass,
-  School,
-  ShoppingCart,
-  ShoppingBag,
-  UtensilsCrossed,
-  Flame,
-  Car,
-  BrainCircuit,
   Star,
   Sparkles,
-  Palette,
-  Volume2
+  ArrowLeft,
+  Volume2,
+  VolumeX,
+  Heart
 } from 'lucide-react';
 
+const MENU_CARDS = [
+  {
+    id: 'alphabet',
+    title: 'L\'Alphabet A-Z',
+    subtitle: 'Lettres & Mots',
+    emoji: '🔤',
+    badge: 'EDUCATIONAL',
+    color: '#FF6B6B',
+    bgGrad: 'linear-gradient(135deg, #FF6B6B, #FFA07A)',
+    thumbBg: '#FFEAA7',
+    iconText: 'A B C'
+  },
+  {
+    id: 'numbers',
+    title: 'Chiffres 1 à 20',
+    subtitle: 'Compter les étoiles',
+    emoji: '🔢',
+    badge: 'COUNTING',
+    color: '#4DABF7',
+    bgGrad: 'linear-gradient(135deg, #4DABF7, #74C0FC)',
+    thumbBg: '#D0EBFF',
+    iconText: '1 2 3'
+  },
+  {
+    id: 'animals',
+    title: 'Les Animaux',
+    subtitle: 'Grand, marron & cris',
+    emoji: '🦁',
+    badge: 'INTERACTIVE',
+    color: '#FF922B',
+    bgGrad: 'linear-gradient(135deg, #FF922B, #FFC078)',
+    thumbBg: '#FFE8CC',
+    iconText: '🐘 🐭 🐻'
+  },
+  {
+    id: 'coloring',
+    title: 'Coloriage',
+    subtitle: 'Pompier & Canard',
+    emoji: '🎨',
+    badge: 'COLORING',
+    color: '#20C997',
+    bgGrad: 'linear-gradient(135deg, #20C997, #63E6BE)',
+    thumbBg: '#D3F9D8',
+    iconText: '🦆 🚒 🖌️'
+  },
+  {
+    id: 'memory',
+    title: 'Mémoire & Paires',
+    subtitle: 'Chiens, chats & doudous',
+    emoji: '🧩',
+    badge: 'MEMORY',
+    color: '#FCC419',
+    bgGrad: 'linear-gradient(135deg, #FCC419, #FFE066)',
+    thumbBg: '#FFF3BF',
+    iconText: '🐶 🐾 🐱'
+  },
+  {
+    id: 'firefighter',
+    title: 'Pompier & Eau',
+    subtitle: 'De l\'eau sur le feu !',
+    emoji: '🚒',
+    badge: 'ACTION',
+    color: '#FA5252',
+    bgGrad: 'linear-gradient(135deg, #FA5252, #FF8787)',
+    thumbBg: '#FFE3E3',
+    iconText: '💦 🔥 🚒'
+  },
+  {
+    id: 'driving',
+    title: 'Petite Voiture',
+    subtitle: 'Vroum vroum & feux',
+    emoji: '🚗',
+    badge: 'TAP GAMES',
+    color: '#339AF0',
+    bgGrad: 'linear-gradient(135deg, #339AF0, #74C0FC)',
+    thumbBg: '#D0EBFF',
+    iconText: '🚗 🚦 💨'
+  },
+  {
+    id: 'cooking',
+    title: 'Petite Cuisine',
+    subtitle: 'Soupe du chef',
+    emoji: '🍲',
+    badge: 'DRAG & DROP',
+    color: '#845EF7',
+    bgGrad: 'linear-gradient(135deg, #845EF7, #B197FC)',
+    thumbBg: '#EEBFA8',
+    iconText: '🍅 🥕 🥣'
+  },
+];
+
 export default function App() {
-  const [currentView, setCurrentView] = useState('world'); // 'world' or location ID
-  const [stars, setStars] = useState(3);
-  const [teacherMessage, setTeacherMessage] = useState(
-    "Bonjour mon petit trésor ! Je suis Maîtresse Nia ! Viens explorer la ville avec moi !"
+  const [activeGame, setActiveGame] = useState(null); // null = Home Portal
+  const [stars, setStars] = useState(5);
+  const [muted, setMuted] = useState(false);
+  const [niaMessage, setNiaMessage] = useState(
+    "Coucou ! C'est moi, Nia ! Touche un jeu pour t'amuser et apprendre avec moi !"
   );
 
   useEffect(() => {
-    const welcome = "Bonjour mon petit trésor ! Je suis Maîtresse Nia ! Viens explorer la ville magique avec moi ! Où veux-tu aller ?";
-    teacher.speakBilingual(welcome, "Hello little treasure! I am Teacher Nia! Come explore the magical town with me!");
+    // Initial cheerful welcome voice like Dora
+    const welcome = "Coucou mon ami ! C'est moi, Nia ! Que veux-tu apprendre aujourd'hui ? Choisis un jeu !";
+    doraVoice.speak(welcome);
   }, []);
 
-  const handleSelectLocation = (loc) => {
-    sounds.playSuccess();
-    setCurrentView(loc.id);
-    const msg = `Nous arrivons à ${loc.nameFr} ! ${loc.description}`;
-    setTeacherMessage(msg);
-    teacher.speakBilingual(msg, `Welcome to the ${loc.nameEn}!`);
-  };
-
-  const handleBackToWorld = () => {
+  const handleSelectGame = (gameId) => {
     sounds.playPop();
-    setCurrentView('world');
-    const msg = "De retour dans la ville ! Balade-toi et choisis un nouvel endroit magique !";
-    setTeacherMessage(msg);
-    teacher.speakFrench(msg);
+    setActiveGame(gameId);
+    let prompt = "";
+    switch (gameId) {
+      case 'alphabet':
+        prompt = "Youpi ! L'alphabet de A à Z ! Répète les lettres après moi !";
+        break;
+      case 'numbers':
+        prompt = "Compter de 1 à 20, c'est super facile ! Comptons ensemble !";
+        break;
+      case 'animals':
+        prompt = "Bienvenue au zoo ! Trouvons le grand animal et l'animal marron !";
+        break;
+      case 'coloring':
+        prompt = "Sortons les pinceaux magiques ! Peins le canard et le pompier !";
+        break;
+      case 'memory':
+        prompt = "Retrouve les paires d'animaux cachées !";
+        break;
+      case 'firefighter':
+        prompt = "Vite pompier ! Arrose le feu avec de l'eau pour sauver la forêt !";
+        break;
+      case 'driving':
+        prompt = "En voiture ! Fais Tut-tut et attention au feu rouge !";
+        break;
+      case 'cooking':
+        prompt = "Miam ! Préparons une bonne soupe chaude avec de bons légumes !";
+        break;
+      default:
+        prompt = "Amusons-nous ensemble !";
+    }
+    setNiaMessage(prompt);
+    doraVoice.speak(prompt);
   };
 
-  const addStar = () => {
+  const handleBackToMenu = () => {
+    sounds.playPop();
+    setActiveGame(null);
+    const msg = "Super ! Choisis un autre jeu rigolo !";
+    setNiaMessage(msg);
+    doraVoice.speak(msg);
+  };
+
+  const handleRewardStar = () => {
     setStars((s) => s + 1);
   };
 
   const repeatVoice = () => {
-    teacher.speakFrench(teacherMessage);
+    doraVoice.speak(niaMessage);
+  };
+
+  const toggleSound = () => {
+    const next = !muted;
+    setMuted(next);
+    doraVoice.isMuted = next;
+    sounds.isMuted = next;
+    if (next) doraVoice.stop();
   };
 
   return (
-    <div className="pixar-world-app">
-      {/* Top Header Bar */}
-      <header className="main-navbar">
-        <div className="nav-brand-section">
-          <span className="brand-logo-icon animate-bounce-soft">🌍</span>
-          <div className="brand-text-wrap">
-            <h1 className="brand-heading">Le Monde de Maîtresse Nia 🌟</h1>
-            <p className="brand-subheading">Aventure 3D interactive bilingue (Français & Anglais)</p>
+    <div className="learning-center-viewport">
+      {/* Top Friendly Header Bar */}
+      <header className="center-navbar">
+        <div className="navbar-brand">
+          <span className="brand-star-icon animate-bounce-soft">⭐</span>
+          <div className="brand-text-block">
+            <h1 className="brand-title">Le Monde Magique de Nia</h1>
+            <p className="brand-tagline">Éveil & Jeux pour les tout-petits (3 ans)</p>
           </div>
         </div>
 
-        {/* Global Stars Count */}
-        <div className="header-stars-pill">
-          <Star size={24} fill="#ffd32a" color="#ffa502" />
-          <span className="stars-number">{stars}</span>
-        </div>
+        <div className="navbar-controls">
+          {/* Stars Collected Badge */}
+          <div className="stars-counter-badge animate-pop">
+            <Star size={24} fill="#FFD43B" color="#F59F00" />
+            <span className="stars-count-text">{stars}</span>
+          </div>
 
-        {/* Home / World View Button */}
-        {currentView !== 'world' && (
-          <button onClick={handleBackToWorld} className="return-world-nav-btn">
-            🌍 Revenir à la Ville 3D
+          {/* Sound Toggle */}
+          <button 
+            onClick={toggleSound} 
+            className={`sound-toggle-btn ${muted ? 'is-muted' : ''}`}
+            title={muted ? "Activer le son" : "Couper le son"}
+          >
+            {muted ? <VolumeX size={22} /> : <Volume2 size={22} />}
           </button>
-        )}
+
+          {/* Back Button (When inside a game) */}
+          {activeGame && (
+            <button onClick={handleBackToMenu} className="back-portal-btn animate-pop">
+              <ArrowLeft size={22} /> Menu des Jeux
+            </button>
+          )}
+        </div>
       </header>
 
-      {/* Main Interactive Stage */}
-      <main className="stage-area">
-        {currentView === 'world' && (
-          <div className="world-experience-container">
-            {/* 3D Interactive Town */}
-            <World3D
-              onSelectLocation={handleSelectLocation}
-              onTeacherSpeech={setTeacherMessage}
-              starsCount={stars}
-              onCollectStar={addStar}
-            />
-          </div>
-        )}
-
-        {/* Destination Modals / Screens */}
-        {currentView === 'school' && (
-          <SchoolLocation
-            onTeacherSpeech={setTeacherMessage}
-            onClose={handleBackToWorld}
-            onRewardStar={addStar}
+      {/* Main Content Layout with Nia Animated Mini-Me directly interacting */}
+      <div className="center-main-layout">
+        {/* Animated Nia Character Side Host */}
+        <aside className="nia-host-column">
+          <NiaCharacter
+            message={niaMessage}
+            onRepeat={repeatVoice}
+            size={activeGame ? 'small' : 'large'}
           />
-        )}
+        </aside>
 
-        {currentView === 'grocery' && (
-          <GroceryLocation
-            onTeacherSpeech={setTeacherMessage}
-            onClose={handleBackToWorld}
-            onRewardStar={addStar}
-          />
-        )}
-
-        {currentView === 'mall' && (
-          <MallLocation
-            onTeacherSpeech={setTeacherMessage}
-            onClose={handleBackToWorld}
-            onRewardStar={addStar}
-          />
-        )}
-
-        {currentView === 'restaurant' && (
-          <RestaurantLocation
-            onTeacherSpeech={setTeacherMessage}
-            onClose={handleBackToWorld}
-            onRewardStar={addStar}
-          />
-        )}
-
-        {currentView === 'firefighter' && (
-          <FireStationLocation
-            onTeacherSpeech={setTeacherMessage}
-            onClose={handleBackToWorld}
-            onRewardStar={addStar}
-          />
-        )}
-
-        {currentView === 'driving' && (
-          <div className="location-modal-card">
-            <div className="location-modal-header fire-theme">
-              <h2>🚗 La Voiture en Ville</h2>
-              <button onClick={handleBackToWorld} className="close-modal-btn">✖ Retour</button>
+        {/* Activity Area or Learning Center Grid */}
+        <main className="center-stage-column">
+          {!activeGame ? (
+            /* --- The Toddler Learning Center Portal Grid (inspired by user reference image) --- */
+            <div className="portal-grid-container">
+              {MENU_CARDS.map((card) => (
+                <div
+                  key={card.id}
+                  onClick={() => handleSelectGame(card.id)}
+                  className="portal-game-card animate-pop"
+                >
+                  <div className="card-thumb-canvas" style={{ background: card.bgGrad }}>
+                    <div className="thumb-graphic-box">
+                      <span className="card-jumbo-emoji animate-bounce-soft">{card.emoji}</span>
+                      <span className="card-icon-text">{card.iconText}</span>
+                    </div>
+                  </div>
+                  <div className="card-bottom-pill">
+                    <span className="card-title-text">{card.title}</span>
+                    <span className="card-badge-tag">{card.badge} ›</span>
+                  </div>
+                </div>
+              ))}
             </div>
-            <DrivingGame onTeacherPrompt={setTeacherMessage} />
-          </div>
-        )}
-
-        {currentView === 'sorting' && (
-          <div className="location-modal-card">
-            <div className="location-modal-header mall-theme">
-              <h2>🧩 Les Énigmes Faciles</h2>
-              <button onClick={handleBackToWorld} className="close-modal-btn">✖ Retour</button>
+          ) : (
+            /* --- Active Game Component --- */
+            <div className="active-activity-wrapper animate-pop">
+              {activeGame === 'alphabet' && (
+                <AlphabetActivity onNiaSpeak={setNiaMessage} onRewardStar={handleRewardStar} />
+              )}
+              {activeGame === 'numbers' && (
+                <NumbersActivity onNiaSpeak={setNiaMessage} onRewardStar={handleRewardStar} />
+              )}
+              {activeGame === 'animals' && (
+                <AnimalsActivity onNiaSpeak={setNiaMessage} onRewardStar={handleRewardStar} />
+              )}
+              {activeGame === 'coloring' && (
+                <ColoringActivity onNiaSpeak={setNiaMessage} onRewardStar={handleRewardStar} />
+              )}
+              {activeGame === 'memory' && (
+                <PuzzleMemoryActivity onNiaSpeak={setNiaMessage} onRewardStar={handleRewardStar} />
+              )}
+              {activeGame === 'firefighter' && (
+                <FirefighterGame onTeacherPrompt={setNiaMessage} />
+              )}
+              {activeGame === 'driving' && (
+                <DrivingGame onTeacherPrompt={setNiaMessage} />
+              )}
+              {activeGame === 'cooking' && (
+                <CookingGame onTeacherPrompt={setNiaMessage} />
+              )}
             </div>
-            <SortingGame onTeacherPrompt={setTeacherMessage} />
-          </div>
-        )}
-      </main>
+          )}
+        </main>
+      </div>
 
-      {/* Bottom Bar: Quick Destination Shortcuts */}
-      <nav className="bottom-quick-bar">
-        <button
-          onClick={() => { sounds.playPop(); setCurrentView('world'); }}
-          className={`quick-bar-btn ${currentView === 'world' ? 'active' : ''}`}
-        >
-          <span className="q-emoji">🌍</span>
-          <span className="q-label">Ville 3D</span>
-        </button>
-        <button
-          onClick={() => handleSelectLocation({ id: 'school', nameFr: "L'École", nameEn: "School", description: "Lettres et chiffres !" })}
-          className={`quick-bar-btn ${currentView === 'school' ? 'active' : ''}`}
-        >
-          <span className="q-emoji">🏫</span>
-          <span className="q-label">École</span>
-        </button>
-        <button
-          onClick={() => handleSelectLocation({ id: 'grocery', nameFr: "L'Épicerie", nameEn: "Grocery Store", description: "Faisons les courses !" })}
-          className={`quick-bar-btn ${currentView === 'grocery' ? 'active' : ''}`}
-        >
-          <span className="q-emoji">🛒</span>
-          <span className="q-label">Épicerie</span>
-        </button>
-        <button
-          onClick={() => handleSelectLocation({ id: 'mall', nameFr: "Le Centre Commercial", nameEn: "Mall", description: "Jouets et vêtements !" })}
-          className={`quick-bar-btn ${currentView === 'mall' ? 'active' : ''}`}
-        >
-          <span className="q-emoji">🛍️</span>
-          <span className="q-label">Magasins</span>
-        </button>
-        <button
-          onClick={() => handleSelectLocation({ id: 'restaurant', nameFr: "Le Restaurant", nameEn: "Restaurant", description: "Cuisinons ensemble !" })}
-          className={`quick-bar-btn ${currentView === 'restaurant' ? 'active' : ''}`}
-        >
-          <span className="q-emoji">🍽️</span>
-          <span className="q-label">Restaurant</span>
-        </button>
-        <button
-          onClick={() => handleSelectLocation({ id: 'firefighter', nameFr: "Les Pompiers", nameEn: "Fire Station", description: "De l'eau sur le feu !" })}
-          className={`quick-bar-btn ${currentView === 'firefighter' ? 'active' : ''}`}
-        >
-          <span className="q-emoji">🚒</span>
-          <span className="q-label">Pompiers</span>
-        </button>
-      </nav>
-
-      {/* 3D Pixar Teacher Mascot Guide Widget */}
-      <TeacherPixarGuide 
-        message={teacherMessage} 
-        onRepeat={repeatVoice}
-      />
+      {/* Cheerful Footer */}
+      <footer className="center-footer">
+        <p>🌟 Avec la voix chaleureuse de Nia en français &bull; Conçu spécialement pour les 3 ans</p>
+      </footer>
     </div>
   );
 }
