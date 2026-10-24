@@ -1,4 +1,4 @@
-// High-energy Dora-the-Explorer-like French voice synthesis engine with Bilingual mode toggle
+// High-energy Dora-the-Explorer-like French voice synthesis engine with Tyanna character
 
 class DoraVoiceEngine {
   constructor() {
@@ -57,7 +57,7 @@ class DoraVoiceEngine {
       utterance.voice = this.frenchVoice;
     }
 
-    // Little girl voice style (Dora style): clear, friendly, slightly elevated pitch
+    // Little girl voice style: clear, warm, enthusiastic
     utterance.pitch = 1.38;
     utterance.rate = 0.95;
 

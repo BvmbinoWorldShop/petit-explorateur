@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import NiaCharacter from './components/NiaCharacter';
+import TyannaCharacter from './components/TyannaCharacter';
 import AlphabetActivity from './activities/AlphabetActivity';
 import NumbersActivity from './activities/NumbersActivity';
 import AnimalsActivity from './activities/AnimalsActivity';
@@ -7,7 +7,6 @@ import ColoringActivity from './activities/ColoringActivity';
 import PuzzleMemoryActivity from './activities/PuzzleMemoryActivity';
 import BalloonsPopGame from './games/BalloonsPopGame';
 import DuckMazeGame from './games/DuckMazeGame';
-import FeedAnimalsGame from './games/FeedAnimalsGame';
 import AnimalFarmGame from './games/AnimalFarmGame';
 import MusicXylophoneGame from './games/MusicXylophoneGame';
 import NiaDressingRoom from './components/NiaDressingRoom';
@@ -30,26 +29,35 @@ import {
 
 const MENU_CARDS = [
   {
+    id: 'farm',
+    title: 'Ferme aux Œufs',
+    subtitle: 'Poules qui courent & clients',
+    emoji: '🐔',
+    badge: 'FARM TYCOON',
+    bgGrad: 'linear-gradient(135deg, #2ED573, #10AC84)',
+    iconText: '🌾 🐔 🥚 💰'
+  },
+  {
+    id: 'numbers',
+    title: 'Nombres & Calculs',
+    subtitle: '1-20, Additions & Soustractions',
+    emoji: '🔢',
+    badge: 'COUNT & MATH',
+    bgGrad: 'linear-gradient(135deg, #4DABF7, #74C0FC)',
+    iconText: '1 2 3  +  -'
+  },
+  {
     id: 'alphabet',
     title: 'L\'Alphabet A-Z',
-    subtitle: 'Lettres & Mots',
+    subtitle: 'Lettres & Mots magiques',
     emoji: '🔤',
     badge: 'EDUCATIONAL',
     bgGrad: 'linear-gradient(135deg, #FF6B6B, #FFA07A)',
     iconText: 'A B C'
   },
   {
-    id: 'numbers',
-    title: 'Chiffres 1 à 20',
-    subtitle: 'Compter les étoiles',
-    emoji: '🔢',
-    badge: 'COUNTING',
-    bgGrad: 'linear-gradient(135deg, #4DABF7, #74C0FC)',
-    iconText: '1 2 3'
-  },
-  {
     id: 'animals',
-    title: 'Les Animaux',
+    title: 'Le Zoo des Animaux',
     subtitle: 'Grand, marron & cris',
     emoji: '🦁',
     badge: 'INTERACTIVE',
@@ -73,15 +81,6 @@ const MENU_CARDS = [
     badge: 'MAZE GAMES',
     bgGrad: 'linear-gradient(135deg, #2ED573, #7BED9F)',
     iconText: '🦆 🛁 🌿'
-  },
-  {
-    id: 'farm',
-    title: 'Ferme aux Œufs',
-    subtitle: 'Nourrir & Vendre',
-    emoji: '🐔',
-    badge: 'FARM TYCOON',
-    bgGrad: 'linear-gradient(135deg, #2ED573, #10AC84)',
-    iconText: '🌾 🐔 🥚 💰'
   },
   {
     id: 'music',
@@ -141,16 +140,16 @@ const MENU_CARDS = [
 
 export default function App() {
   const [activeGame, setActiveGame] = useState(null);
-  const [stars, setStars] = useState(8);
+  const [stars, setStars] = useState(12);
   const [muted, setMuted] = useState(false);
-  const [langMode, setLangMode] = useState('fr'); // 'fr' or 'bilingual'
-  const [niaAccessory, setNiaAccessory] = useState('crown');
-  const [niaMessage, setNiaMessage] = useState(
-    "Coucou mon ami ! C'est moi, Nia ! Touche un jeu pour t'amuser et apprendre avec moi !"
+  const [langMode, setLangMode] = useState('fr');
+  const [tyannaAccessory, setTyannaAccessory] = useState('crown');
+  const [tyannaMessage, setTyannaMessage] = useState(
+    "Coucou mon ami ! C'est moi, Tyanna ! Touche un jeu pour t'amuser et apprendre avec moi !"
   );
 
   useEffect(() => {
-    const welcome = "Coucou mon ami ! C'est moi, Nia ! Que veux-tu apprendre aujourd'hui ? Choisis un jeu !";
+    const welcome = "Coucou mon ami ! C'est moi, Tyanna ! Que veux-tu apprendre aujourd'hui ? Choisis un jeu !";
     doraVoice.speak(welcome);
   }, []);
 
@@ -159,11 +158,14 @@ export default function App() {
     setActiveGame(gameId);
     let prompt = "";
     switch (gameId) {
-      case 'alphabet':
-        prompt = "Youpi ! L'alphabet de A à Z ! Répète les lettres après moi !";
+      case 'farm':
+        prompt = "Bienvenue dans ta ferme ! Regarde les poules courir et les clients faire la queue au comptoir !";
         break;
       case 'numbers':
-        prompt = "Compter de 1 à 20, c'est super facile ! Comptons ensemble !";
+        prompt = "Compter de 1 à 20, faire des additions et soustractions avec moi !";
+        break;
+      case 'alphabet':
+        prompt = "Youpi ! L'alphabet de A à Z ! Répète les lettres après moi !";
         break;
       case 'animals':
         prompt = "Bienvenue au zoo ! Trouvons le grand animal et l'animal marron !";
@@ -173,9 +175,6 @@ export default function App() {
         break;
       case 'maze':
         prompt = "Aide le petit canard à traverser le labyrinthe pour rejoindre son bain !";
-        break;
-      case 'farm':
-        prompt = "Bienvenue dans ta ferme ! Donne des graines aux poules, vends les œufs et achète de nouveaux animaux !";
         break;
       case 'music':
         prompt = "Touche les lames du xylophone pour jouer une belle chanson !";
@@ -204,15 +203,15 @@ export default function App() {
       default:
         prompt = "Amusons-nous ensemble !";
     }
-    setNiaMessage(prompt);
+    setTyannaMessage(prompt);
     doraVoice.speak(prompt);
   };
 
   const handleBackToMenu = () => {
     sounds.playPop();
     setActiveGame(null);
-    const msg = "Super ! Choisis un autre jeu rigolo !";
-    setNiaMessage(msg);
+    const msg = "Super ! Choisis un autre jeu rigolo avec moi !";
+    setTyannaMessage(msg);
     doraVoice.speak(msg);
   };
 
@@ -221,7 +220,7 @@ export default function App() {
   };
 
   const repeatVoice = () => {
-    doraVoice.speak(niaMessage);
+    doraVoice.speak(tyannaMessage);
   };
 
   const toggleSound = () => {
@@ -240,7 +239,7 @@ export default function App() {
     const alertMsg = nextMode === 'bilingual'
       ? "Mode Bilingue activé ! Français et Anglais !"
       : "Mode 100% Français activé !";
-    setNiaMessage(alertMsg);
+    setTyannaMessage(alertMsg);
     doraVoice.speak(alertMsg);
   };
 
@@ -251,8 +250,8 @@ export default function App() {
         <div className="navbar-brand">
           <span className="brand-star-icon animate-bounce-soft">⭐</span>
           <div className="brand-text-block">
-            <h1 className="brand-title">Le Monde Magique de Nia</h1>
-            <p className="brand-tagline">Centre d'Éveil & Jeux pour tout-petits (3 ans)</p>
+            <h1 className="brand-title">Le Monde Magique de Tyanna</h1>
+            <p className="brand-tagline">Centre d'Éveil & Jeux 3D pour tout-petits (3 ans)</p>
           </div>
         </div>
 
@@ -277,7 +276,7 @@ export default function App() {
           <button
             onClick={() => handleSelectGame('dressing')}
             className={`quick-header-action-btn ${activeGame === 'dressing' ? 'active' : ''}`}
-            title="Habiller Nia"
+            title="Habiller Tyanna"
           >
             <Shirt size={20} />
             <span className="btn-label-hide-mobile">Dressing</span>
@@ -311,14 +310,13 @@ export default function App() {
         </div>
       </header>
 
-      {/* Main Content Layout */}
+      {/* Main Content Layout with Tyanna Character Side Host */}
       <div className="center-main-layout">
-        {/* Animated Nia Character Side Host */}
         <aside className="nia-host-column">
-          <NiaCharacter
-            message={niaMessage}
+          <TyannaCharacter
+            message={tyannaMessage}
             onRepeat={repeatVoice}
-            accessory={niaAccessory}
+            accessory={tyannaAccessory}
             size={activeGame ? 'small' : 'large'}
           />
         </aside>
@@ -326,7 +324,7 @@ export default function App() {
         {/* Activity Area or Learning Center Grid */}
         <main className="center-stage-column">
           {!activeGame ? (
-            /* --- The Toddler Learning Center Portal Grid (12 games!) --- */
+            /* --- The Toddler Learning Center Portal Grid --- */
             <div className="portal-grid-container">
               {MENU_CARDS.map((card) => (
                 <div
@@ -350,54 +348,54 @@ export default function App() {
           ) : (
             /* --- Active Game Component --- */
             <div className="active-activity-wrapper animate-pop">
-              {activeGame === 'alphabet' && (
-                <AlphabetActivity onNiaSpeak={setNiaMessage} onRewardStar={handleRewardStar} />
+              {activeGame === 'farm' && (
+                <AnimalFarmGame onNiaSpeak={setTyannaMessage} onRewardStar={handleRewardStar} />
               )}
               {activeGame === 'numbers' && (
-                <NumbersActivity onNiaSpeak={setNiaMessage} onRewardStar={handleRewardStar} />
+                <NumbersActivity onNiaSpeak={setTyannaMessage} onRewardStar={handleRewardStar} />
+              )}
+              {activeGame === 'alphabet' && (
+                <AlphabetActivity onNiaSpeak={setTyannaMessage} onRewardStar={handleRewardStar} />
               )}
               {activeGame === 'animals' && (
-                <AnimalsActivity onNiaSpeak={setNiaMessage} onRewardStar={handleRewardStar} />
+                <AnimalsActivity onNiaSpeak={setTyannaMessage} onRewardStar={handleRewardStar} />
               )}
               {activeGame === 'balloons' && (
-                <BalloonsPopGame onNiaSpeak={setNiaMessage} onRewardStar={handleRewardStar} />
+                <BalloonsPopGame onNiaSpeak={setTyannaMessage} onRewardStar={handleRewardStar} />
               )}
               {activeGame === 'maze' && (
-                <DuckMazeGame onNiaSpeak={setNiaMessage} onRewardStar={handleRewardStar} />
-              )}
-              {activeGame === 'farm' && (
-                <AnimalFarmGame onNiaSpeak={setNiaMessage} onRewardStar={handleRewardStar} />
+                <DuckMazeGame onNiaSpeak={setTyannaMessage} onRewardStar={handleRewardStar} />
               )}
               {activeGame === 'music' && (
-                <MusicXylophoneGame onNiaSpeak={setNiaMessage} />
+                <MusicXylophoneGame onNiaSpeak={setTyannaMessage} />
               )}
               {activeGame === 'coloring' && (
-                <ColoringActivity onNiaSpeak={setNiaMessage} onRewardStar={handleRewardStar} />
+                <ColoringActivity onNiaSpeak={setTyannaMessage} onRewardStar={handleRewardStar} />
               )}
               {activeGame === 'memory' && (
-                <PuzzleMemoryActivity onNiaSpeak={setNiaMessage} onRewardStar={handleRewardStar} />
+                <PuzzleMemoryActivity onNiaSpeak={setTyannaMessage} onRewardStar={handleRewardStar} />
               )}
               {activeGame === 'dressing' && (
                 <NiaDressingRoom
-                  currentAccessory={niaAccessory}
-                  onSelectAccessory={setNiaAccessory}
-                  onNiaSpeak={setNiaMessage}
+                  currentAccessory={tyannaAccessory}
+                  onSelectAccessory={setTyannaAccessory}
+                  onNiaSpeak={setTyannaMessage}
                 />
               )}
               {activeGame === 'stickers' && (
                 <StickerBook
                   starsCount={stars}
-                  onNiaSpeak={setNiaMessage}
+                  onNiaSpeak={setTyannaMessage}
                 />
               )}
               {activeGame === 'firefighter' && (
-                <FirefighterGame onTeacherPrompt={setNiaMessage} />
+                <FirefighterGame onTeacherPrompt={setTyannaMessage} />
               )}
               {activeGame === 'driving' && (
-                <DrivingGame onTeacherPrompt={setNiaMessage} />
+                <DrivingGame onTeacherPrompt={setTyannaMessage} />
               )}
               {activeGame === 'cooking' && (
-                <CookingGame onTeacherPrompt={setNiaMessage} />
+                <CookingGame onTeacherPrompt={setTyannaMessage} />
               )}
             </div>
           )}
@@ -405,7 +403,7 @@ export default function App() {
       </div>
 
       <footer className="center-footer">
-        <p>🌟 Avec la voix enjouée de Nia &bull; Conçu avec amour pour les tout-petits de 3 ans</p>
+        <p>🌟 Avec la voix enjouée de Tyanna &bull; Conçu avec amour pour les tout-petits de 3 ans</p>
       </footer>
     </div>
   );
