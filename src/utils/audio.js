@@ -219,6 +219,52 @@ class SoundFX {
     osc.start(now);
     osc.stop(now + 0.12);
   }
+
+  playCashRegister() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+
+    // 1. Mechanical cash drawer ratchet click
+    [0, 0.04, 0.08].forEach((offset) => {
+      const click = this.ctx.createOscillator();
+      const clickGain = this.ctx.createGain();
+      click.type = 'square';
+      click.frequency.setValueAtTime(800 + Math.random() * 400, now + offset);
+      clickGain.gain.setValueAtTime(0.12, now + offset);
+      clickGain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.03);
+      click.connect(clickGain);
+      clickGain.connect(this.ctx.destination);
+      click.start(now + offset);
+      click.stop(now + offset + 0.03);
+    });
+
+    // 2. High-pitch Brass Bell "DING!"
+    const bell = this.ctx.createOscillator();
+    const bellGain = this.ctx.createGain();
+    bell.type = 'sine';
+    bell.frequency.setValueAtTime(2093, now + 0.1); // C7 bell ring
+    bellGain.gain.setValueAtTime(0.35, now + 0.1);
+    bellGain.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
+    bell.connect(bellGain);
+    bellGain.connect(this.ctx.destination);
+    bell.start(now + 0.1);
+    bell.stop(now + 0.7);
+
+    // 3. Shimmer overtone
+    const bellOver = this.ctx.createOscillator();
+    const bellOverGain = this.ctx.createGain();
+    bellOver.type = 'triangle';
+    bellOver.frequency.setValueAtTime(3135.96, now + 0.1); // G7
+    bellOverGain.gain.setValueAtTime(0.18, now + 0.1);
+    bellOverGain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+    bellOver.connect(bellOverGain);
+    bellOverGain.connect(this.ctx.destination);
+    bellOver.start(now + 0.1);
+    bellOver.stop(now + 0.5);
+  }
 }
 
 export const sounds = new SoundFX();

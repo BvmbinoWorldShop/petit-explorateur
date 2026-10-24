@@ -2051,70 +2051,215 @@ body {
 }
 
 /* ========================================================
-   ENHANCED 3D PIXAR FARM, RUNNING CHICKENS & HUMAN MINI-MES
+   ENHANCED 3D PIXAR FARM: 30+ CHICKENS & 3D CASH REGISTER
    ======================================================== */
 
-/* Pasture Expansion */
-.pasture-canvas-field.expansive-pasture {
-  height: 380px;
-  background: radial-gradient(circle at 50% 30%, #55efc4 0%, #2ed573 55%, #10ac84 100%);
+.wide-farm-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* 1. MASSIVE EXPANSIVE MEADOW (ALMOST HALF THE SCREEN) */
+.pasture-canvas-field.expansive-pasture.mega-farm-pasture {
+  height: clamp(480px, 52vh, 620px);
+  width: 100%;
+  background: 
+    radial-gradient(ellipse at 50% 15%, #a8e6cf 0%, transparent 60%),
+    radial-gradient(circle at 80% 85%, #2ed573 0%, #10ac84 70%),
+    linear-gradient(180deg, #55efc4 0%, #2ed573 45%, #20bf6b 85%, #10ac84 100%);
   border: 5px solid #1dd1a1;
   border-radius: 32px;
-  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.15), 0 12px 28px rgba(0, 0, 0, 0.12);
+  box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.14), 0 12px 30px rgba(0, 0, 0, 0.15);
   position: relative;
   overflow: hidden;
 }
 
-.pasture-header-row {
+/* Sleek top control dock inside the pasture */
+.sleek-dock-bar {
   position: absolute;
-  top: 14px;
-  left: 16px;
-  right: 16px;
+  top: 12px;
+  left: 14px;
+  right: 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 10;
+  z-index: 20;
   pointer-events: auto;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
 }
 
-.pasture-tag {
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(8px);
+.pasture-tag.glowing-tag {
+  background: rgba(16, 44, 28, 0.75);
+  backdrop-filter: blur(10px);
   color: #ffffff;
   padding: 6px 14px;
   border-radius: 20px;
   font-size: 0.85rem;
-  font-weight: 700;
-  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  font-weight: 800;
+  border: 2px solid rgba(46, 213, 115, 0.6);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.farm-wooden-coop {
-  position: absolute;
-  top: 12px;
-  right: 16px;
-  background: #c0392b;
-  color: white;
+.sleek-pasture-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Compact, Sleek Feed Pill Button (No longer oversized!) */
+.sleek-feed-pill-btn {
+  background: linear-gradient(135deg, #ffd32a 0%, #ff9f1a 100%);
+  color: #2d3436;
+  font-family: var(--font-family);
+  font-weight: 900;
+  font-size: 0.82rem;
   padding: 8px 16px;
-  border-radius: 16px;
-  border: 3px solid #f39c12;
+  border-radius: 999px;
+  border: 2.5px solid #ffffff;
+  box-shadow: 0 4px 14px rgba(255, 159, 26, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease-out;
+}
+
+.sleek-feed-pill-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 18px rgba(255, 159, 26, 0.6);
+}
+
+.sleek-feed-pill-btn:active {
+  transform: translateY(1px);
+}
+
+/* Add Chickens Action Pills */
+.sleek-add-pill-btn {
+  background: linear-gradient(135deg, #ffffff 0%, #dff9fb 100%);
+  color: #130f40;
+  font-family: var(--font-family);
   font-weight: 800;
-  font-size: 0.9rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  font-size: 0.8rem;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 2px solid #22a6b3;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s;
+}
+
+.sleek-add-pill-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: #c7ecee;
+  border-color: #0984e3;
+}
+
+.sleek-add-pill-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sleek-super-flock-btn {
+  background: linear-gradient(135deg, #e056fd 0%, #686de0 100%);
+  color: #ffffff;
+  font-family: var(--font-family);
+  font-weight: 900;
+  font-size: 0.8rem;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 14px rgba(104, 109, 224, 0.45);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+}
+
+.sleek-super-flock-btn:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 20px rgba(104, 109, 224, 0.65);
+}
+
+.sleek-super-flock-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tiny-price {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-size: 0.72rem;
+}
+
+/* Meadow Decorations */
+.field-grass-tufts.mega-tufts {
+  position: absolute;
+  top: 50px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  justify-content: space-around;
+  font-size: 1.8rem;
+  opacity: 0.35;
   pointer-events: none;
 }
 
-/* 3D Pixar Chickens */
-.pixar-chicken-box {
-  width: 82px;
-  height: 78px;
-  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.22));
+.farm-pond-corner {
+  position: absolute;
+  bottom: 12px;
+  right: 16px;
+  background: rgba(72, 219, 251, 0.35);
+  border: 2px dashed #0abde3;
+  color: #0c2461;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  pointer-events: none;
+}
+
+.compact-coop {
+  position: absolute;
+  bottom: 12px;
+  left: 16px;
+  background: #c0392b;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 14px;
+  border: 2px solid #f39c12;
+  font-weight: 800;
+  font-size: 0.8rem;
+  pointer-events: none;
+}
+
+/* 30+ Flocking Chickens */
+.running-chicken-entity.flock-chicken {
+  position: absolute;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  will-change: left, top;
+}
+
+.pixar-chicken-box.mini-hen {
+  width: 58px;
+  height: 54px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.22));
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.pixar-chicken-box:hover {
-  transform: scale(1.15);
+.pixar-chicken-box.mini-hen:hover {
+  transform: scale(1.22);
 }
 
 .pixar-chicken-3d-svg {
@@ -2132,155 +2277,324 @@ body {
   100% { transform: rotate(-28deg); }
 }
 
-/* Ultra-Juicy Feed All Master Button */
-.luxury-feed-btn {
-  background: linear-gradient(135deg, #ffd32a 0%, #ff9f1a 100%);
-  color: #2d3436;
-  font-weight: 900;
-  font-size: 0.95rem;
-  padding: 10px 20px;
-  border-radius: 24px;
-  border: 3px solid #ffffff;
-  box-shadow: 0 8px 20px rgba(255, 159, 26, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.8);
-  cursor: pointer;
-  transition: all 0.15s ease-out;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.luxury-feed-btn:hover {
-  transform: translateY(-3px) scale(1.03);
-  box-shadow: 0 12px 26px rgba(255, 159, 26, 0.65);
-}
-
-.luxury-feed-btn:active {
-  transform: translateY(2px) scale(0.98);
-}
-
-/* Front Desk with Human Neighbors */
-.luxury-counter {
-  background: linear-gradient(180deg, #fffdf8 0%, #fff7e6 100%);
-  border: 4px solid #f39c12;
-  box-shadow: 0 10px 24px rgba(243, 156, 18, 0.15);
-}
-
-.customer-avatar-minime {
-  width: 72px;
-  height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
-}
-
-.pixar-minime-svg {
-  width: 100%;
-  height: 100%;
-}
-
-/* Serve Button */
-.luxury-serve-btn {
-  width: 100%;
-  background: linear-gradient(135deg, #2ed573 0%, #10ac84 100%);
-  color: white;
-  border: 3px solid #ffffff;
-  border-radius: 24px;
-  padding: 16px 24px;
-  font-size: 1.15rem;
+.chicken-cluck-bubble.mini-bubble {
+  background: #ffffff;
+  color: #d63031;
+  font-size: 0.7rem;
   font-weight: 800;
-  letter-spacing: 0.5px;
-  box-shadow: 0 8px 22px rgba(46, 213, 115, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.5);
+  padding: 2px 6px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  margin-bottom: -4px;
+}
+
+.chicken-name-tag.mini-tag {
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 8px;
+  margin-top: -2px;
+}
+
+/* =========================================================
+   2. LOWER STAGE: EGGS SILO + 3D CASH REGISTER + MONEY SILO
+   ========================================================= */
+
+.farm-merchant-bottom-stage {
+  display: grid;
+  grid-template-columns: 180px 1fr 190px;
+  gap: 14px;
+  align-items: stretch;
+}
+
+@media (max-width: 960px) {
+  .farm-merchant-bottom-stage {
+    grid-template-columns: 1fr;
+  }
+}
+
+.compact-silo {
+  padding: 12px 10px;
+  border-radius: 22px;
+}
+
+.compact-rack {
+  min-height: 140px;
+  max-height: 190px;
+  padding: 8px;
+}
+
+.mini-grid {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.mini-grid .rack-egg-unit {
+  font-size: 1.45rem;
+}
+
+/* Center Cash Register Desk Counter */
+.center-cash-register-desk {
+  background: linear-gradient(180deg, #fffdfa 0%, #fef3c7 100%);
+  border: 4px solid #f59e0b;
+  border-radius: 26px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 10px 24px rgba(245, 158, 11, 0.15);
+}
+
+.register-desk-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.desk-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #78350f;
+}
+
+.desk-sub {
+  font-size: 0.75rem;
+  color: #92400e;
+  font-weight: 600;
+}
+
+.counter-interactive-split {
+  display: grid;
+  grid-template-columns: 170px 1fr auto;
+  gap: 14px;
+  align-items: center;
+}
+
+@media (max-width: 650px) {
+  .counter-interactive-split {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+}
+
+/* 3D Pixar Cash Register Component */
+.pixar-cash-register-wrap {
+  width: 160px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.15s ease-out;
+}
+
+.pixar-cash-register-wrap:hover {
+  transform: scale(1.05);
+}
+
+.pixar-cash-register-wrap:active {
+  transform: scale(0.98);
+}
+
+.pixar-register-svg {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+}
+
+.register-bell-ding {
+  transform-origin: 124px 28px;
+  animation: bellRingVibe 0.3s ease-in-out infinite alternate;
+}
+
+@keyframes bellRingVibe {
+  0% { transform: rotate(-14deg); }
+  100% { transform: rotate(14deg); }
+}
+
+.register-cash-drawer {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.register-cash-drawer.drawer-opened {
+  transform: translateY(10px);
+}
+
+.register-click-badge {
+  background: #2563eb;
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 12px;
+  margin-top: -6px;
+  box-shadow: 0 4px 8px rgba(37, 99, 235, 0.35);
+}
+
+/* Active Customer at Register */
+.customer-at-register-box {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.serving-customer-card {
+  background: #ffffff;
+  border: 3px solid #fde68a;
+  border-radius: 20px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  max-width: 240px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
+}
+
+.speech-balloon {
+  background: #fef08a;
+  color: #713f12;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 6px 10px;
+  border-radius: 14px;
+  text-align: center;
+  border: 1.5px solid #facc15;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.customer-avatar-minime.big-avatar {
+  width: 68px;
+  height: 74px;
+}
+
+.customer-info-tag {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+
+.customer-info-tag .c-name {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #1f2937;
+}
+
+.customer-info-tag .c-role {
+  font-size: 0.72rem;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.sleek-register-action-btn {
+  width: 100%;
+  font-family: var(--font-family);
+  font-size: 0.82rem;
+  font-weight: 900;
+  padding: 8px 12px;
+  border-radius: 14px;
+  border: 2px solid #ffffff;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  cursor: pointer;
-  transition: all 0.18s;
+  gap: 6px;
+  transition: all 0.15s;
 }
 
-.luxury-serve-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(46, 213, 115, 0.55);
+.sleek-register-action-btn.ready-to-pay {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  animation: pulsePayGlow 1.2s infinite alternate;
 }
 
-.luxury-serve-btn:active {
-  transform: translateY(2px);
+@keyframes pulsePayGlow {
+  0% { transform: scale(1); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4); }
+  100% { transform: scale(1.03); box-shadow: 0 6px 18px rgba(16, 185, 129, 0.7); }
 }
 
-.luxury-serve-btn.ready-to-serve {
-  animation: pulseServeGlow 1.4s infinite alternate;
+.sleek-register-action-btn.needs-eggs {
+  background: #f3f4f6;
+  color: #9ca3af;
+  border-color: #e5e7eb;
 }
 
-@keyframes pulseServeGlow {
-  0% { box-shadow: 0 6px 18px rgba(46, 213, 115, 0.4); }
-  100% { box-shadow: 0 10px 30px rgba(46, 213, 115, 0.85), 0 0 18px #2ed573; }
-}
-
-/* Physical Banknotes Visual Stack */
-.bills-stack-visual {
+/* Waiting Customers Line Strip */
+.customers-line-strip {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  width: 100%;
-  align-items: center;
-  margin-bottom: 6px;
+  border-left: 2px dashed #fcd34d;
+  padding-left: 12px;
+  min-width: 80px;
 }
 
-.physical-bill-bundle {
-  width: 110px;
-  height: 38px;
-  background: linear-gradient(135deg, #85e89d 0%, #2ecc71 50%, #27ae60 100%);
-  border: 2px solid #1e824c;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+.strip-title {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #b45309;
+}
+
+.strip-avatars {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 10px;
-  color: #0c3d1d;
-  font-weight: 900;
-  font-size: 0.85rem;
-  letter-spacing: 0.5px;
-  transform: rotate(-1.5deg);
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mini-waiting-avatar {
+  width: 44px;
+  height: 48px;
+  background: #ffffff;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
   position: relative;
-}
-
-.physical-bill-bundle:nth-child(even) {
-  transform: rotate(2deg);
-}
-
-.bill-currency-tag {
-  font-size: 1rem;
-  opacity: 0.85;
-}
-
-.bill-center-art {
-  font-size: 0.95rem;
   display: flex;
   align-items: center;
-  gap: 3px;
+  justify-content: center;
+  padding: 2px;
 }
 
-/* Luxury Shop Action Buttons */
-.luxury-shop-btn {
-  background: linear-gradient(180deg, #ffffff 0%, #f1f2f6 100%);
-  border: 3px solid #dfe4ea;
-  border-radius: 18px;
-  padding: 10px 14px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+.mini-wants {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #f59e0b;
+  color: white;
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 1px 4px;
+  border-radius: 6px;
 }
 
-.luxury-shop-btn:hover:not(:disabled) {
-  border-color: #2ed573;
-  background: #f0fff4;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(46, 213, 115, 0.2);
+/* Banknotes & Coins Vault Silo */
+.compact-cash-stack {
+  min-height: 140px;
+  padding: 8px;
 }
 
-.luxury-shop-btn.hen-action:hover:not(:disabled) {
-  border-color: #e67e22;
-  background: #fff8f0;
-  box-shadow: 0 6px 14px rgba(230, 126, 34, 0.2);
+.mini-bill {
+  width: 90px;
+  height: 32px;
+  font-size: 0.75rem;
 }
+
+.mini-coins {
+  max-width: 140px;
+  gap: 2px;
+}
+
+.mini-coin-icon {
+  font-size: 1.45rem;
+}
+
+.compact-shop-btn {
+  padding: 8px 10px;
+  font-size: 0.78rem;
+}
+
 
