@@ -2049,3 +2049,238 @@ body {
   flex-direction: column;
   gap: 16px;
 }
+
+/* ========================================================
+   ENHANCED 3D PIXAR FARM, RUNNING CHICKENS & HUMAN MINI-MES
+   ======================================================== */
+
+/* Pasture Expansion */
+.pasture-canvas-field.expansive-pasture {
+  height: 380px;
+  background: radial-gradient(circle at 50% 30%, #55efc4 0%, #2ed573 55%, #10ac84 100%);
+  border: 5px solid #1dd1a1;
+  border-radius: 32px;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.15), 0 12px 28px rgba(0, 0, 0, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+.pasture-header-row {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+  pointer-events: auto;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pasture-tag {
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+}
+
+.farm-wooden-coop {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: #c0392b;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 16px;
+  border: 3px solid #f39c12;
+  font-weight: 800;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+/* 3D Pixar Chickens */
+.pixar-chicken-box {
+  width: 82px;
+  height: 78px;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.22));
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pixar-chicken-box:hover {
+  transform: scale(1.15);
+}
+
+.pixar-chicken-3d-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.chick-wing-flap {
+  transform-origin: 36px 50px;
+  animation: flapWing 0.22s ease-in-out infinite alternate;
+}
+
+@keyframes flapWing {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-28deg); }
+}
+
+/* Ultra-Juicy Feed All Master Button */
+.luxury-feed-btn {
+  background: linear-gradient(135deg, #ffd32a 0%, #ff9f1a 100%);
+  color: #2d3436;
+  font-weight: 900;
+  font-size: 0.95rem;
+  padding: 10px 20px;
+  border-radius: 24px;
+  border: 3px solid #ffffff;
+  box-shadow: 0 8px 20px rgba(255, 159, 26, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: all 0.15s ease-out;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.luxury-feed-btn:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 12px 26px rgba(255, 159, 26, 0.65);
+}
+
+.luxury-feed-btn:active {
+  transform: translateY(2px) scale(0.98);
+}
+
+/* Front Desk with Human Neighbors */
+.luxury-counter {
+  background: linear-gradient(180deg, #fffdf8 0%, #fff7e6 100%);
+  border: 4px solid #f39c12;
+  box-shadow: 0 10px 24px rgba(243, 156, 18, 0.15);
+}
+
+.customer-avatar-minime {
+  width: 72px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+}
+
+.pixar-minime-svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Serve Button */
+.luxury-serve-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #2ed573 0%, #10ac84 100%);
+  color: white;
+  border: 3px solid #ffffff;
+  border-radius: 24px;
+  padding: 16px 24px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  box-shadow: 0 8px 22px rgba(46, 213, 115, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.luxury-serve-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(46, 213, 115, 0.55);
+}
+
+.luxury-serve-btn:active {
+  transform: translateY(2px);
+}
+
+.luxury-serve-btn.ready-to-serve {
+  animation: pulseServeGlow 1.4s infinite alternate;
+}
+
+@keyframes pulseServeGlow {
+  0% { box-shadow: 0 6px 18px rgba(46, 213, 115, 0.4); }
+  100% { box-shadow: 0 10px 30px rgba(46, 213, 115, 0.85), 0 0 18px #2ed573; }
+}
+
+/* Physical Banknotes Visual Stack */
+.bills-stack-visual {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.physical-bill-bundle {
+  width: 110px;
+  height: 38px;
+  background: linear-gradient(135deg, #85e89d 0%, #2ecc71 50%, #27ae60 100%);
+  border: 2px solid #1e824c;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  color: #0c3d1d;
+  font-weight: 900;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  transform: rotate(-1.5deg);
+  position: relative;
+}
+
+.physical-bill-bundle:nth-child(even) {
+  transform: rotate(2deg);
+}
+
+.bill-currency-tag {
+  font-size: 1rem;
+  opacity: 0.85;
+}
+
+.bill-center-art {
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* Luxury Shop Action Buttons */
+.luxury-shop-btn {
+  background: linear-gradient(180deg, #ffffff 0%, #f1f2f6 100%);
+  border: 3px solid #dfe4ea;
+  border-radius: 18px;
+  padding: 10px 14px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.luxury-shop-btn:hover:not(:disabled) {
+  border-color: #2ed573;
+  background: #f0fff4;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(46, 213, 115, 0.2);
+}
+
+.luxury-shop-btn.hen-action:hover:not(:disabled) {
+  border-color: #e67e22;
+  background: #fff8f0;
+  box-shadow: 0 6px 14px rgba(230, 126, 34, 0.2);
+}
+
