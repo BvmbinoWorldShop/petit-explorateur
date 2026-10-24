@@ -8,6 +8,7 @@ import PuzzleMemoryActivity from './activities/PuzzleMemoryActivity';
 import BalloonsPopGame from './games/BalloonsPopGame';
 import DuckMazeGame from './games/DuckMazeGame';
 import FeedAnimalsGame from './games/FeedAnimalsGame';
+import AnimalFarmGame from './games/AnimalFarmGame';
 import MusicXylophoneGame from './games/MusicXylophoneGame';
 import NiaDressingRoom from './components/NiaDressingRoom';
 import StickerBook from './components/StickerBook';
@@ -74,13 +75,13 @@ const MENU_CARDS = [
     iconText: '🦆 🛁 🌿'
   },
   {
-    id: 'feed',
-    title: 'Nourrir Animaux',
-    subtitle: 'Carottes, os & bananes',
-    emoji: '🥕',
-    badge: 'DRAG & DROP',
-    bgGrad: 'linear-gradient(135deg, #FF9F43, #FECA57)',
-    iconText: '🐰 🥕 🐶 🦴'
+    id: 'farm',
+    title: 'Ferme aux Œufs',
+    subtitle: 'Nourrir & Vendre',
+    emoji: '🐔',
+    badge: 'FARM TYCOON',
+    bgGrad: 'linear-gradient(135deg, #2ED573, #10AC84)',
+    iconText: '🌾 🐔 🥚 💰'
   },
   {
     id: 'music',
@@ -173,8 +174,8 @@ export default function App() {
       case 'maze':
         prompt = "Aide le petit canard à traverser le labyrinthe pour rejoindre son bain !";
         break;
-      case 'feed':
-        prompt = "Les animaux ont faim ! Donne la carotte au lapin et l'os au chien !";
+      case 'farm':
+        prompt = "Bienvenue dans ta ferme ! Donne des graines aux poules, vends les œufs et achète de nouveaux animaux !";
         break;
       case 'music':
         prompt = "Touche les lames du xylophone pour jouer une belle chanson !";
@@ -364,8 +365,8 @@ export default function App() {
               {activeGame === 'maze' && (
                 <DuckMazeGame onNiaSpeak={setNiaMessage} onRewardStar={handleRewardStar} />
               )}
-              {activeGame === 'feed' && (
-                <FeedAnimalsGame onNiaSpeak={setNiaMessage} onRewardStar={handleRewardStar} />
+              {activeGame === 'farm' && (
+                <AnimalFarmGame onNiaSpeak={setNiaMessage} onRewardStar={handleRewardStar} />
               )}
               {activeGame === 'music' && (
                 <MusicXylophoneGame onNiaSpeak={setNiaMessage} />
