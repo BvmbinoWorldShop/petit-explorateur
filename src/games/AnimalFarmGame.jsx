@@ -1,50 +1,51 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { doraVoice } from '../utils/speech';
 import { sounds } from '../utils/audio';
 import confetti from 'canvas-confetti';
-import { Coins, Sparkles, Plus, Bell, Heart, Store, Users } from 'lucide-react';
+import { Coins, Sparkles, Store, Users, ArrowUpRight, ArrowDownRight, Bell } from 'lucide-react';
 
-const CUSTOMER_POOL = [
-  { id: 'bunny', name: 'Lapinou', emoji: '🐰', desire: 1 },
-  { id: 'bear', name: 'Nounours', emoji: '🐻', desire: 2 },
-  { id: 'cat', name: 'Mistigri', emoji: '🐱', desire: 1 },
-  { id: 'dog', name: 'Filou', emoji: '🐶', desire: 2 },
-  { id: 'fox', name: 'Rox', emoji: '🦊', desire: 1 },
+const HUMAN_CUSTOMERS = [
+  { id: 'lea', name: 'La Petite Léa', emoji: '👧🏾', role: 'Voisine', wants: 1 },
+  { id: 'thomas', name: 'Monsieur Thomas', emoji: '👨‍🦱', role: 'Voisin', wants: 2 },
+  { id: 'sarah', name: 'Madame Sarah', emoji: '👩‍🦰', role: 'Maman', wants: 1 },
+  { id: 'mamie', name: 'Mamie Rose', emoji: '👵🏽', role: 'Grand-mère', wants: 3 },
+  { id: 'lucas', name: 'Lucas le Cuisinier', emoji: '🧑‍🍳', role: 'Chef', wants: 2 },
+  { id: 'noa', name: 'Le Petit Noa', emoji: '👦🏻', role: 'Copain d\'école', wants: 1 },
+  { id: 'david', name: 'Docteur David', emoji: '👨‍⚕️', role: 'Médecin', wants: 2 },
 ];
 
 export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
   const [coins, setCoins] = useState(15);
   const [seeds, setSeeds] = useState(4);
-  const [eggsInBasket, setEggsInBasket] = useState(0);
-  const [moneyPile, setMoneyPile] = useState(0); // Gold pile waiting at front desk
+  const [eggs, setEggs] = useState(2); // Start with 2 visible eggs in the rack
+  const [lastCashChange, setLastCashChange] = useState(null); // { type: 'in' | 'out', amount: 10 }
+  const [lastEggChange, setLastEggChange] = useState(null); // { type: 'in' | 'out', amount: 1 }
 
-  // Running Chickens with pasture coordinates
+  // Running Chickens
   const [chickens, setChickens] = useState([
-    { id: 1, name: 'Poupette', x: 25, y: 35, targetX: 25, targetY: 35, isEating: false, flip: false },
-    { id: 2, name: 'Cocotte', x: 65, y: 55, targetX: 65, targetY: 55, isEating: false, flip: true },
+    { id: 1, name: 'Poupette', x: 30, y: 40, isEating: false, flip: false },
+    { id: 2, name: 'Cocotte', x: 65, y: 60, isEating: false, flip: true },
   ]);
 
-  // Customer line waiting at the front desk
+  // Real human customer queue at front desk
   const [customerLine, setCustomerLine] = useState([
-    { id: 'c1', name: 'Lapinou', emoji: '🐰', wants: 1 },
-    { id: 'c2', name: 'Nounours', emoji: '🐻', wants: 2 },
+    { id: 'c1', name: 'Madame Sarah', emoji: '👩‍🦰', role: 'Maman', wants: 1 },
+    { id: 'c2', name: 'Monsieur Thomas', emoji: '👨‍🦱', role: 'Voisin', wants: 2 },
   ]);
 
   useEffect(() => {
-    const welcome = "Bienvenue dans ta grande ferme ! Regarde tes poules courir dans le pré ! Les clients font la queue au comptoir pour acheter tes œufs !";
+    const welcome = "Bienvenue au marché de la ferme ! Des vrais voisins et clients font la queue au comptoir pour acheter tes bons œufs frais !";
     onNiaSpeak(welcome);
     doraVoice.speak(welcome);
 
-    // Chickens wandering loop
+    // Chickens roaming
     const moveInterval = setInterval(() => {
       setChickens((prev) =>
         prev.map((c) => {
-          const newTargetX = Math.max(10, Math.min(85, c.x + (Math.random() - 0.5) * 35));
-          const newTargetY = Math.max(15, Math.min(80, c.y + (Math.random() - 0.5) * 30));
+          const newTargetX = Math.max(12, Math.min(85, c.x + (Math.random() - 0.5) * 30));
+          const newTargetY = Math.max(20, Math.min(75, c.y + (Math.random() - 0.5) * 25));
           return {
             ...c,
-            targetX: newTargetX,
-            targetY: newTargetY,
             x: newTargetX,
             y: newTargetY,
             flip: newTargetX < c.x,
@@ -53,34 +54,35 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
       );
     }, 2800);
 
-    // New customers arriving at the front desk every 5 seconds
-    const customerInterval = setInterval(() => {
+    // Human customers arriving periodically
+    const custInterval = setInterval(() => {
       setCustomerLine((prev) => {
         if (prev.length < 5) {
-          const randomCust = CUSTOMER_POOL[Math.floor(Math.random() * CUSTOMER_POOL.length)];
+          const randomPerson = HUMAN_CUSTOMERS[Math.floor(Math.random() * HUMAN_CUSTOMERS.length)];
           const newCustomer = {
             id: Math.random().toString(),
-            name: randomCust.name,
-            emoji: randomCust.emoji,
-            wants: Math.random() > 0.5 ? 2 : 1,
+            name: randomPerson.name,
+            emoji: randomPerson.emoji,
+            role: randomPerson.role,
+            wants: Math.random() > 0.6 ? 2 : 1,
           };
           return [...prev, newCustomer];
         }
         return prev;
       });
-    }, 5000);
+    }, 5500);
 
     return () => {
       clearInterval(moveInterval);
-      clearInterval(customerInterval);
+      clearInterval(custInterval);
     };
   }, []);
 
-  // 1. Feed Chicken & Lay Egg
+  // 1. Feed Chicken & Lay Egg (+1 Egg IN)
   const feedChicken = (chickenId) => {
     if (seeds <= 0) {
       sounds.playBloop();
-      const msg = "Tu n'as plus de graines ! Achète des graines à la boutique pour nourrir tes poules !";
+      const msg = "Tu n'as plus de graines ! Achète un sac de graines au magasin avec tes pièces !";
       onNiaSpeak(msg);
       doraVoice.speak(msg);
       return;
@@ -89,29 +91,30 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
     sounds.playPop();
     setSeeds((s) => s - 1);
 
-    // Chicken eats
     setChickens((prev) =>
       prev.map((c) => (c.id === chickenId ? { ...c, isEating: true } : c))
     );
 
-    doraVoice.speak("Cot cot ! Miam les bonnes graines !");
+    doraVoice.speak("Cot cot ! La poule mange les bonnes graines !");
 
-    // Lays egg
     setTimeout(() => {
       sounds.playSuccess();
       setChickens((prev) =>
         prev.map((c) => (c.id === chickenId ? { ...c, isEating: false } : c))
       );
-      setEggsInBasket((e) => e + 1);
-      confetti({ particleCount: 30, spread: 45, origin: { y: 0.6 } });
 
-      const eggMsg = "Cot cot codet ! La poule a pondu un bel œuf ! Les clients au comptoir vont être ravis !";
+      // Egg added into visual rack
+      setEggs((prev) => prev + 1);
+      setLastEggChange({ type: 'in', amount: 1 });
+      setTimeout(() => setLastEggChange(null), 2000);
+
+      confetti({ particleCount: 30, spread: 45, origin: { y: 0.6 } });
+      const eggMsg = "Cot cot codet ! Un nouvel œuf s'ajoute sur la pile !";
       onNiaSpeak(eggMsg);
       doraVoice.speak(eggMsg);
     }, 1100);
   };
 
-  // 2. Feed all chickens at once
   const feedAllChickens = () => {
     if (seeds < chickens.length) {
       const msg = "Il te faut plus de graines pour nourrir toutes tes poules !";
@@ -124,88 +127,87 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
     });
   };
 
-  // 3. Serve Customer at Front Desk
+  // 2. Serve Real Human Customer (Eggs OUT, Cash IN)
   const serveNextCustomer = () => {
     if (customerLine.length === 0) {
-      doraVoice.speak("Il n'y a pas de client pour l'instant ! Attends un peu, ils vont arriver !");
+      doraVoice.speak("Il n'y a pas de client pour l'instant ! Attends un peu, un nouveau voisin va arriver !");
       return;
     }
 
     const currentCustomer = customerLine[0];
 
-    if (eggsInBasket < currentCustomer.wants) {
+    if (eggs < currentCustomer.wants) {
       sounds.playBloop();
-      const needMsg = `${currentCustomer.name} veut ${currentCustomer.wants} œuf${currentCustomer.wants > 1 ? 's' : ''} ! Nourris tes poules pour avoir des œufs !`;
+      const needMsg = `${currentCustomer.name} veut acheter ${currentCustomer.wants} œuf${currentCustomer.wants > 1 ? 's' : ''} ! Donne des graines aux poules pour en récolter !`;
       onNiaSpeak(needMsg);
       doraVoice.speak(needMsg);
       return;
     }
 
-    // Process sale!
     sounds.playSuccess();
-    setEggsInBasket((e) => e - currentCustomer.wants);
-    const saleAmount = currentCustomer.wants * 6; // 6 coins per egg
-    setMoneyPile((m) => m + saleAmount);
+    // Eggs leave rack
+    setEggs((prev) => prev - currentCustomer.wants);
+    setLastEggChange({ type: 'out', amount: currentCustomer.wants });
 
-    // Remove served customer from line
+    // Cash enters pile
+    const earned = currentCustomer.wants * 6;
+    setCoins((prev) => prev + earned);
+    setLastCashChange({ type: 'in', amount: earned });
+
+    setTimeout(() => {
+      setLastEggChange(null);
+      setLastCashChange(null);
+    }, 2200);
+
+    // Remove customer
     setCustomerLine((prev) => prev.slice(1));
     confetti({ particleCount: 50, spread: 60 });
     if (onRewardStar) onRewardStar();
 
-    const cheer = `Ding ! Merci ${currentCustomer.name} ! L'argent s'accumule sur le comptoir !`;
+    const cheer = `Ding ! Merci ${currentCustomer.name} ! ${currentCustomer.wants} œuf${currentCustomer.wants > 1 ? 's' : ''} vendu${currentCustomer.wants > 1 ? 's' : ''}, et +${earned} pièces d'or sur la pile !`;
     onNiaSpeak(cheer);
     doraVoice.speak(cheer);
   };
 
-  // 4. Collect Money Pile into Wallet
-  const collectMoneyPile = () => {
-    if (moneyPile <= 0) return;
-    sounds.playSuccess();
-    setCoins((c) => c + moneyPile);
-    const earned = moneyPile;
-    setMoneyPile(0);
-    confetti({ particleCount: 60, spread: 70 });
-
-    const msg = `Youpi ! Tu as ramassé ${earned} pièces d'or ! Ta ferme est très populaire !`;
-    onNiaSpeak(msg);
-    doraVoice.speak(msg);
-  };
-
-  // 5. Buy Seeds (3 coins)
+  // 3. Buy Seeds (Cash OUT, Seeds IN)
   const buySeeds = () => {
     if (coins < 3) {
       sounds.playBloop();
-      const msg = "Il te faut 3 pièces d'or pour acheter des graines !";
+      const msg = "Il te faut 3 pièces d'or ! Sers les clients pour gagner de l'argent !";
       onNiaSpeak(msg);
       doraVoice.speak(msg);
       return;
     }
     sounds.playPop();
-    setCoins((c) => c - 3);
-    setSeeds((s) => s + 4);
-    const msg = "Graines achetées ! 4 sacs prêts pour tes poules !";
+    setCoins((prev) => prev - 3);
+    setSeeds((prev) => prev + 4);
+    setLastCashChange({ type: 'out', amount: 3 });
+    setTimeout(() => setLastCashChange(null), 2000);
+
+    const msg = "-3 pièces pour acheter 4 sacs de graines !";
     onNiaSpeak(msg);
     doraVoice.speak(msg);
   };
 
-  // 6. Buy Chicken (10 coins) -> spawns running chicken immediately
+  // 4. Buy Chicken (Cash OUT, Chicken IN)
   const buyChicken = () => {
     if (coins < 10) {
       sounds.playBloop();
-      const msg = "Une poule coûte 10 pièces ! Sers les clients pour gagner de l'argent !";
+      const msg = "Une poule coûte 10 pièces ! Continue de vendre des œufs aux voisins !";
       onNiaSpeak(msg);
       doraVoice.speak(msg);
       return;
     }
     sounds.playSuccess();
-    setCoins((c) => c - 10);
+    setCoins((prev) => prev - 10);
+    setLastCashChange({ type: 'out', amount: 10 });
+    setTimeout(() => setLastCashChange(null), 2000);
+
     const newHen = {
       id: Date.now(),
       name: `Cocotte ${chickens.length + 1}`,
-      x: 30 + Math.random() * 40,
-      y: 30 + Math.random() * 40,
-      targetX: 50,
-      targetY: 50,
+      x: 35 + Math.random() * 30,
+      y: 35 + Math.random() * 30,
       isEating: false,
       flip: Math.random() > 0.5,
     };
@@ -213,57 +215,92 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
     confetti({ particleCount: 75, spread: 65 });
     if (onRewardStar) onRewardStar();
 
-    const msg = "Hourra ! Une nouvelle poule court dans ton pré ! Cot cot cot !";
+    const msg = "Hourra ! -10 pièces et une nouvelle vraie poule court dans ton pré !";
     onNiaSpeak(msg);
     doraVoice.speak(msg);
   };
 
   return (
     <div className="center-activity-card premium-farm-experience">
-      {/* Farm Top Banner */}
+      {/* Top Farm Title Header */}
       <div className="activity-card-header farm-header-theme">
         <div className="header-info">
           <span className="card-badge-icon">🌾</span>
           <div>
-            <h2 className="card-main-title">La Ferme Magique & Le Marché</h2>
-            <p className="card-subtitle">Poules qui courent, file d'attente de clients & montagne de pièces !</p>
+            <h2 className="card-main-title">La Ferme aux Œufs & Vrais Voisins</h2>
+            <p className="card-subtitle">Regarde les œufs et les pièces entrer et sortir en direct !</p>
           </div>
         </div>
 
-        {/* Real-time Wallet */}
+        {/* Global Stock Stats */}
         <div className="farm-wallet-bar">
-          <div className="wallet-pill gold-pill" onClick={collectMoneyPile}>
-            <Coins size={22} color="#f1c40f" />
+          <div className="wallet-pill gold-pill">
+            <Coins size={20} color="#f1c40f" />
             <span>{coins} 🪙 Pièces</span>
           </div>
           <div className="wallet-pill seed-pill">
             <span>🌾 {seeds} Graines</span>
           </div>
           <div className="wallet-pill egg-pill">
-            <span>🥚 {eggsInBasket} Œufs</span>
+            <span>🥚 {eggs} Œufs</span>
           </div>
         </div>
       </div>
 
-      <div className="tycoon-world-stage">
-        {/* ================= SECTION 1: THE RUNNING CHICKEN PASTURE ================= */}
-        <div className="pasture-nature-world">
-          <div className="pasture-header-row">
-            <span className="pasture-tag">🏡 Pré des Poules ({chickens.length} poules qui courent)</span>
-            {chickens.length > 1 && (
-              <button onClick={feedAllChickens} className="feed-all-action-btn">
-                🌾 Nourrir TOUTES les poules !
-              </button>
-            )}
+      <div className="farm-visual-economic-arena">
+        {/* ================= LEFT COLUMN: THE VISUAL EGG TRAY SILO ================= */}
+        <div className="visual-silo-column egg-silo">
+          <div className="silo-header">
+            <h4>🥚 Casier à Œufs</h4>
+            <span className="silo-count-badge">{eggs} en stock</span>
           </div>
 
-          {/* Running Chickens Field */}
+          {/* Visual Indicators of Flow */}
+          {lastEggChange && (
+            <div className={`flow-indicator-banner ${lastEggChange.type === 'in' ? 'flow-in' : 'flow-out'} animate-pop`}>
+              {lastEggChange.type === 'in' ? (
+                <span><ArrowDownRight size={16} /> +{lastEggChange.amount} Œuf pondu !</span>
+              ) : (
+                <span><ArrowUpRight size={16} /> -{lastEggChange.amount} Vendu !</span>
+              )}
+            </div>
+          )}
+
+          {/* Stacked Eggs Visualization Rack */}
+          <div className="egg-stack-rack">
+            {eggs === 0 ? (
+              <p className="empty-rack-hint">Casier vide... Donne des graines à tes poules !</p>
+            ) : (
+              <div className="rack-eggs-grid">
+                {Array.from({ length: Math.min(eggs, 24) }).map((_, i) => (
+                  <span key={i} className="rack-egg-unit animate-pop" title={`Œuf #${i + 1}`}>
+                    🥚
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+          <p className="silo-footer-text">
+            {eggs > 24 ? `+ ${eggs - 24} autres œufs dans la réserve !` : 'Œufs prêts pour les clients'}
+          </p>
+        </div>
+
+        {/* ================= CENTER COLUMN: THE PASTURE & CUSTOMER COUNTER ================= */}
+        <div className="center-interactive-farm-hub">
+          {/* 1. Chickens Running in Pasture */}
           <div className="pasture-canvas-field">
-            {/* Scenery details */}
+            <div className="pasture-header-row">
+              <span className="pasture-tag">🏡 Pré des Poules ({chickens.length} poules en liberté)</span>
+              {chickens.length > 1 && (
+                <button onClick={feedAllChickens} className="feed-all-action-btn">
+                  🌾 Nourrir TOUTES les poules !
+                </button>
+              )}
+            </div>
+
             <div className="field-grass-tufts">🌱 🌼 🌻 🌱 🌼</div>
             <div className="field-haystack">🌾</div>
 
-            {/* Dynamic Running Chickens */}
             {chickens.map((chick) => (
               <div
                 key={chick.id}
@@ -286,25 +323,22 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
               </div>
             ))}
           </div>
-        </div>
 
-        {/* ================= SECTION 2: FRONT DESK & CUSTOMER QUEUE ================= */}
-        <div className="store-front-desk-section">
-          {/* Customer Line at Front Desk */}
+          {/* 2. Front Desk Counter with REAL HUMAN Customers Queue */}
           <div className="front-desk-counter">
             <div className="counter-sign">
-              <Store size={24} />
+              <Store size={22} />
               <div>
-                <h4>Comptoir de Vente des Œufs</h4>
-                <p>File d'attente des clients : <strong>{customerLine.length} en attente</strong></p>
+                <h4>Comptoir de Vente des Vrais Voisins</h4>
+                <p>File d'attente : <strong>{customerLine.length} personnes du village</strong></p>
               </div>
             </div>
 
-            {/* Visual Long Queue of Customers */}
+            {/* Visual Real Human Customer Queue */}
             <div className="customer-queue-track">
               {customerLine.length === 0 ? (
                 <div className="empty-line-text">
-                  <span>En attente de nouveaux clients... 🍃</span>
+                  <span>En attente de nouveaux voisins... 🍃</span>
                 </div>
               ) : (
                 customerLine.map((cust, idx) => (
@@ -318,6 +352,7 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
                     </div>
                     <span className="customer-avatar-emoji animate-bounce-soft">{cust.emoji}</span>
                     <span className="customer-name">{cust.name}</span>
+                    <span className="customer-role-sub">({cust.role})</span>
                     {idx === 0 && <span className="next-tag">À servir ! 🛎️</span>}
                   </div>
                 ))
@@ -325,64 +360,66 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
             </div>
 
             {/* Serve Button */}
-            <div className="serve-action-bar">
-              <button
-                onClick={serveNextCustomer}
-                className={`bell-serve-button ${eggsInBasket > 0 && customerLine.length > 0 ? 'ready-to-serve' : ''}`}
-              >
-                <Bell size={26} /> SERVIR LE CLIENT AU COMPTOIR ! 🛎️
-              </button>
-            </div>
+            <button
+              onClick={serveNextCustomer}
+              className={`bell-serve-button ${eggs > 0 && customerLine.length > 0 ? 'ready-to-serve' : ''}`}
+            >
+              <Bell size={24} /> SERVIR LE PREMIER VOISIN ! (Ding !) 🛎️
+            </button>
+          </div>
+        </div>
+
+        {/* ================= RIGHT COLUMN: THE VISUAL CASH & COINS STACK ================= */}
+        <div className="visual-silo-column cash-silo">
+          <div className="silo-header">
+            <h4>💰 Pile d'Argent</h4>
+            <span className="silo-count-badge gold">{coins} 🪙</span>
           </div>
 
-          {/* Money Pile Station & Farm Shop */}
-          <div className="desk-sub-panels">
-            {/* Pile of Money growing */}
-            <div className="money-pile-box" onClick={collectMoneyPile}>
-              <div className="pile-header">
-                <h4>Montagne de Pièces du Comptoir :</h4>
-                <span className="pile-coins-count">{moneyPile} 🪙</span>
-              </div>
-
-              <div className="visual-money-stack">
-                {moneyPile > 0 ? (
-                  <div className="growing-gold-stack animate-pop">
-                    <span className="gold-stack-icon">💰🪙💰</span>
-                    <button className="collect-pile-btn animate-bounce-soft">
-                      🖐️ TOUCHER POUR TOUT RAMASSER !
-                    </button>
-                  </div>
-                ) : (
-                  <p className="empty-pile-text">Sers des clients pour empiler les pièces d'or !</p>
-                )}
-              </div>
+          {/* Flow Indicator (Cash In vs Out) */}
+          {lastCashChange && (
+            <div className={`flow-indicator-banner ${lastCashChange.type === 'in' ? 'flow-in' : 'flow-out'} animate-pop`}>
+              {lastCashChange.type === 'in' ? (
+                <span><ArrowDownRight size={16} /> +{lastCashChange.amount} 🪙 Vente d'œufs !</span>
+              ) : (
+                <span><ArrowUpRight size={16} /> -{lastCashChange.amount} 🪙 Achat ferme !</span>
+              )}
             </div>
+          )}
 
-            {/* Village Farm Shop */}
-            <div className="village-farm-shop">
-              <h4 className="shop-title">Boutique : Agrandis ta Ferme !</h4>
-              <div className="shop-buttons-row">
-                <button
-                  onClick={buySeeds}
-                  className="tycoon-buy-btn"
-                  disabled={coins < 3}
-                >
-                  <span className="t-icon">🌾</span>
-                  <span className="t-text">+4 Graines</span>
-                  <span className="t-price">3 🪙</span>
-                </button>
-
-                <button
-                  onClick={buyChicken}
-                  className="tycoon-buy-btn hen-btn"
-                  disabled={coins < 10}
-                >
-                  <span className="t-icon">🐔</span>
-                  <span className="t-text">+1 Poule qui court</span>
-                  <span className="t-price">10 🪙</span>
-                </button>
-              </div>
+          {/* Visual Banknotes & Coins Stack */}
+          <div className="cash-stack-display">
+            <div className="coins-visual-pyramid">
+              {Array.from({ length: Math.min(Math.ceil(coins / 3), 16) }).map((_, i) => (
+                <span key={i} className="stacked-coin-icon animate-pop">
+                  🪙
+                </span>
+              ))}
             </div>
+            <p className="cash-status-note">
+              {coins >= 10 ? '💵 Beaucoup d\'argent gagné !' : 'Gagne des pièces en vendant des œufs !'}
+            </p>
+          </div>
+
+          {/* Shop Upgrades Buttons */}
+          <div className="silo-shop-controls">
+            <button
+              onClick={buySeeds}
+              className="silo-buy-action-btn"
+              disabled={coins < 3}
+            >
+              <span>🌾 +4 Sacs Graines</span>
+              <span className="price-tag">-3 🪙</span>
+            </button>
+
+            <button
+              onClick={buyChicken}
+              className="silo-buy-action-btn hen-action"
+              disabled={coins < 10}
+            >
+              <span>🐔 +1 Nouvelle Poule</span>
+              <span className="price-tag">-10 🪙</span>
+            </button>
           </div>
         </div>
       </div>
