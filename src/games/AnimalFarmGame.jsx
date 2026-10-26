@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { doraVoice } from '../utils/speech';
 import { sounds } from '../utils/audio';
 import confetti from 'canvas-confetti';
-import { Coins, Sparkles, Store, Users, ArrowUpRight, ArrowDownRight, Bell, Banknote, PlusCircle } from 'lucide-react';
+import { Coins, Sparkles, Store, Users, ArrowUpRight, ArrowDownRight, Bell, Banknote, ShieldCheck } from 'lucide-react';
 
 // Cute 3D Pixar-style Mini-Me Customers
 const PIXAR_CUSTOMERS = [
@@ -85,70 +85,108 @@ function PixarMiniMe({ person }) {
   );
 }
 
-// 2. 3D Pixar-style Chicken SVG Component
+// 2. Realistic 3D Pixar Chicken Graphic (Articulated running legs, layered plumage, pecking beak)
 function PixarChickenGraphic({ chick }) {
+  const isEating = chick.isEating;
   return (
-    <svg viewBox="0 0 100 95" className="pixar-chicken-3d-svg">
+    <svg viewBox="0 0 110 100" className={`pixar-chicken-3d-svg ${isEating ? 'hen-is-eating' : 'hen-is-trotting'}`}>
       <defs>
-        <radialGradient id={`chickBody_${chick.id}`} cx="40%" cy="35%" r="60%">
-          <stop offset="0%" stopColor="#FFFFFF" />
-          <stop offset="60%" stopColor="#FFF9E6" />
-          <stop offset="100%" stopColor="#F5CD79" />
+        {/* Warm Golden Feathers Radial Shading */}
+        <radialGradient id={`henPlumage_${chick.id}`} cx="45%" cy="40%" r="60%">
+          <stop offset="0%" stopColor="#FFFDF5" />
+          <stop offset="35%" stopColor="#FDEAA8" />
+          <stop offset="70%" stopColor="#F39C12" />
+          <stop offset="100%" stopColor="#D35400" />
         </radialGradient>
-        <radialGradient id={`wingGrad_${chick.id}`} cx="35%" cy="30%" r="65%">
-          <stop offset="0%" stopColor="#FFFFFF" />
-          <stop offset="100%" stopColor="#F7D794" />
-        </radialGradient>
+
+        {/* Neck Cape Feathers Gradient */}
+        <linearGradient id={`henCape_${chick.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFEAA7" />
+          <stop offset="50%" stopColor="#F9CA24" />
+          <stop offset="100%" stopColor="#EB4D4B" />
+        </linearGradient>
+
+        {/* Tail Feather Gradient with Iridescent Sheen */}
+        <linearGradient id={`henTail_${chick.id}`} x1="0%" y1="100%" x2="60%" y2="0%">
+          <stop offset="0%" stopColor="#2C3E50" />
+          <stop offset="35%" stopColor="#1B1464" />
+          <stop offset="70%" stopColor="#006266" />
+          <stop offset="100%" stopColor="#F39C12" />
+        </linearGradient>
+
+        {/* Comb & Wattle Red Gradient */}
+        <linearGradient id="henCombGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#FF4757" />
+          <stop offset="100%" stopColor="#B33939" />
+        </linearGradient>
       </defs>
 
-      {/* Shadow under chicken */}
-      <ellipse cx="50" cy="88" rx="28" ry="6" fill="rgba(0,0,0,0.18)" />
+      {/* Realistic Ground Contact Shadow */}
+      <ellipse cx="54" cy="94" rx="34" ry="5.5" fill="rgba(0,0,0,0.24)" />
 
-      {/* Feet taking steps */}
-      <g stroke="#E67E22" strokeWidth="3.5" strokeLinecap="round">
-        <line x1="42" y1="72" x2="38" y2="86" />
-        <line x1="38" y1="86" x2="31" y2="88" />
-        <line x1="58" y1="72" x2="62" y2="86" />
-        <line x1="62" y1="86" x2="69" y2="88" />
+      {/* BACK ARTICULATED LEG (Alternates step when running) */}
+      <g className="hen-leg hen-leg-back">
+        {/* Thigh */}
+        <path d="M 42 66 Q 39 76 36 82" stroke="#E67E22" strokeWidth="4.5" strokeLinecap="round" fill="none" />
+        {/* Tarsus & Claws */}
+        <path d="M 36 82 L 35 92" stroke="#F39C12" strokeWidth="3" strokeLinecap="round" />
+        <path d="M 35 92 L 27 94 M 35 92 L 30 95 M 35 92 L 39 94 M 35 92 L 40 90" stroke="#E67E22" strokeWidth="2.2" strokeLinecap="round" />
       </g>
 
-      {/* Plump 3D Body */}
-      <ellipse cx="50" cy="54" rx="29" ry="25" fill={`url(#chickBody_${chick.id})`} stroke="#E6BE8A" strokeWidth="1.5" />
-
-      {/* Fluffy Tail Feathers */}
-      <path d="M 22 48 C 10 38 12 28 26 38 Z" fill="#F5CD79" />
-      <path d="M 20 54 C 8 46 10 36 24 45 Z" fill="#F7D794" />
-
-      {/* Red Comb on top of head */}
-      <g fill="#EA2027">
-        <circle cx="56" cy="18" r="6" />
-        <circle cx="63" cy="14" r="7" />
-        <circle cx="70" cy="18" r="6" />
+      {/* FAN TAIL PLUMES (Layered realistic arching feathers) */}
+      <g className="hen-tail-group">
+        <path d="M 30 56 C 12 44 6 22 22 16 C 28 24 30 42 34 54 Z" fill={`url(#henTail_${chick.id})`} stroke="#1B1464" strokeWidth="1" />
+        <path d="M 34 58 C 18 48 12 30 28 26 C 32 34 34 46 38 56 Z" fill={`url(#henTail_${chick.id})`} opacity="0.9" />
+        <path d="M 38 62 C 22 54 20 40 32 36 C 36 44 38 52 42 60 Z" fill="#E67E22" />
       </g>
 
-      {/* Head */}
-      <circle cx="62" cy="35" r="18" fill={`url(#chickBody_${chick.id})`} stroke="#E6BE8A" strokeWidth="1" />
+      {/* PLUMP 3D CHICKEN BODY */}
+      <ellipse cx="58" cy="62" rx="29" ry="24" fill={`url(#henPlumage_${chick.id})`} stroke="#D35400" strokeWidth="1.2" />
 
-      {/* Red Wattle under beak */}
-      <ellipse cx="76" cy="46" rx="4" ry="7" fill="#EA2027" />
+      {/* LAYERED FLIGHT WING (Flutters when active) */}
+      <g className="hen-wing-layer">
+        <path d="M 46 54 C 46 40 68 42 70 56 C 70 70 50 70 46 54 Z" fill="#F39C12" stroke="#D35400" strokeWidth="1.2" />
+        {/* Layered Primary Feather Tips */}
+        <path d="M 46 58 C 40 62 38 68 50 66" fill="#E67E22" stroke="#BA4A00" strokeWidth="1" />
+        <path d="M 50 60 C 44 64 42 70 54 68" fill="#EB4D4B" stroke="#BA4A00" strokeWidth="1" />
+        <path d="M 54 62 C 48 66 46 72 58 69" fill="#F9CA24" stroke="#BA4A00" strokeWidth="1" />
+      </g>
 
-      {/* Big Sparkling Pixar Eye */}
-      <ellipse cx="66" cy="32" rx="5.5" ry="6.5" fill="#FFFFFF" stroke="#D4A373" strokeWidth="0.8" />
-      <circle cx="68" cy="32" r="4.2" fill="#2C3E50" />
-      <circle cx="66.5" cy="30" r="1.6" fill="#FFFFFF" />
-      <circle cx="69.5" cy="34" r="0.8" fill="#FFFFFF" />
+      {/* FRONT ARTICULATED LEG (Alternates step when running) */}
+      <g className="hen-leg hen-leg-front">
+        <path d="M 56 66 Q 58 76 60 82" stroke="#E67E22" strokeWidth="4.5" strokeLinecap="round" fill="none" />
+        <path d="M 60 82 L 62 92" stroke="#F39C12" strokeWidth="3" strokeLinecap="round" />
+        <path d="M 62 92 L 54 94 M 62 92 L 58 95 M 62 92 L 67 94 M 62 92 L 67 90" stroke="#E67E22" strokeWidth="2.2" strokeLinecap="round" />
+      </g>
 
-      {/* Cute Orange Beak */}
-      <path d="M 74 34 L 89 40 L 74 44 Z" fill="#F39C12" stroke="#D35400" strokeWidth="1" />
+      {/* NECK & HEAD GROUP (Bends 60° down to grass when eating) */}
+      <g className="hen-neck-head-group">
+        {/* Feathered Neck Cape */}
+        <path d="M 68 58 C 74 52 78 40 76 30 C 72 30 66 42 58 50 Z" fill={`url(#henCape_${chick.id})`} />
+        
+        {/* Head */}
+        <circle cx="80" cy="28" r="14.5" fill={`url(#henPlumage_${chick.id})`} stroke="#E67E22" strokeWidth="1" />
 
-      {/* 3D Wing (flaps when moving or eating) */}
-      <g className={chick.isEating ? 'chick-wing-flap' : ''}>
-        <path
-          d="M 36 50 C 36 40 56 42 56 56 C 56 68 40 68 36 50 Z"
-          fill={`url(#wingGrad_${chick.id})`}
-          stroke="#D4A373"
-          strokeWidth="1.5"
-        />
+        {/* Sculpted 5-Point Jagged Red Comb */}
+        <path d="M 72 20 C 70 11 75 9 77 15 C 79 8 84 7 85 14 C 87 8 91 8 91 15 C 93 10 97 11 96 17 C 98 14 101 16 99 21 Z" fill="url(#henCombGrad)" stroke="#B33939" strokeWidth="0.8" />
+
+        {/* Pendulous Red Wattles (Barbillons) */}
+        <path d="M 89 36 C 93 38 94 46 89 47 C 85 47 85 40 89 36 Z" fill="url(#henCombGrad)" stroke="#B33939" strokeWidth="0.8" />
+        <path d="M 85 37 C 88 39 88 45 84 45 C 81 45 81 40 85 37 Z" fill="#FF4757" />
+
+        {/* Amber Realistic Eye with Pixar Glints */}
+        <ellipse cx="82" cy="25" rx="4.5" ry="5" fill="#FFFFFF" stroke="#C0392B" strokeWidth="0.6" />
+        <circle cx="83" cy="25" r="3.2" fill="#E67E22" />
+        <circle cx="83.5" cy="25" r="2.2" fill="#1E272E" />
+        <circle cx="82" cy="23.5" r="1.1" fill="#FFFFFF" />
+        <circle cx="84.5" cy="26" r="0.6" fill="#FFFFFF" />
+
+        {/* Realistic Sharp Curved Beak */}
+        <g className="hen-beak">
+          <path d="M 90 26 L 104 32 L 90 35 Z" fill="#F1C40F" stroke="#D35400" strokeWidth="1" />
+          <path d="M 90 32 L 100 32" stroke="#B71540" strokeWidth="0.8" />
+          <circle cx="93" cy="28.5" r="0.7" fill="#B71540" />
+        </g>
       </g>
     </svg>
   );
@@ -258,23 +296,28 @@ function PixarCashRegister({ amountDue, isRinging, isOpen, onRing }) {
   );
 }
 
-// Generate an initial flock of chickens
-const INITIAL_CHICKENS = Array.from({ length: 14 }).map((_, i) => ({
+// Generate initial lively flock of chickens
+const INITIAL_CHICKENS = Array.from({ length: 15 }).map((_, i) => ({
   id: i + 1,
   name: `Poule ${i + 1}`,
-  x: 8 + (i % 7) * 13 + Math.random() * 5,
-  y: 18 + Math.floor(i / 7) * 32 + Math.random() * 12,
+  x: 6 + (i % 8) * 11 + Math.random() * 5,
+  y: 18 + Math.floor(i / 8) * 32 + Math.random() * 12,
   isEating: false,
   flip: Math.random() > 0.5,
 }));
 
 export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
-  const [coins, setCoins] = useState(40);
-  const [bills, setBills] = useState(4); // Physical green banknotes ($5 bills)
-  const [seeds, setSeeds] = useState(25);
-  const [eggs, setEggs] = useState(8);
+  const [coins, setCoins] = useState(45);
+  const [bills, setBills] = useState(5); // Physical green banknotes ($5 bills)
+  const [seeds, setSeeds] = useState(30);
+  const [eggs, setEggs] = useState(10);
   const [lastCashChange, setLastCashChange] = useState(null);
   const [lastEggChange, setLastEggChange] = useState(null);
+
+  // Dropped seeds scattered in the garden grass
+  const [droppedFood, setDroppedFood] = useState([]);
+  // Flying seeds to reserve animation flag
+  const [isGrainFlying, setIsGrainFlying] = useState(false);
 
   // Large Pasture with 30+ potential chickens
   const [chickens, setChickens] = useState(INITIAL_CHICKENS);
@@ -291,7 +334,7 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
   ]);
 
   useEffect(() => {
-    const welcome = "Bienvenue dans ta très grande ferme ! Regarde toutes tes poules courir dans le champ géant ! Amène les clients à ta caisse enregistreuse 3D !";
+    const welcome = "Bienvenue dans ta très grande ferme ! Regarde tes poules courir et picorer dans le grand pré ! Quand tu achètes des graines, elles vont dans ta réserve !";
     onNiaSpeak(welcome);
     doraVoice.speak(welcome);
 
@@ -299,9 +342,9 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
     const moveInterval = setInterval(() => {
       setChickens((prev) =>
         prev.map((c) => {
-          // Keep chickens well distributed across large meadow
-          const newTargetX = Math.max(5, Math.min(94, c.x + (Math.random() - 0.5) * 32));
-          const newTargetY = Math.max(14, Math.min(86, c.y + (Math.random() - 0.5) * 26));
+          if (c.isEating) return c; // Don't interrupt eating
+          const newTargetX = Math.max(5, Math.min(94, c.x + (Math.random() - 0.5) * 30));
+          const newTargetY = Math.max(14, Math.min(84, c.y + (Math.random() - 0.5) * 24));
           return {
             ...c,
             x: newTargetX,
@@ -334,25 +377,40 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
     };
   }, []);
 
-  // 1. Feed Single Chicken
+  // 1. Feed Single Chicken (Food visibly drops in the garden, chicken runs to peck it!)
   const feedChicken = (chickenId) => {
     if (seeds <= 0) {
       sounds.playBloop();
-      const msg = "Tu n'as plus de graines ! Achète des graines avec tes pièces à la boutique !";
+      const msg = "Tu n'as plus de graines ! Achète un sac pour remplir ta réserve de nourriture !";
       onNiaSpeak(msg);
       doraVoice.speak(msg);
       return;
     }
 
-    sounds.playPop();
+    const targetChick = chickens.find((c) => c.id === chickenId);
+    if (!targetChick) return;
+
+    // Drop food on garden grass right near this chicken!
+    const foodId = Date.now() + Math.random();
+    const newFood = {
+      id: foodId,
+      x: Math.max(6, Math.min(94, targetChick.x + (targetChick.flip ? -5 : 5))),
+      y: Math.min(88, targetChick.y + 6),
+    };
+    setDroppedFood((prev) => [...prev, newFood]);
+
+    sounds.playSeedsRustle();
     setSeeds((s) => s - 1);
 
+    // Chicken bends down and pecks the dropped food!
     setChickens((prev) =>
       prev.map((c) => (c.id === chickenId ? { ...c, isEating: true } : c))
     );
 
     setTimeout(() => {
       sounds.playSuccess();
+      // Food is eaten and disappears with sparkles
+      setDroppedFood((prev) => prev.filter((f) => f.id !== foodId));
       setChickens((prev) =>
         prev.map((c) => (c.id === chickenId ? { ...c, isEating: false } : c))
       );
@@ -362,36 +420,48 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
       setTimeout(() => setLastEggChange(null), 1800);
 
       confetti({ particleCount: 25, spread: 45, origin: { y: 0.5 } });
-    }, 900);
+    }, 1300);
   };
 
-  // 2. Feed ALL Chickens with Sleek Compact Master Button
+  // 2. Feed ALL Chickens (Food showers across the whole garden, all chickens peck!)
   const feedAllChickens = () => {
     if (seeds < chickens.length) {
       sounds.playBloop();
-      const msg = `Il te faut ${chickens.length} graines ! Achète des graines avec tes pièces !`;
+      const msg = `Il te faut ${chickens.length} graines dans la réserve ! Remplis ta réserve de nourriture !`;
       onNiaSpeak(msg);
       doraVoice.speak(msg);
       return;
     }
-    sounds.playSuccess();
+
+    sounds.playSeedsRustle();
     setSeeds((s) => s - chickens.length);
 
-    // Feed in wave
+    // Drop food clusters in the garden in front of every chicken!
+    const batchFood = chickens.map((c, i) => ({
+      id: Date.now() + i,
+      x: Math.max(6, Math.min(94, c.x + (c.flip ? -5 : 5))),
+      y: Math.min(88, c.y + 6),
+    }));
+    setDroppedFood((prev) => [...prev, ...batchFood]);
+
+    // All chickens bend down and peck their food on the grass!
     setChickens((prev) => prev.map((c) => ({ ...c, isEating: true })));
 
     setTimeout(() => {
+      sounds.playSuccess();
+      setDroppedFood([]);
       setChickens((prev) => prev.map((c) => ({ ...c, isEating: false })));
+
       const eggsEarned = Math.floor(chickens.length * 0.8) || 1;
       setEggs((prev) => prev + eggsEarned);
       setLastEggChange({ type: 'in', amount: eggsEarned });
       setTimeout(() => setLastEggChange(null), 2000);
 
-      confetti({ particleCount: 50, spread: 70, origin: { y: 0.4 } });
-      const eggMsg = `Toutes tes ${chickens.length} poules ont mangé ! +${eggsEarned} beaux œufs frais !`;
+      confetti({ particleCount: 55, spread: 70, origin: { y: 0.4 } });
+      const eggMsg = `Toutes tes ${chickens.length} poules ont picoré dans l'herbe ! +${eggsEarned} beaux œufs frais !`;
       onNiaSpeak(eggMsg);
       doraVoice.speak(eggMsg);
-    }, 1000);
+    }, 1400);
   };
 
   // 3. Add Chickens (Super Farm expansion to reach 30+)
@@ -463,7 +533,7 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
     setEggs((prev) => prev - currentCustomer.wants);
     setLastEggChange({ type: 'out', amount: currentCustomer.wants });
 
-    // Add cash & banknotes
+    // Add cash & banknotes directly to vault!
     const earnedCoins = currentCustomer.wants * 5;
     const earnedBills = currentCustomer.wants >= 2 ? 1 : 0;
 
@@ -480,27 +550,35 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
     confetti({ particleCount: 50, spread: 60 });
     if (onRewardStar) onRewardStar();
 
-    const cheer = `KA-CHING ! Caisse enregistrée pour ${currentCustomer.name} ! +${earnedCoins} pièces et des billets !`;
+    const cheer = `KA-CHING ! Caisse enregistrée pour ${currentCustomer.name} ! L'argent va directement dans le coffre-fort !`;
     onNiaSpeak(cheer);
     doraVoice.speak(cheer);
   };
 
-  // 5. Buy Seeds
+  // 5. Buy Food (Seeds fly visibly into the grain reserve!)
   const buySeeds = () => {
     if (coins < 3) {
       sounds.playBloop();
-      const msg = "Il te faut 3 pièces pour acheter des graines !";
+      const msg = "Il te faut 3 pièces dans le coffre pour acheter des graines !";
       onNiaSpeak(msg);
       doraVoice.speak(msg);
       return;
     }
-    sounds.playPop();
+
+    // Trigger visual grain flight into reserve
+    setIsGrainFlying(true);
+    sounds.playSeedsRustle();
+
     setCoins((prev) => prev - 3);
     setSeeds((prev) => prev + 10);
     setLastCashChange({ type: 'out', amount: 3 });
-    setTimeout(() => setLastCashChange(null), 2000);
 
-    const msg = "+10 graines achetées pour tes poules !";
+    setTimeout(() => {
+      setIsGrainFlying(false);
+      setLastCashChange(null);
+    }, 1800);
+
+    const msg = "+10 graines ajoutées dans la réserve de nourriture !";
     onNiaSpeak(msg);
     doraVoice.speak(msg);
   };
@@ -515,40 +593,51 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
         <div className="header-info">
           <span className="card-badge-icon">🌾</span>
           <div>
-            <h2 className="card-main-title">La Ferme Géante aux 30+ Poules & Caisse 3D</h2>
-            <p className="card-subtitle">Immense pré de poules Pixar, clients au guichet et caisse enregistreuse tactile !</p>
+            <h2 className="card-main-title">La Ferme Géante aux 30+ Poules & Coffre-Fort</h2>
+            <p className="card-subtitle">Vraies poules qui courent et picorent, graines dans la réserve, caisse 3D & coffre à billets !</p>
           </div>
         </div>
 
         {/* Global Wallet Bar */}
         <div className="farm-wallet-bar">
-          <div className="wallet-pill bill-pill" title="Billets de banque">
+          <div className="wallet-pill bill-pill" title="Billets au coffre">
             <Banknote size={18} color="#2ecc71" />
             <span>{bills} Billets 💵</span>
           </div>
-          <div className="wallet-pill gold-pill" title="Pièces d'or">
+          <div className="wallet-pill gold-pill" title="Pièces au coffre">
             <Coins size={18} color="#f1c40f" />
             <span>{coins} Pièces 🪙</span>
           </div>
-          <div className="wallet-pill seed-pill">
+          <div className="wallet-pill seed-pill" title="Réserve de graines">
             <span>🌾 {seeds} Graines</span>
           </div>
-          <div className="wallet-pill egg-pill">
+          <div className="wallet-pill egg-pill" title="Œufs récoltés">
             <span>🥚 {eggs} Œufs</span>
           </div>
         </div>
       </div>
 
       {/* ========================================================= */}
-      {/* 1. MASSIVE EXPANSIVE MEADOW (ALMOST HALF THE SCREEN)      */}
+      {/* 1. MASSIVE EXPANSIVE MEADOW (OCCUPIES ALMOST HALF THE SCREEN) */}
       {/* ========================================================= */}
       <div className="pasture-canvas-field expansive-pasture mega-farm-pasture">
-        {/* Sleek, proportionate top control bar inside meadow */}
+        {/* Sleek top control bar inside meadow */}
         <div className="pasture-header-row sleek-dock-bar">
           <div className="pasture-status-badges">
             <span className="pasture-tag glowing-tag">
               🐔 <strong>{chickens.length}</strong> Poules Pixar {chickens.length >= 30 ? '🎉 OBJECTIF 30+ ATTEINT !' : '(Objectif : 30+)'}
             </span>
+
+            {/* VISUAL GRAIN RESERVE (Seeds store that visibly receives bought food) */}
+            <div className={`grain-reserve-indicator ${isGrainFlying ? 'receiving-seeds-pulse' : ''}`} title="Réserve de nourriture des poules">
+              <span className="reserve-icon">🌾</span>
+              <span className="reserve-text">Réserve : <strong>{seeds}</strong> graines</span>
+              {isGrainFlying && (
+                <span className="flying-seeds-badge animate-bounce-soft">
+                  +10 Graines ! 🌾
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Compact Sleek Action Controls */}
@@ -556,7 +645,7 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
             <button
               onClick={feedAllChickens}
               className="sleek-feed-pill-btn"
-              title="Nourrir toutes les poules d'un seul coup"
+              title="Faire tomber des graines pour toutes les poules"
             >
               <span className="pill-icon">🌾</span>
               <span>Nourrir Tout ({chickens.length})</span>
@@ -589,7 +678,21 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
         <div className="farm-pond-corner">🦆 💦 Mare aux canards</div>
         <div className="farm-wooden-coop compact-coop">🏡 Poulailler</div>
 
-        {/* 30+ Animated 3D Pixar Chickens Running Freely Across the Entire Meadow */}
+        {/* VISUALLY DROPPED SEEDS SCATTERED IN THE GARDEN WHEN FEEDING */}
+        {droppedFood.map((food) => (
+          <div
+            key={food.id}
+            className="garden-dropped-seed-pile animate-drop-scatter"
+            style={{ left: `${food.x}%`, top: `${food.y}%` }}
+          >
+            <span className="grain-kernel g1">🌽</span>
+            <span className="grain-kernel g2">🌾</span>
+            <span className="grain-kernel g3">🟡</span>
+            <span className="grain-kernel g4">🌾</span>
+          </div>
+        ))}
+
+        {/* 30+ ANIMATED REALISTIC PIXAR CHICKENS RUNNING & PECKING */}
         {chickens.map((chick) => (
           <div
             key={chick.id}
@@ -604,7 +707,7 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
           >
             {chick.isEating && (
               <div className="chicken-cluck-bubble mini-bubble" style={{ transform: `scaleX(${chick.flip ? -1 : 1})` }}>
-                ❤️ Miam !
+                🌾 Miam !
               </div>
             )}
             <div className="pixar-chicken-box mini-hen">
@@ -618,7 +721,7 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
       </div>
 
       {/* ========================================================= */}
-      {/* 2. LOWER SECTION: EGGS SILO + 3D CASH REGISTER + CASH SILO */}
+      {/* 2. LOWER SECTION: EGGS SILO + 3D CASH REGISTER + 3D VAULT */}
       {/* ========================================================= */}
       <div className="farm-merchant-bottom-stage">
         {/* --- LEFT: EGG TRAY SILO --- */}
@@ -721,51 +824,82 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
           </div>
         </div>
 
-        {/* --- RIGHT: BANKNOTES & COINS VAULT SILO --- */}
-        <div className="visual-silo-column cash-silo compact-silo">
-          <div className="silo-header">
-            <h4>💵 Billets & Pièces</h4>
-            <span className="silo-count-badge gold">{coins} 🪙</span>
-          </div>
+        {/* --- RIGHT: 3D REINFORCED MONEY VAULT (BILLS & COINS ONLY IN VAULT, COUNT AT BOTTOM) --- */}
+        <div className="farm-bank-vault-widget">
+          <div className="vault-metallic-box">
+            {/* Vault Outer Header */}
+            <div className="vault-safe-door-header">
+              <div className="vault-title-wrap">
+                <ShieldCheck size={18} color="#f59e0b" />
+                <span className="vault-brand">COFFRE-FORT 3D</span>
+              </div>
+              <span className="vault-lock-dial">⚙️ 🔒</span>
+            </div>
 
-          {lastCashChange && (
-            <div className={`flow-indicator-banner ${lastCashChange.type === 'in' ? 'flow-in' : 'flow-out'} animate-pop`}>
-              {lastCashChange.type === 'in' ? (
-                <span><ArrowDownRight size={14} /> +{lastCashChange.amount} 🪙 Vente</span>
-              ) : (
-                <span><ArrowUpRight size={14} /> -{lastCashChange.amount} 🪙 Achat</span>
+            {/* INSIDE VAULT CHAMBER: ONLY PHYSICAL BILLS & SHINY COINS! */}
+            <div className="vault-treasure-chamber">
+              <div className="vault-interior-lighting"></div>
+
+              {/* Layered Green Banknote Bundles ($5) */}
+              <div className="vault-banknotes-pile">
+                {Array.from({ length: Math.min(bills, 7) }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="physical-bill-bundle vault-bill animate-pop"
+                    style={{
+                      transform: `rotate(${(i % 4 - 1.5) * 3}deg) translateY(-${i * 4}px)`,
+                      zIndex: i + 1,
+                    }}
+                  >
+                    <span className="bill-currency-tag">$</span>
+                    <span className="bill-center-art">💵 5</span>
+                    <span className="bill-currency-tag">$</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Shiny Gold Coins Stacks */}
+              <div className="vault-gold-coins-pyramid">
+                {Array.from({ length: Math.min(Math.ceil(coins / 3), 16) }).map((_, i) => (
+                  <span
+                    key={i}
+                    className="stacked-coin-icon vault-coin-unit animate-pop"
+                    style={{ animationDelay: `${i * 0.03}s` }}
+                  >
+                    🪙
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* AT THE BOTTOM OF THE VAULT: Count & Money Saved */}
+            <div className="vault-bottom-save-plaque">
+              <div className="vault-total-saved-row">
+                <span className="vault-saved-label">TOTAL ÉCONOMISÉ</span>
+                <span className="vault-saved-amount">{coins + bills * 5} 🪙</span>
+              </div>
+
+              <div className="vault-counts-breakdown">
+                <span className="count-pill bills-pill">💵 {bills} Billets (${bills * 5})</span>
+                <span className="count-pill coins-pill">🪙 {coins} Pièces</span>
+              </div>
+
+              {lastCashChange && (
+                <div className={`vault-change-banner ${lastCashChange.type === 'in' ? 'c-in' : 'c-out'} animate-pop`}>
+                  {lastCashChange.type === 'in' ? `+${lastCashChange.amount} 🪙 Vente !` : `-${lastCashChange.amount} 🪙 Achat !`}
+                </div>
               )}
             </div>
-          )}
-
-          {/* Physical Banknotes & Coins Stack */}
-          <div className="cash-stack-display compact-cash-stack">
-            <div className="bills-stack-visual">
-              {Array.from({ length: Math.min(bills, 5) }).map((_, i) => (
-                <div key={i} className="physical-bill-bundle animate-pop mini-bill">
-                  <span className="bill-currency-tag">$</span>
-                  <span className="bill-center-art">💵 5</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="coins-visual-pyramid mini-coins">
-              {Array.from({ length: Math.min(Math.ceil(coins / 3), 14) }).map((_, i) => (
-                <span key={i} className="stacked-coin-icon mini-coin-icon animate-pop">
-                  🪙
-                </span>
-              ))}
-            </div>
           </div>
 
-          {/* Quick Buy Seeds */}
-          <div className="silo-shop-controls">
+          {/* Quick Buy Seeds - Placed outside / beneath the vault */}
+          <div className="vault-store-shelf">
             <button
               onClick={buySeeds}
-              className="silo-buy-action-btn luxury-shop-btn compact-shop-btn"
+              className="vault-buy-seeds-btn luxury-shop-btn"
               disabled={coins < 3}
             >
-              <span>🌾 +10 Graines</span>
+              <span>🌾 Acheter +10 Graines</span>
               <span className="price-tag">-3 🪙</span>
             </button>
           </div>
