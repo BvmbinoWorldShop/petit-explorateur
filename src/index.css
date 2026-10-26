@@ -188,7 +188,7 @@ body {
     flex-direction: column;
   }
 
-  /* Tyanna Mobile: Fixed at Top of Screen with sweet companion banner */
+  /* Tyanna Mobile: Fixed at Top of Screen, 75% Smaller (Ultra-Compact Slim Banner) */
   .nia-host-column {
     position: sticky;
     top: 0;
@@ -196,80 +196,94 @@ body {
     right: 0;
     width: 100%;
     z-index: 999;
-    background: rgba(30, 39, 46, 0.94);
-    backdrop-filter: blur(14px);
-    border-bottom: 3.5px solid #ffd32a;
-    padding: 8px 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-    margin-bottom: 12px;
-    border-radius: 0 0 20px 20px;
+    background: rgba(30, 39, 46, 0.96);
+    backdrop-filter: blur(12px);
+    border-bottom: 2.5px solid #ffd32a;
+    padding: 4px 10px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    margin-bottom: 8px;
+    border-radius: 0 0 16px 16px;
+    height: 38px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
   }
 
   .nia-container {
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
-    gap: 10px;
+    gap: 8px;
     width: 100%;
+    height: 100%;
   }
 
+  /* Tiny Mascot Avatar (75% smaller: 26px round avatar) */
   .nia-puppet {
-    width: 52px;
-    height: 64px;
+    width: 26px;
+    height: 26px;
     flex-shrink: 0;
     border-radius: 50%;
-    background: rgba(47, 53, 66, 0.95);
-    border: 2.5px solid #ffd32a;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    background: #2f3542;
+    border: 2px solid #ffd32a;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     overflow: hidden;
-    padding: 1px;
+    padding: 0;
     position: relative;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .nia-svg {
     filter: none;
-    transform: translateY(-2px) scale(1.18);
+    transform: translateY(2px) scale(1.6);
+    transform-origin: 50% 30%;
   }
 
   .nia-tag-pill {
     display: none;
   }
 
+  /* 1-Line Sweet Dialogue Pill */
   .nia-speech-bubble {
     flex: 1;
     max-width: none;
-    padding: 6px 12px;
-    border-radius: 16px;
+    padding: 2px 10px;
+    border-radius: 12px;
     margin-bottom: 0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    border: 2px solid #ffd32a;
+    box-shadow: none;
+    border: 1.5px solid #ffd32a;
     background: #ffffff;
     animation: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 28px;
   }
 
   .bubble-top {
-    margin-bottom: 2px;
-  }
-
-  .bubble-name {
-    font-size: 0.65rem;
+    margin-bottom: 0;
+    display: none;
   }
 
   .bubble-audio-btn {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    padding: 0;
   }
 
   .bubble-text {
-    font-size: 0.8rem;
-    line-height: 1.25;
-    max-height: 38px;
+    font-size: 0.72rem;
+    line-height: 1.15;
+    max-height: 24px;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+    color: #2f3542;
+    font-weight: 700;
   }
 
   .bubble-arrow {
@@ -3213,6 +3227,982 @@ body {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* ========================================================
+   CRISPY 3D STYLING & MOBILE RESPONSIVENESS FOR ALL GAMES
+   ======================================================== */
+
+/* Generic Game Card Base (Matches .center-activity-card) */
+.game-card {
+  background: #ffffff;
+  border: 4px solid #ffffff;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+}
+
+.game-header {
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.game-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.score-badge {
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(8px);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 18px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+}
+
+/* 1. FIREFIGHTER GAME (Pompier & Eau) */
+.firefighter-stage .game-header {
+  background: linear-gradient(135deg, #fa5252 0%, #ff8787 100%);
+}
+
+.fire-arena {
+  background: linear-gradient(180deg, #1e272e 0%, #2f3542 50%, #1e272e 100%);
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  min-height: 420px;
+  position: relative;
+  overflow: hidden;
+}
+
+.fire-scene {
+  width: 100%;
+  max-width: 500px;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.fire-spot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.flame-element {
+  font-size: 5.5rem;
+  line-height: 1;
+  transition: transform 0.25s ease-out;
+}
+
+.animate-flicker {
+  animation: flameFlicker 0.4s infinite alternate ease-in-out;
+}
+
+@keyframes flameFlicker {
+  0% { transform: scale(1) rotate(-3deg); filter: drop-shadow(0 0 20px #ff4757); }
+  100% { transform: scale(1.08) rotate(3deg); filter: drop-shadow(0 0 35px #ffa502); }
+}
+
+.wood-logs {
+  font-size: 2.2rem;
+  margin-top: -12px;
+}
+
+.health-bar-container {
+  width: 180px;
+  height: 14px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid #ff4757;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.health-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff4757 0%, #ffa502 100%);
+  border-radius: 8px;
+  transition: width 0.25s ease-out;
+}
+
+.fire-hint {
+  color: #dfe6e9;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.extinguished-scene {
+  background: rgba(255, 255, 255, 0.12);
+  border: 3px solid #2ed573;
+  border-radius: 24px;
+  padding: 24px;
+  text-align: center;
+  color: white;
+  backdrop-filter: blur(10px);
+}
+
+.safe-emoji {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.safe-title {
+  font-size: 1.3rem;
+  color: #2ed573;
+  font-weight: 900;
+  margin-bottom: 4px;
+}
+
+.safe-sub {
+  font-size: 0.9rem;
+  color: #dfe6e9;
+  margin-bottom: 14px;
+}
+
+.water-jet {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  font-size: 2rem;
+  animation: sprayWaterAnim 0.3s forwards ease-out;
+  pointer-events: none;
+}
+
+@keyframes sprayWaterAnim {
+  0% { transform: translate(-50%, 60px) scale(0.4); opacity: 0; }
+  50% { opacity: 1; transform: translate(-50%, 0) scale(1.2); }
+  100% { transform: translate(-50%, -30px) scale(0.8); opacity: 0; }
+}
+
+.hose-controls {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  justify-content: center;
+}
+
+.giant-water-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #0984e3 0%, #00cec9 100%);
+  border: 4px solid #ffffff;
+  border-radius: 26px;
+  padding: 16px 20px;
+  color: white;
+  font-family: var(--font-family);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  box-shadow: 0 8px 24px rgba(9, 132, 227, 0.45), inset 0 2px 0 rgba(255, 255, 255, 0.6);
+  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1);
+  outline: none;
+}
+
+.giant-water-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 28px rgba(9, 132, 227, 0.6);
+}
+
+.giant-water-btn:active,
+.giant-water-btn.spraying {
+  transform: translateY(3px) scale(0.97);
+}
+
+.water-btn-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.water-btn-text .main-text {
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+
+.water-btn-text .sub-text {
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
+/* 2. COOKING GAME (Petite Cuisine du Chef) */
+.cooking-stage .game-header {
+  background: linear-gradient(135deg, #845ef7 0%, #b197fc 100%);
+}
+
+.cooking-arena {
+  background: linear-gradient(180deg, #fffdf8 0%, #fef3c7 100%);
+  padding: 20px 16px;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .cooking-arena {
+    grid-template-columns: 1fr;
+  }
+}
+
+.shelf-container {
+  background: #ffffff;
+  border: 3px solid #fcd34d;
+  border-radius: 22px;
+  padding: 14px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
+}
+
+.shelf-label {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #78350f;
+  margin-bottom: 10px;
+}
+
+.ingredients-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.ingredient-card {
+  background: #ffffff;
+  border: 3px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 10px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  outline: none;
+}
+
+.ingredient-card:hover {
+  transform: translateY(-3px) scale(1.05);
+}
+
+.ingredient-card.is-target {
+  border-color: #f59e0b;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
+  animation: targetPulse 1s infinite alternate;
+}
+
+@keyframes targetPulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.08); }
+}
+
+.ingredient-emoji {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.ingredient-name-fr {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin-top: 4px;
+}
+
+.ingredient-name-en {
+  font-size: 0.68rem;
+  color: #6b7280;
+}
+
+/* Soup Pot */
+.pot-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.pot-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 320px;
+}
+
+.steam-wrapper {
+  display: flex;
+  gap: 16px;
+  font-size: 1.6rem;
+  margin-bottom: -10px;
+  z-index: 5;
+}
+
+.pot-body {
+  width: 220px;
+  height: 150px;
+  background: linear-gradient(135deg, #d63031 0%, #b71540 100%);
+  border: 4px solid #ffffff;
+  border-radius: 0 0 110px 110px;
+  box-shadow: 0 12px 24px rgba(183, 21, 64, 0.35), inset 0 -10px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pot-rim {
+  position: absolute;
+  top: 0;
+  left: -10px;
+  right: -10px;
+  height: 20px;
+  background: #e17055;
+  border: 3px solid #ffffff;
+  border-radius: 20px;
+}
+
+.pot-soup {
+  width: 180px;
+  height: 100px;
+  background: radial-gradient(circle at 50% 30%, #f39c12 0%, #d35400 100%);
+  border-radius: 0 0 90px 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 8px;
+}
+
+.empty-pot-text {
+  font-size: 0.75rem;
+  color: #fff9e6;
+  font-weight: 800;
+  text-align: center;
+}
+
+.pot-ingredients {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+.floating-ingredient {
+  font-size: 1.6rem;
+  animation: floatSoup 1.2s infinite alternate ease-in-out;
+}
+
+@keyframes floatSoup {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-6px); }
+}
+
+.stir-button {
+  margin-top: 14px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  border: 3px solid #ffffff;
+  border-radius: 20px;
+  padding: 10px 22px;
+  font-family: var(--font-family);
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+  transition: transform 0.12s;
+}
+
+.stir-button:hover {
+  transform: translateY(-2px);
+}
+
+.stir-button:active {
+  transform: translateY(2px);
+}
+
+.dish-ready-banner {
+  background: #10b981;
+  color: white;
+  border-radius: 20px;
+  padding: 10px 18px;
+  text-align: center;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+/* 3. DRIVING GAME (Petite Voiture) */
+.driving-stage .game-header {
+  background: linear-gradient(135deg, #339af0 0%, #74c0fc 100%);
+}
+
+.car-color-selector {
+  background: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.selector-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #334155;
+}
+
+.car-palette {
+  display: flex;
+  gap: 8px;
+}
+
+.car-color-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid #ffffff;
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  transition: transform 0.15s;
+}
+
+.car-color-btn.active {
+  transform: scale(1.22);
+  border-color: #ffd32a;
+}
+
+.road-container {
+  height: 340px;
+  background: #34495e;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+}
+
+.traffic-light-post {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: #1e272e;
+  border: 2px solid #718093;
+  border-radius: 16px;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  z-index: 10;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.light-bulb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  opacity: 0.25;
+}
+
+.light-bulb.red { background: #ff4757; }
+.light-bulb.green { background: #2ed573; }
+.light-bulb.red.on { opacity: 1; box-shadow: 0 0 14px #ff4757; }
+.light-bulb.green.on { opacity: 1; box-shadow: 0 0 14px #2ed573; }
+
+.light-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: white;
+}
+
+.road-track {
+  width: 100%;
+  max-width: 440px;
+  height: 100%;
+  background: #2c3e50;
+  border-left: 6px solid #f1c40f;
+  border-right: 6px solid #f1c40f;
+  position: relative;
+}
+
+.road-line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: repeating-linear-gradient(180deg, #ffffff 0px, #ffffff 24px, transparent 24px, transparent 48px);
+  transform: translateX(-50%);
+  animation: roadMove 0.8s linear infinite;
+}
+
+.road-track.driving-fast .road-line {
+  animation: roadMove 0.35s linear infinite;
+}
+
+@keyframes roadMove {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 48px; }
+}
+
+.road-side {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  font-size: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.road-side.side-left { left: 8px; }
+.road-side.side-right { right: 8px; }
+
+.road-star {
+  position: absolute;
+  top: 25%;
+  transform: translateX(-50%);
+  font-size: 2.2rem;
+  cursor: pointer;
+  animation: starPulse 0.8s infinite alternate ease-in-out;
+  z-index: 5;
+}
+
+@keyframes starPulse {
+  0% { transform: translateX(-50%) scale(0.9); }
+  100% { transform: translateX(-50%) scale(1.15); filter: drop-shadow(0 0 10px #ffd32a); }
+}
+
+.car-player {
+  position: absolute;
+  bottom: 24px;
+  transform: translateX(-50%);
+  width: 95px;
+  height: 56px;
+  z-index: 8;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.4));
+}
+
+.car-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.car-controls {
+  padding: 14px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  background: #f8fafc;
+}
+
+.control-btn {
+  background: #ffffff;
+  border: 3px solid #cbd5e1;
+  border-radius: 18px;
+  padding: 12px 6px;
+  font-family: var(--font-family);
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #1e293b;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.12s;
+  outline: none;
+}
+
+.control-btn:hover {
+  transform: translateY(-2px);
+  border-color: #3b82f6;
+}
+
+.control-btn:active {
+  transform: translateY(2px);
+}
+
+.control-btn.gas-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.control-btn.horn-btn {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  border-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+}
+
+/* 4. COLORING STUDIO (Coloriage Magique) */
+.coloring-theme {
+  background: linear-gradient(135deg, #20c997 0%, #63e6be 100%);
+}
+
+.coloring-studio-arena {
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  gap: 16px;
+  padding: 16px;
+  background: #fffdf8;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .coloring-studio-arena {
+    grid-template-columns: 1fr;
+  }
+}
+
+.drawing-board {
+  background: #ffffff;
+  border: 4px solid #e2e8f0;
+  border-radius: 24px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+}
+
+.drawing-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 12px;
+}
+
+.coloring-svg {
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+}
+
+.paintable-part {
+  cursor: pointer;
+  transition: fill 0.25s ease-out, filter 0.15s;
+}
+
+.paintable-part:hover {
+  filter: brightness(1.15) drop-shadow(0 0 6px rgba(0, 0, 0, 0.2));
+}
+
+.drawing-nav-row {
+  margin-top: 14px;
+}
+
+.change-drawing-btn {
+  background: #f1f5f9;
+  border: 2px solid #cbd5e1;
+  border-radius: 16px;
+  padding: 8px 14px;
+  font-family: var(--font-family);
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #334155;
+  cursor: pointer;
+}
+
+.palette-dock {
+  background: #ffffff;
+  border: 3px solid #e2e8f0;
+  border-radius: 22px;
+  padding: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.palette-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #334155;
+  margin-bottom: 10px;
+}
+
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.palette-swatch-btn {
+  border: 3px solid #ffffff;
+  border-radius: 16px;
+  padding: 8px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transition: transform 0.15s;
+  color: white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.palette-swatch-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+}
+
+.palette-swatch-btn.active {
+  transform: scale(1.12);
+  border-color: #2d3436;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.35);
+}
+
+.swatch-emoji {
+  font-size: 1.4rem;
+}
+
+.swatch-name {
+  font-size: 0.72rem;
+  font-weight: 800;
+  margin-top: 2px;
+}
+
+/* 5. PUZZLE MEMORY (Mémoire & Paires) */
+.memory-theme {
+  background: linear-gradient(135deg, #fcc419 0%, #ffe066 100%);
+}
+
+.memory-game-arena {
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  background: #fffdf8;
+}
+
+.memory-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  width: 100%;
+  max-width: 440px;
+}
+
+.memory-card-tile {
+  height: 120px;
+  background: #ffffff;
+  border: 4px solid #f59e0b;
+  border-radius: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 18px rgba(245, 158, 11, 0.25);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  outline: none;
+}
+
+.memory-card-tile:hover {
+  transform: translateY(-3px) scale(1.04);
+}
+
+.memory-card-tile.is-revealed {
+  background: #fef3c7;
+  border-color: #10b981;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
+}
+
+.card-front-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.memory-card-emoji {
+  font-size: 3.2rem;
+}
+
+.memory-card-label {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin-top: 2px;
+}
+
+.card-back-pattern {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-paw {
+  font-size: 2.4rem;
+  opacity: 0.7;
+}
+
+.memory-win-banner {
+  background: #d1fae5;
+  border: 3px solid #10b981;
+  border-radius: 24px;
+  padding: 18px 24px;
+  text-align: center;
+  color: #065f46;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ========================================================
+   GLOBAL MOBILE POLISH: ENSURE 100% PERFECT RESPONSIVENESS
+   ======================================================== */
+
+@media (max-width: 600px) {
+  .learning-center-viewport {
+    padding: 6px;
+  }
+
+  .center-navbar {
+    padding: 8px 12px;
+    border-radius: 18px;
+    margin-bottom: 8px;
+  }
+
+  .brand-title {
+    font-size: 1.15rem;
+  }
+
+  .brand-tagline {
+    display: none;
+  }
+
+  .portal-grid-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .portal-game-card {
+    border-radius: 18px;
+  }
+
+  /* Farm Pasture on Phones */
+  .pasture-canvas-field.expansive-pasture.mega-farm-pasture {
+    height: clamp(340px, 44vh, 420px);
+    border-radius: 22px;
+  }
+
+  .pasture-header-row.sleek-dock-bar {
+    top: 6px;
+    left: 8px;
+    right: 8px;
+    gap: 4px;
+  }
+
+  .pasture-tag.glowing-tag {
+    font-size: 0.72rem;
+    padding: 4px 8px;
+  }
+
+  .grain-reserve-indicator {
+    padding: 3px 8px;
+  }
+
+  .grain-reserve-indicator .reserve-text {
+    font-size: 0.72rem;
+  }
+
+  .sleek-feed-pill-btn {
+    font-size: 0.72rem;
+    padding: 6px 10px;
+  }
+
+  .sleek-add-pill-btn,
+  .sleek-super-flock-btn {
+    font-size: 0.7rem;
+    padding: 5px 8px;
+  }
+
+  /* Farm Bottom Stage on Phones */
+  .farm-merchant-bottom-stage {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .counter-interactive-split {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .pixar-cash-register-wrap {
+    width: 140px;
+  }
+
+  .customers-line-strip {
+    border-left: none;
+    border-top: 2px dashed #fcd34d;
+    padding-left: 0;
+    padding-top: 8px;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .strip-avatars {
+    flex-direction: row;
+  }
+
+  /* Responsive Rainbow Xylophone Keys on Phones */
+  .xylophone-keys-container {
+    width: 100%;
+    gap: 4px;
+    padding: 16px 8px;
+    border-radius: 20px;
+  }
+
+  .xylo-bar-btn.bar-3d {
+    flex: 1;
+    min-width: 0;
+    max-width: 44px;
+    padding: 8px 0;
+    border-radius: 12px;
+  }
+
+  .xylo-note-label {
+    font-size: 0.95rem;
+  }
+
+  .xylo-pitch-sub {
+    font-size: 0.65rem;
+  }
+}
+
 
 
 
