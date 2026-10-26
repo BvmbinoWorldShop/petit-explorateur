@@ -735,11 +735,22 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
           {/* Compact Sleek Action Controls */}
           <div className="sleek-pasture-actions">
             <button
+              onClick={buySeeds}
+              className={`sleek-buy-seeds-btn ${seeds === 0 ? 'pulse-need-seeds' : ''}`}
+              title="Acheter 10 graines (3 pièces)"
+              disabled={coins < 3}
+            >
+              <span className="pill-icon">🌾</span>
+              <span>+10 Graines</span>
+              <span className="tiny-price">3🪙</span>
+            </button>
+
+            <button
               onClick={feedAllChickens}
               className="sleek-feed-pill-btn"
               title="Faire tomber des graines pour toutes les poules"
             >
-              <span className="pill-icon">🌾</span>
+              <span className="pill-icon">🌽</span>
               <span>Nourrir Tout ({chickens.length})</span>
             </button>
 
@@ -759,7 +770,7 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
               title="Ajouter 5 poules pour vite atteindre 30+ !"
               disabled={coins < 35}
             >
-              <span>🐣 +5 Poules Magiques !</span>
+              <span>🐣 +5 Poules !</span>
               <span className="tiny-price">35🪙</span>
             </button>
           </div>
@@ -813,7 +824,72 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
       </div>
 
       {/* ========================================================= */}
-      {/* 2. LOWER SECTION: EGGS SILO + 3D CASH REGISTER + 3D VAULT */}
+      {/* 2. CHUNKY 3D TACTILE ACTION DOCK (DIRECTLY BELOW PASTURE) */}
+      {/* ========================================================= */}
+      <div className="farm-kid-action-dock">
+        {/* BUY FOOD BUTTON: PROMINENT & EASILY ACCESSIBLE FOR KIDS */}
+        <button
+          onClick={buySeeds}
+          className={`kid-dock-pill-btn btn-food-blue ${seeds === 0 ? 'pulse-prompt-alert' : ''}`}
+          disabled={coins < 3}
+          title="Acheter 10 graines (3 pièces)"
+        >
+          <div className="dock-btn-icon-circle">🌾</div>
+          <div className="dock-btn-labels">
+            <span className="dock-btn-title">Acheter Graines</span>
+            <span className="dock-btn-desc">+10 au stock</span>
+          </div>
+          <div className="dock-btn-price-badge">3 🪙</div>
+        </button>
+
+        {/* FEED ALL CHICKENS */}
+        <button
+          onClick={feedAllChickens}
+          className="kid-dock-pill-btn btn-feed-yellow"
+          disabled={seeds < 1}
+          title="Faire tomber des graines pour toutes les poules"
+        >
+          <div className="dock-btn-icon-circle">🌽</div>
+          <div className="dock-btn-labels">
+            <span className="dock-btn-title">Nourrir Tout</span>
+            <span className="dock-btn-desc">{chickens.length} poules</span>
+          </div>
+          <div className="dock-btn-cost-badge">{chickens.length} 🌾</div>
+        </button>
+
+        {/* BUY 1 CHICKEN */}
+        <button
+          onClick={() => addChickens(1)}
+          className="kid-dock-pill-btn btn-hen-green"
+          disabled={coins < 10}
+          title="Ajouter 1 poule (10 pièces)"
+        >
+          <div className="dock-btn-icon-circle">🐔</div>
+          <div className="dock-btn-labels">
+            <span className="dock-btn-title">+1 Poule</span>
+            <span className="dock-btn-desc">Nouvelle poule</span>
+          </div>
+          <div className="dock-btn-price-badge">10 🪙</div>
+        </button>
+
+        {/* BUY 5 CHICKENS */}
+        <button
+          onClick={() => addChickens(5)}
+          className="kid-dock-pill-btn btn-flock-purple"
+          disabled={coins < 35}
+          title="Ajouter 5 poules d'un coup (35 pièces)"
+        >
+          <div className="dock-btn-icon-circle">🐣</div>
+          <div className="dock-btn-labels">
+            <span className="dock-btn-title">+5 Poules</span>
+            <span className="dock-btn-desc">Super troupeau</span>
+          </div>
+          <div className="dock-btn-price-badge">35 🪙</div>
+        </button>
+      </div>
+
+      {/* ========================================================= */}
+      {/* 3. LOWER SECTION: EGGS SILO + 3D CASH REGISTER + 3D VAULT */}
       {/* ========================================================= */}
       <div className="farm-merchant-bottom-stage">
         {/* --- LEFT: EGG TRAY SILO --- */}
@@ -929,36 +1005,55 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
             </div>
 
             {/* INSIDE VAULT CHAMBER: ONLY PHYSICAL BILLS & SHINY COINS! */}
-            <div className="vault-treasure-chamber">
+            <div className="vault-treasure-chamber compact-vault-chamber">
               <div className="vault-interior-lighting"></div>
 
-              {/* Layered Big Realistic Banknotes (No $ and No 5) */}
-              <div className="vault-banknotes-pile">
-                {Array.from({ length: Math.min(bills, 6) }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="vault-big-bill-item animate-pop"
-                    style={{
-                      transform: `rotate(${(i % 3 - 1) * 3.5}deg) translateY(-${i * 6}px)`,
-                      zIndex: i + 1,
-                    }}
-                  >
-                    <BigBanknote />
+              <div className="vault-tray-compartments">
+                {/* 1. Banknotes Compartment: Drop down size of bills, multiple bills piling up without expanding height */}
+                <div className="vault-cash-tray" title={`${bills} billet(s) au coffre`}>
+                  <div className="vault-tray-header">
+                    <span className="vault-tray-tag">💵 BILLETS ({bills})</span>
                   </div>
-                ))}
-              </div>
+                  <div className="vault-banknotes-stack-box">
+                    {bills === 0 ? (
+                      <span className="empty-cash-hint">0 billet</span>
+                    ) : (
+                      Array.from({ length: Math.min(bills, 14) }).map((_, i) => (
+                        <div
+                          key={i}
+                          className="vault-compact-bill-item animate-pop"
+                          style={{
+                            position: 'absolute',
+                            top: `${Math.min(i * 2.8, 28)}px`,
+                            left: `${(i % 3 - 1) * 2}px`,
+                            transform: `rotate(${(i % 2 === 0 ? 1 : -1) * 1.5}deg)`,
+                            zIndex: i + 1,
+                          }}
+                        >
+                          <BigBanknote />
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
 
-              {/* Shiny Yellow Coins Piling Up As Eggs Are Sold */}
-              <div className="vault-gold-coins-pyramid yellow-coins-stack">
-                {Array.from({ length: Math.min(Math.max(Math.floor(coins / 2), 3), 28) }).map((_, i) => (
-                  <span
-                    key={i}
-                    className="vault-shiny-coin-item animate-pop"
-                    style={{ animationDelay: `${i * 0.02}s` }}
-                  >
-                    <ShinyGoldCoin />
-                  </span>
-                ))}
+                {/* 2. Shiny Yellow Coins Compartment: Piling up neatly in safe bed */}
+                <div className="vault-coins-tray" title={`${coins} pièce(s) au coffre`}>
+                  <div className="vault-tray-header">
+                    <span className="vault-tray-tag">🪙 PIÈCES ({coins})</span>
+                  </div>
+                  <div className="vault-gold-coins-pyramid yellow-coins-stack compact-coins-stack">
+                    {Array.from({ length: Math.min(Math.max(Math.floor(coins / 2), 3), 16) }).map((_, i) => (
+                      <span
+                        key={i}
+                        className="vault-shiny-coin-item compact-coin animate-pop"
+                        style={{ animationDelay: `${i * 0.02}s` }}
+                      >
+                        <ShinyGoldCoin />
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
 
