@@ -184,45 +184,52 @@ body {
 
 @media (max-width: 900px) {
   .center-main-layout {
-    display: block;
+    display: flex;
+    flex-direction: column;
   }
 
-  /* Tyanna Mobile Floating Widget (fixed at bottom-right, smaller, floats on scroll) */
+  /* Tyanna Mobile: Fixed at Top of Screen with sweet companion banner */
   .nia-host-column {
-    position: fixed;
-    bottom: 16px;
-    right: 14px;
-    top: auto;
-    z-index: 9999;
-    max-width: 90vw;
-    width: auto;
-    pointer-events: none;
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 999;
+    background: rgba(30, 39, 46, 0.94);
+    backdrop-filter: blur(14px);
+    border-bottom: 3.5px solid #ffd32a;
+    padding: 8px 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    margin-bottom: 12px;
+    border-radius: 0 0 20px 20px;
   }
 
   .nia-container {
-    flex-direction: row-reverse;
-    align-items: flex-end;
-    gap: 8px;
-    pointer-events: auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    width: 100%;
   }
 
   .nia-puppet {
-    width: 62px;
-    height: 78px;
+    width: 52px;
+    height: 64px;
     flex-shrink: 0;
     border-radius: 50%;
     background: rgba(47, 53, 66, 0.95);
-    border: 3px solid #ffd32a;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    border: 2.5px solid #ffd32a;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
     overflow: hidden;
-    padding: 2px;
+    padding: 1px;
     position: relative;
     cursor: pointer;
   }
 
   .nia-svg {
     filter: none;
-    transform: translateY(-4px) scale(1.15);
+    transform: translateY(-2px) scale(1.18);
   }
 
   .nia-tag-pill {
@@ -230,12 +237,14 @@ body {
   }
 
   .nia-speech-bubble {
-    max-width: 220px;
-    padding: 8px 12px;
+    flex: 1;
+    max-width: none;
+    padding: 6px 12px;
     border-radius: 16px;
     margin-bottom: 0;
-    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
-    border-width: 2.5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 2px solid #ffd32a;
+    background: #ffffff;
     animation: none;
   }
 
@@ -247,10 +256,15 @@ body {
     font-size: 0.65rem;
   }
 
+  .bubble-audio-btn {
+    width: 24px;
+    height: 24px;
+  }
+
   .bubble-text {
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     line-height: 1.25;
-    max-height: 44px;
+    max-height: 38px;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
@@ -259,15 +273,7 @@ body {
   }
 
   .bubble-arrow {
-    bottom: auto;
-    top: 50%;
-    right: -10px;
-    left: auto;
-    transform: translateY(-50%);
-    border-left: 10px solid #ffd32a;
-    border-top: 6px solid transparent;
-    border-bottom: 6px solid transparent;
-    border-right: none;
+    display: none;
   }
 }
 
@@ -563,14 +569,36 @@ body {
   cursor: pointer;
 }
 
-/* Balloons Sky Game */
-.balloons-sky-arena {
-  background: linear-gradient(180deg, #74b9ff 0%, #dfe6e9 100%);
+/* Balloons Sky Game (Crispy 3D Upgrade) */
+.balloons-theme-header {
+  background: linear-gradient(135deg, #ff7675 0%, #fab1a0 100%);
+}
+
+.luxury-score-pill {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(8px);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.balloons-sky-arena.crispy-sky-arena {
+  background: 
+    radial-gradient(ellipse at 50% 10%, #ffffff 0%, transparent 60%),
+    linear-gradient(180deg, #48dbfb 0%, #74b9ff 40%, #a29bfe 80%, #ffeaa7 100%);
   border-radius: 28px;
-  height: 420px;
+  height: 440px;
   position: relative;
   overflow: hidden;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.12), 0 10px 24px rgba(0, 0, 0, 0.15);
+  border: 4px solid #ffffff;
 }
 
 .sky-clouds-row {
@@ -580,52 +608,69 @@ body {
   right: 0;
   display: flex;
   justify-content: space-around;
-  font-size: 3rem;
-  opacity: 0.6;
+  font-size: 2.6rem;
+  opacity: 0.75;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.08));
+}
+
+.cloud-item.c1 { animation: cloudDrift 8s ease-in-out infinite alternate; }
+.cloud-item.c2 { animation: cloudDrift 11s ease-in-out infinite alternate-reverse; }
+.cloud-item.c3 { animation: cloudDrift 9s ease-in-out infinite alternate; }
+
+@keyframes cloudDrift {
+  0% { transform: translateX(-12px); }
+  100% { transform: translateX(12px); }
+}
+
+.floating-crispy-balloon-btn {
+  position: absolute;
+  bottom: -140px;
+  width: 82px;
+  height: 115px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  animation: float-crispy-balloon linear forwards;
+  will-change: transform;
+  outline: none;
+}
+
+.crispy-3d-balloon-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.28));
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.floating-crispy-balloon-btn:hover .crispy-3d-balloon-svg {
+  transform: scale(1.18);
+}
+
+.floating-crispy-balloon-btn:active .crispy-3d-balloon-svg {
+  transform: scale(0.92);
+}
+
+@keyframes float-crispy-balloon {
+  0% { transform: translateY(0) rotate(0deg); }
+  30% { transform: translateY(-180px) rotate(5deg); }
+  65% { transform: translateY(-380px) rotate(-5deg); }
+  100% { transform: translateY(-620px) rotate(3deg); }
+}
+
+.sky-bottom-grass {
+  position: absolute;
+  bottom: 6px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  font-size: 1.5rem;
+  opacity: 0.55;
   pointer-events: none;
 }
 
-.floating-balloon-btn {
-  position: absolute;
-  bottom: -90px;
-  width: 70px;
-  height: 85px;
-  border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 700;
-  font-size: 1.6rem;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
-  animation: float-balloon linear forwards;
-}
-
-@keyframes float-balloon {
-  0% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-250px) rotate(4deg); }
-  100% { transform: translateY(-560px) rotate(-4deg); }
-}
-
-.balloon-knot {
-  position: absolute;
-  bottom: -6px;
-  width: 10px;
-  height: 6px;
-  background: inherit;
-  border-radius: 3px;
-}
-
-.balloon-string {
-  position: absolute;
-  bottom: -24px;
-  width: 2px;
-  height: 18px;
-  background: rgba(255, 255, 255, 0.8);
-}
 
 /* Duck Maze */
 .maze-playground-arena {
@@ -851,48 +896,168 @@ body {
   font-weight: 700;
 }
 
-.xylophone-keys-container {
-  display: flex;
-  gap: 10px;
-  align-items: flex-end;
-  background: #dfe6e9;
-  padding: 24px 20px;
-  border-radius: 28px;
-  border: 6px solid #b2bec3;
+/* Xylophone Musical Arc-en-Ciel (Crispy 3D Upgrade) */
+.music-theme-header {
+  background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
 }
 
-.xylo-bar-btn {
-  width: 58px;
-  border: none;
-  border-radius: 16px;
+.xylo-songs-menu {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.luxury-song-btn {
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(8px);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-family: var(--font-family);
+  font-size: 0.78rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease-out;
+}
+
+.luxury-song-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.crispy-xylo-arena {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.flying-notes-layer {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  height: 80px;
+  pointer-events: none;
+}
+
+.floating-note-particle {
+  position: absolute;
+  font-size: 2.2rem;
+  animation: floatUpNote 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+@keyframes floatUpNote {
+  0% { transform: translateY(60px) scale(0.4) rotate(0deg); opacity: 0; }
+  30% { opacity: 1; transform: translateY(20px) scale(1.2) rotate(15deg); }
+  100% { transform: translateY(-40px) scale(0.9) rotate(-15deg); opacity: 0; }
+}
+
+.xylo-wooden-chassis {
+  background: linear-gradient(180deg, #d35400 0%, #b33939 50%, #7f1d1d 100%);
+  border: 5px solid #e17055;
+  border-radius: 36px;
+  padding: 28px 22px;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(0, 0, 0, 0.4);
+  position: relative;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.xylo-rubber-rail {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  height: 12px;
+  background: #2d3436;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
+
+.xylo-rubber-rail.top-rail { top: 40px; }
+.xylo-rubber-rail.bottom-rail { bottom: 40px; }
+
+.xylophone-keys-container {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  position: relative;
+  z-index: 5;
+}
+
+.xylo-bar-btn.bar-3d {
+  width: 62px;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 20px;
   color: white;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 0;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-  transition: transform 0.1s ease;
+  padding: 14px 0;
+  position: relative;
+  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.12s;
+  outline: none;
 }
 
-.xylo-bar-btn:active, .xylo-bar-btn.is-struck {
-  transform: translateY(6px);
-  filter: brightness(1.2);
+.xylo-bar-btn.bar-3d:active,
+.xylo-bar-btn.bar-3d.is-struck {
+  transform: translateY(10px) scale(0.97);
+  filter: brightness(1.25);
 }
 
-.xylo-bolt {
-  width: 10px;
-  height: 10px;
-  background: #ffffff;
+.xylo-screw {
+  width: 12px;
+  height: 12px;
+  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #bdc3c7 60%, #7f8c8d 100%);
   border-radius: 50%;
-  opacity: 0.8;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+}
+
+.xylo-bar-highlight {
+  position: absolute;
+  top: 14px;
+  left: 6px;
+  right: 6px;
+  height: 40%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, transparent 100%);
+  border-radius: 14px 14px 0 0;
+  pointer-events: none;
 }
 
 .xylo-note-label {
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: 1.35rem;
+  font-weight: 900;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
+
+.xylo-pitch-sub {
+  font-size: 0.8rem;
+  font-weight: 800;
+  opacity: 0.85;
+}
+
+.xylo-tip-banner {
+  background: #ffffff;
+  color: #2d3436;
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+}
+
 
 /* Dressing Room */
 .dressing-room-arena {
@@ -2881,35 +3046,61 @@ body {
   pointer-events: none;
 }
 
-/* Banknotes Stack in Vault */
+/* Banknotes Stack in Vault (Big Banknotes, No $ and No 5) */
 .vault-banknotes-pile {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   align-items: center;
   width: 100%;
 }
 
-.vault-bill {
-  width: 105px;
-  height: 34px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
+.vault-big-bill-item {
+  width: 145px;
+  height: 76px;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Golden Coins Cascade in Vault */
-.vault-gold-coins-pyramid {
+.vault-big-bill-item:hover {
+  transform: scale(1.08) translateY(-4px) !important;
+}
+
+.big-banknote-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.45));
+}
+
+/* Golden Coins Cascade & Mountain in Vault (Yellow Coins) */
+.vault-gold-coins-pyramid.yellow-coins-stack {
   display: flex;
   flex-wrap: wrap;
   gap: 3px;
   justify-content: center;
-  max-width: 160px;
+  max-width: 175px;
+  padding: 4px 0;
 }
 
-.vault-coin-unit {
-  font-size: 1.6rem;
-  line-height: 1;
-  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
+.vault-shiny-coin-item {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.35));
+  transition: transform 0.18s;
+  cursor: pointer;
 }
+
+.vault-shiny-coin-item:hover {
+  transform: scale(1.25) translateY(-2px);
+}
+
+.shiny-gold-coin-svg {
+  width: 100%;
+  height: 100%;
+}
+
 
 /* AT THE BOTTOM OF THE VAULT: Count & Money Saved Plaque */
 .vault-bottom-save-plaque {

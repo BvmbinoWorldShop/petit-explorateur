@@ -296,21 +296,114 @@ function PixarCashRegister({ amountDue, isRinging, isOpen, onRing }) {
   );
 }
 
-// Generate initial lively flock of chickens
-const INITIAL_CHICKENS = Array.from({ length: 15 }).map((_, i) => ({
-  id: i + 1,
-  name: `Poule ${i + 1}`,
-  x: 6 + (i % 8) * 11 + Math.random() * 5,
-  y: 18 + Math.floor(i / 8) * 32 + Math.random() * 12,
-  isEating: false,
-  flip: Math.random() > 0.5,
-}));
+// 4. Grand Billet Réaliste (SANS symbole dollar $ et SANS chiffre 5, grand format)
+function BigBanknote() {
+  return (
+    <svg viewBox="0 0 160 84" className="big-banknote-svg">
+      <defs>
+        <linearGradient id="notePaperGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#d4edda" />
+          <stop offset="25%" stopColor="#a3e4d7" />
+          <stop offset="65%" stopColor="#2ecc71" />
+          <stop offset="100%" stopColor="#1e824c" />
+        </linearGradient>
+        <pattern id="guillochePattern" width="8" height="8" patternUnits="userSpaceOnUse">
+          <circle cx="4" cy="4" r="3" fill="none" stroke="#27ae60" strokeWidth="0.5" opacity="0.3" />
+        </pattern>
+      </defs>
+
+      {/* Shadow */}
+      <rect x="2" y="3" width="156" height="78" rx="6" fill="rgba(0,0,0,0.3)" />
+
+      {/* Main Banknote Paper */}
+      <rect x="2" y="2" width="156" height="78" rx="6" fill="url(#notePaperGrad)" stroke="#145a32" strokeWidth="2.5" />
+      <rect x="4" y="4" width="152" height="74" rx="4" fill="url(#guillochePattern)" />
+
+      {/* Ornate Inner Guilloche Border */}
+      <rect x="8" y="8" width="144" height="66" rx="4" fill="none" stroke="#196f3d" strokeWidth="1.5" strokeDasharray="4 2" />
+      <rect x="12" y="12" width="136" height="58" rx="3" fill="none" stroke="#27ae60" strokeWidth="1" />
+
+      {/* 4 Corner Rosettes */}
+      <g fill="#145a32">
+        <circle cx="16" cy="16" r="3" />
+        <circle cx="144" cy="16" r="3" />
+        <circle cx="16" cy="66" r="3" />
+        <circle cx="144" cy="66" r="3" />
+      </g>
+
+      {/* Central Vignette / Engraved Oval Seal */}
+      <ellipse cx="80" cy="41" rx="26" ry="21" fill="#e8f8f5" stroke="#1e824c" strokeWidth="1.8" />
+      <ellipse cx="80" cy="41" rx="23" ry="18" fill="none" stroke="#27ae60" strokeWidth="1" strokeDasharray="3 1.5" />
+
+      {/* Central Agricultural Wheat Sheaf Emblem (Strictly No $ and No 5) */}
+      <g fill="#27ae60" stroke="#196f3d" strokeWidth="0.8">
+        <path d="M 80 49 C 76 43 72 36 78 30 C 82 35 81 44 80 49 Z" fill="#2ecc71" />
+        <path d="M 80 49 C 84 43 88 36 82 30 C 78 35 79 44 80 49 Z" fill="#2ecc71" />
+        <path d="M 80 50 L 80 28" stroke="#145a32" strokeWidth="1.5" />
+        <circle cx="80" cy="27" r="2" fill="#f1c40f" stroke="#d35400" strokeWidth="0.6" />
+      </g>
+
+      {/* Engraved Side Geometric Waves */}
+      <path d="M 24 24 Q 28 41 24 58" fill="none" stroke="#1e824c" strokeWidth="1.5" />
+      <path d="M 28 27 Q 32 41 28 55" fill="none" stroke="#27ae60" strokeWidth="1" />
+      <path d="M 136 24 Q 132 41 136 58" fill="none" stroke="#1e824c" strokeWidth="1.5" />
+      <path d="M 132 27 Q 128 41 132 55" fill="none" stroke="#27ae60" strokeWidth="1" />
+
+      {/* Top and Bottom Decorative Lines */}
+      <line x1="38" y1="18" x2="122" y2="18" stroke="#145a32" strokeWidth="1" strokeDasharray="5 2" />
+      <line x1="38" y1="64" x2="122" y2="64" stroke="#145a32" strokeWidth="1" strokeDasharray="5 2" />
+    </svg>
+  );
+}
+
+// 5. Pièce d'Or Jaune Brillante (3D Yellow Gold Coin)
+function ShinyGoldCoin() {
+  return (
+    <svg viewBox="0 0 38 38" className="shiny-gold-coin-svg">
+      <defs>
+        <linearGradient id="goldRimGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#fff9c4" />
+          <stop offset="35%" stopColor="#ffd32a" />
+          <stop offset="75%" stopColor="#f39c12" />
+          <stop offset="100%" stopColor="#b7791f" />
+        </linearGradient>
+        <radialGradient id="goldFaceGrad" cx="35%" cy="30%" r="65%">
+          <stop offset="0%" stopColor="#fffa65" />
+          <stop offset="50%" stopColor="#ffd32a" />
+          <stop offset="100%" stopColor="#e67e22" />
+        </radialGradient>
+      </defs>
+      {/* 3D Depth Rim */}
+      <circle cx="19" cy="21" r="16.5" fill="#996515" />
+      <circle cx="19" cy="19" r="16.5" fill="url(#goldRimGrad)" stroke="#d35400" strokeWidth="1" />
+      <circle cx="19" cy="19" r="13" fill="url(#goldFaceGrad)" stroke="#f39c12" strokeWidth="0.8" />
+      {/* Star Emblem */}
+      <path
+        d="M 19 12 L 20.8 16.5 L 25.5 16.8 L 21.8 19.8 L 23.2 24.5 L 19 21.8 L 14.8 24.5 L 16.2 19.8 L 12.5 16.8 L 17.2 16.5 Z"
+        fill="#ffffff"
+        opacity="0.9"
+      />
+    </svg>
+  );
+}
+
+// Le jeu commence TOUJOURS avec 1 seule poule au tout début !
+const INITIAL_CHICKENS = [
+  {
+    id: 1,
+    name: 'Poupette',
+    x: 48,
+    y: 46,
+    isEating: false,
+    flip: false,
+  },
+];
 
 export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
-  const [coins, setCoins] = useState(45);
-  const [bills, setBills] = useState(5); // Physical green banknotes ($5 bills)
-  const [seeds, setSeeds] = useState(30);
-  const [eggs, setEggs] = useState(10);
+  const [coins, setCoins] = useState(15);
+  const [bills, setBills] = useState(1); // Grands billets réalistes (sans $ ni 5)
+  const [seeds, setSeeds] = useState(6);
+  const [eggs, setEggs] = useState(0);
   const [lastCashChange, setLastCashChange] = useState(null);
   const [lastEggChange, setLastEggChange] = useState(null);
 
@@ -319,7 +412,7 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
   // Flying seeds to reserve animation flag
   const [isGrainFlying, setIsGrainFlying] = useState(false);
 
-  // Large Pasture with 30+ potential chickens
+  // Large Pasture: Starts with strictly 1 chicken!
   const [chickens, setChickens] = useState(INITIAL_CHICKENS);
 
   // Cash register animation states
@@ -330,11 +423,10 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
   const [customerLine, setCustomerLine] = useState([
     { ...PIXAR_CUSTOMERS[0], wants: 1 },
     { ...PIXAR_CUSTOMERS[1], wants: 2 },
-    { ...PIXAR_CUSTOMERS[2], wants: 1 },
   ]);
 
   useEffect(() => {
-    const welcome = "Bienvenue dans ta très grande ferme ! Regarde tes poules courir et picorer dans le grand pré ! Quand tu achètes des graines, elles vont dans ta réserve !";
+    const welcome = "Bienvenue dans ta ferme ! Regarde ta première poule Poupette qui court dans l'herbe ! Donne-lui des graines pour récolter ton premier œuf et le vendre à la caisse !";
     onNiaSpeak(welcome);
     doraVoice.speak(welcome);
 
@@ -840,33 +932,31 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
             <div className="vault-treasure-chamber">
               <div className="vault-interior-lighting"></div>
 
-              {/* Layered Green Banknote Bundles ($5) */}
+              {/* Layered Big Realistic Banknotes (No $ and No 5) */}
               <div className="vault-banknotes-pile">
-                {Array.from({ length: Math.min(bills, 7) }).map((_, i) => (
+                {Array.from({ length: Math.min(bills, 6) }).map((_, i) => (
                   <div
                     key={i}
-                    className="physical-bill-bundle vault-bill animate-pop"
+                    className="vault-big-bill-item animate-pop"
                     style={{
-                      transform: `rotate(${(i % 4 - 1.5) * 3}deg) translateY(-${i * 4}px)`,
+                      transform: `rotate(${(i % 3 - 1) * 3.5}deg) translateY(-${i * 6}px)`,
                       zIndex: i + 1,
                     }}
                   >
-                    <span className="bill-currency-tag">$</span>
-                    <span className="bill-center-art">💵 5</span>
-                    <span className="bill-currency-tag">$</span>
+                    <BigBanknote />
                   </div>
                 ))}
               </div>
 
-              {/* Shiny Gold Coins Stacks */}
-              <div className="vault-gold-coins-pyramid">
-                {Array.from({ length: Math.min(Math.ceil(coins / 3), 16) }).map((_, i) => (
+              {/* Shiny Yellow Coins Piling Up As Eggs Are Sold */}
+              <div className="vault-gold-coins-pyramid yellow-coins-stack">
+                {Array.from({ length: Math.min(Math.max(Math.floor(coins / 2), 3), 28) }).map((_, i) => (
                   <span
                     key={i}
-                    className="stacked-coin-icon vault-coin-unit animate-pop"
-                    style={{ animationDelay: `${i * 0.03}s` }}
+                    className="vault-shiny-coin-item animate-pop"
+                    style={{ animationDelay: `${i * 0.02}s` }}
                   >
-                    🪙
+                    <ShinyGoldCoin />
                   </span>
                 ))}
               </div>
@@ -875,13 +965,13 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
             {/* AT THE BOTTOM OF THE VAULT: Count & Money Saved */}
             <div className="vault-bottom-save-plaque">
               <div className="vault-total-saved-row">
-                <span className="vault-saved-label">TOTAL ÉCONOMISÉ</span>
+                <span className="vault-saved-label">TOTAL ÉCONOMISÉ AU COFFRE</span>
                 <span className="vault-saved-amount">{coins + bills * 5} 🪙</span>
               </div>
 
               <div className="vault-counts-breakdown">
-                <span className="count-pill bills-pill">💵 {bills} Billets (${bills * 5})</span>
-                <span className="count-pill coins-pill">🪙 {coins} Pièces</span>
+                <span className="count-pill bills-pill">💵 {bills} Billet{bills > 1 ? 's' : ''}</span>
+                <span className="count-pill coins-pill">🪙 {coins} Pièces Jaunes</span>
               </div>
 
               {lastCashChange && (

@@ -32,13 +32,29 @@ class DoraVoiceEngine {
     const voices = window.speechSynthesis.getVoices();
 
     this.frenchVoice =
-      voices.find((v) => v.lang === 'fr-FR' && (v.name.includes('Julie') || v.name.includes('Hortense') || v.name.includes('Natural') || v.name.includes('Google'))) ||
+      voices.find((v) => v.lang === 'fr-FR' && (
+        v.name.includes('Amélie') || 
+        v.name.includes('Google français') || 
+        v.name.includes('Julie') || 
+        v.name.includes('Marie') || 
+        v.name.includes('Céline') || 
+        v.name.includes('Hortense') || 
+        v.name.includes('Virginie') ||
+        v.name.includes('Natural') || 
+        v.name.includes('Denise')
+      )) ||
+      voices.find((v) => v.lang === 'fr-FR' && !v.name.includes('Paul') && !v.name.includes('Claude') && !v.name.includes('Henri') && !v.name.includes('Male')) ||
       voices.find((v) => v.lang === 'fr-FR') ||
       voices.find((v) => v.lang.startsWith('fr')) ||
       null;
 
     this.englishVoice =
-      voices.find((v) => (v.lang === 'en-US' || v.lang === 'en-GB') && (v.name.includes('Natural') || v.name.includes('Google'))) ||
+      voices.find((v) => (v.lang === 'en-US' || v.lang === 'en-GB') && (
+        v.name.includes('Jenny') || 
+        v.name.includes('Natural') || 
+        v.name.includes('Google') || 
+        v.name.includes('Aria')
+      )) ||
       voices.find((v) => v.lang.startsWith('en')) ||
       null;
   }
@@ -57,9 +73,9 @@ class DoraVoiceEngine {
       utterance.voice = this.frenchVoice;
     }
 
-    // Little girl voice style: clear, warm, enthusiastic
-    utterance.pitch = 1.38;
-    utterance.rate = 0.95;
+    // Sweet little girl voice: warm, bright, clear, cheerful
+    utterance.pitch = 1.45;
+    utterance.rate = 0.92;
 
     utterance.onstart = () => this.notify(true);
     utterance.onend = () => {

@@ -2,31 +2,95 @@ import React, { useState, useEffect } from 'react';
 import { doraVoice } from '../utils/speech';
 import { sounds } from '../utils/audio';
 import confetti from 'canvas-confetti';
-import { Sparkles, RotateCcw, Volume2, Star } from 'lucide-react';
+import { Sparkles, RotateCcw, Volume2, Star, Zap } from 'lucide-react';
 
-const BALLOON_COLORS = ['#ff7675', '#74b9ff', '#55efc4', '#ffeaa7', '#a29bfe', '#fab1a0', '#fdcb6e'];
-const BALLOON_CHARS = ['A', 'B', 'C', '1', '2', '3', '⭐', '❤️', '🌟', 'D', 'E', '4', '5'];
+const BALLOON_PALETTE = [
+  { id: 'red', primary: '#ff4757', highlight: '#ff6b81', shadow: '#b33939' },
+  { id: 'blue', primary: '#1e90ff', highlight: '#70a1ff', shadow: '#0984e3' },
+  { id: 'emerald', primary: '#2ed573', highlight: '#7bed9f', shadow: '#10ac84' },
+  { id: 'gold', primary: '#ffa502', highlight: '#ffeaa7', shadow: '#e67e22' },
+  { id: 'purple', primary: '#9b59b6', highlight: '#e056fd', shadow: '#6c5ce7' },
+  { id: 'pink', primary: '#ff78cb', highlight: '#ff9ff3', shadow: '#e84393' },
+  { id: 'cyan', primary: '#00d2d3', highlight: '#81ecec', shadow: '#01a3a4' },
+];
+
+const BALLOON_CHARS = ['A', 'B', 'C', '1', '2', '3', '⭐', '❤️', '🌟', 'D', 'E', '4', '5', '🎈', '🐣', '🌸'];
+
+// 3D Crispy Vector Balloon SVG
+function CrispyBalloonGraphic({ theme, char }) {
+  return (
+    <svg viewBox="0 0 100 140" className="crispy-3d-balloon-svg">
+      <defs>
+        <radialGradient id={`balloonBody_${theme.id}`} cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor={theme.highlight} />
+          <stop offset="45%" stopColor={theme.primary} />
+          <stop offset="90%" stopColor={theme.shadow} />
+          <stop offset="100%" stopColor="#1e272e" stopOpacity="0.4" />
+        </radialGradient>
+        <linearGradient id="glossArc" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.85" />
+          <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+
+      {/* String */}
+      <path
+        d="M 50 104 Q 46 114 54 122 T 48 136"
+        fill="none"
+        stroke="#dfe6e9"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+
+      {/* Balloon Knot */}
+      <polygon points="46,104 54,104 50,97" fill={theme.shadow} stroke={theme.primary} strokeWidth="1" />
+
+      {/* Plump 3D Balloon Oval */}
+      <ellipse cx="50" cy="52" rx="38" ry="46" fill={`url(#balloonBody_${theme.id})`} />
+
+      {/* Specular White Highlight Arc (Makes it look 3D Glossy) */}
+      <path
+        d="M 28 24 C 40 14 62 14 70 24 C 62 18 42 18 32 28 Z"
+        fill="url(#glossArc)"
+      />
+      <ellipse cx="32" cy="34" rx="4.5" ry="9" fill="#ffffff" opacity="0.65" transform="rotate(-25 32 34)" />
+
+      {/* Letter / Emoji Badge in center */}
+      <circle cx="50" cy="56" r="16" fill="rgba(255, 255, 255, 0.28)" />
+      <text
+        x="50"
+        y="63"
+        fill="#ffffff"
+        fontSize="19"
+        fontWeight="900"
+        textAnchor="middle"
+        filter="drop-shadow(0 2px 4px rgba(0,0,0,0.4))"
+        fontFamily="sans-serif"
+      >
+        {char}
+      </text>
+    </svg>
+  );
+}
 
 export default function BalloonsPopGame({ onNiaSpeak, onRewardStar }) {
   const [balloons, setBalloons] = useState([]);
   const [poppedCount, setPoppedCount] = useState(0);
 
   useEffect(() => {
-    const welcome = "Touchez les ballons pour les éclater ! Pop ! Pop !";
+    const welcome = "Touche les beaux ballons 3D pour faire POP ! Écoute leur lettre ou leur chiffre !";
     onNiaSpeak(welcome);
     doraVoice.speak(welcome);
     spawnBalloons();
 
-    // Spawning timer
     const interval = setInterval(() => {
       setBalloons((prev) => {
         if (prev.length < 8) {
-          const newBalloon = createBalloon();
-          return [...prev, newBalloon];
+          return [...prev, createBalloon()];
         }
         return prev;
       });
-    }, 1800);
+    }, 1600);
 
     return () => clearInterval(interval);
   }, []);
@@ -34,29 +98,28 @@ export default function BalloonsPopGame({ onNiaSpeak, onRewardStar }) {
   const createBalloon = () => {
     return {
       id: Math.random().toString(),
-      x: 10 + Math.random() * 75, // percent
+      x: 8 + Math.random() * 78,
       char: BALLOON_CHARS[Math.floor(Math.random() * BALLOON_CHARS.length)],
-      color: BALLOON_COLORS[Math.floor(Math.random() * BALLOON_COLORS.length)],
-      speed: 4 + Math.random() * 3, // seconds duration
+      theme: BALLOON_PALETTE[Math.floor(Math.random() * BALLOON_PALETTE.length)],
+      speed: 4 + Math.random() * 2.8,
     };
   };
 
   const spawnBalloons = () => {
-    const initial = [createBalloon(), createBalloon(), createBalloon(), createBalloon()];
-    setBalloons(initial);
+    setBalloons([createBalloon(), createBalloon(), createBalloon(), createBalloon(), createBalloon()]);
   };
 
-  const popBalloon = (b) => {
+  const popBalloon = (b, e) => {
     sounds.playPop();
     setBalloons((prev) => prev.filter((item) => item.id !== b.id));
     const nextCount = poppedCount + 1;
     setPoppedCount(nextCount);
 
     confetti({
-      colors: [b.color],
-      particleCount: 25,
-      spread: 50,
-      origin: { y: 0.6 }
+      colors: [b.theme.primary, b.theme.highlight, '#ffffff'],
+      particleCount: 30,
+      spread: 60,
+      origin: { y: 0.6 },
     });
 
     doraVoice.speak(b.char);
@@ -64,50 +127,61 @@ export default function BalloonsPopGame({ onNiaSpeak, onRewardStar }) {
     if (nextCount % 5 === 0) {
       sounds.playSuccess();
       if (onRewardStar) onRewardStar();
-      const praise = `Bravo ! Tu as éclaté ${nextCount} ballons ! C'est super rigolo !`;
+      const praise = `POP ! Super champion ! Tu as éclaté ${nextCount} ballons magiques !`;
       onNiaSpeak(praise);
       doraVoice.speak(praise);
     }
   };
 
   return (
-    <div className="center-activity-card">
-      <div className="activity-card-header" style={{ background: 'linear-gradient(135deg, #ff7675, #fab1a0)' }}>
+    <div className="center-activity-card crispy-game-card">
+      {/* Header */}
+      <div className="activity-card-header balloons-theme-header">
         <div className="header-info">
           <span className="card-badge-icon">🎈</span>
           <div>
-            <h2 className="card-main-title">Éclate les Ballons Magiques</h2>
-            <p className="card-subtitle">Touche les ballons qui s'envolent pour faire POP !</p>
+            <h2 className="card-main-title">Les Ballons Magiques 3D</h2>
+            <p className="card-subtitle">Ballons brillants qui s'envolent : touche-les vite pour faire POP !</p>
           </div>
         </div>
-        <div className="score-pill-header">
-          <Star size={20} fill="#ffd32a" color="#ffd32a" /> Éclatés : {poppedCount}
+
+        <div className="balloons-header-badges">
+          <div className="score-pill-header luxury-score-pill">
+            <Star size={20} fill="#ffd32a" color="#ffd32a" />
+            <span>Éclatés : <strong>{poppedCount}</strong></span>
+          </div>
         </div>
       </div>
 
-      {/* Balloons Sky Arena */}
-      <div className="balloons-sky-arena">
+      {/* Balloons Sky Arena with Sunny Meadow Backdrop */}
+      <div className="balloons-sky-arena crispy-sky-arena">
+        {/* Floating clouds in sky */}
+        <div className="sky-clouds-row">
+          <span className="cloud-item c1">☁️</span>
+          <span className="cloud-item c2">⛅</span>
+          <span className="cloud-item c3">☁️</span>
+          <span className="cloud-item c4">🌈</span>
+        </div>
+
+        {/* 3D Crispy Balloons */}
         {balloons.map((b) => (
           <button
             key={b.id}
-            onClick={() => popBalloon(b)}
-            className="floating-balloon-btn animate-float-up"
+            onClick={(e) => popBalloon(b, e)}
+            className="floating-crispy-balloon-btn animate-float-up"
             style={{
               left: `${b.x}%`,
-              backgroundColor: b.color,
               animationDuration: `${b.speed}s`,
             }}
+            title={`Éclater le ballon ${b.char} !`}
           >
-            <span className="balloon-char">{b.char}</span>
-            <div className="balloon-knot"></div>
-            <div className="balloon-string"></div>
+            <CrispyBalloonGraphic theme={b.theme} char={b.char} />
           </button>
         ))}
 
-        <div className="sky-clouds-row">
-          <span>☁️</span>
-          <span>☁️</span>
-          <span>☁️</span>
+        {/* Bottom grassy hills */}
+        <div className="sky-bottom-grass">
+          <span>🌱 🌼 🌻 🌾 🌼 🌱 🌻 🌾</span>
         </div>
       </div>
     </div>
