@@ -25,6 +25,10 @@ const SONG_PRESETS = [
     notes: [0, 0, 0, 1, 2, 1, 0, 2, 1, 1, 0],
   },
   {
+    title: 'Petite Étoile ⭐',
+    notes: [0, 0, 4, 4, 5, 5, 4, 3, 3, 2, 2, 1, 1, 0],
+  },
+  {
     title: 'Gamme Magique 🌈',
     notes: [0, 1, 2, 3, 4, 5, 6, 7],
   },
@@ -35,13 +39,17 @@ export default function MusicXylophoneGame({ onNiaSpeak }) {
   const [flyingNotes, setFlyingNotes] = useState([]);
   const [isPlayingSong, setIsPlayingSong] = useState(false);
 
+  // Guided step-by-step song learning state
+  const [guidedSong, setGuidedSong] = useState(SONG_PRESETS[0]);
+  const [guidedStep, setGuidedStep] = useState(0);
+  const [isGuidedMode, setIsGuidedMode] = useState(true);
+
   const playNote = (idx) => {
     const item = NOTES[idx];
     sounds.playMusicalNote(item.freq);
     setActiveNoteIdx(idx);
-    setTimeout(() => setActiveNoteIdx(null), 250);
+    setTimeout(() => setActiveNoteIdx(null), 260);
 
-    // Spawn floating musical particle
     const noteId = Date.now() + Math.random();
     setFlyingNotes((prev) => [...prev, { id: noteId, char: Math.random() > 0.5 ? '🎵' : '🎶', x: 10 + idx * 11 }]);
     setTimeout(() => {
@@ -54,18 +62,38 @@ export default function MusicXylophoneGame({ onNiaSpeak }) {
       spread: 50,
       origin: { y: 0.65 },
     });
+
+    // Advance guided song if the child tapped the glowing target key!
+    if (isGuidedMode && guidedSong && idx === guidedSong.notes[guidedStep]) {
+      const nextStep = guidedStep + 1;
+      if (nextStep >= guidedSong.notes.length) {
+        sounds.playSuccess();
+        confetti({ particleCount: 75, spread: 70 });
+        const win = `Bravo petit musicien ! Tu as joué toute la chanson ${guidedSong.title} !`;
+        if (onNiaSpeak) onNiaSpeak(win);
+        doraVoice.speak(win);
+        setGuidedStep(0);
+      } else {
+        setGuidedStep(nextStep);
+      }
+    }
   };
 
   const handlePlaySong = (song) => {
     if (isPlayingSong) return;
+    setGuidedSong(song);
+    setGuidedStep(0);
     setIsPlayingSong(true);
-    const msg = `Écoute la chanson : ${song.title} ! Regarde les lames de couleur s'allumer !`;
+    const msg = `Écoute et joue la chanson : ${song.title} !`;
     if (onNiaSpeak) onNiaSpeak(msg);
     doraVoice.speak(msg);
 
     song.notes.forEach((noteIdx, step) => {
       setTimeout(() => {
-        playNote(noteIdx);
+        const item = NOTES[noteIdx];
+        sounds.playMusicalNote(item.freq);
+        setActiveNoteIdx(noteIdx);
+        setTimeout(() => setActiveNoteIdx(null), 240);
         if (step === song.notes.length - 1) {
           setIsPlayingSong(false);
           confetti({ particleCount: 50, spread: 70 });
@@ -74,6 +102,8 @@ export default function MusicXylophoneGame({ onNiaSpeak }) {
     });
   };
 
+  const targetNoteIdx = isGuidedMode && guidedSong ? guidedSong.notes[guidedStep] : null;
+
   return (
     <div className="center-activity-card crispy-game-card">
       <div className="activity-card-header music-theme-header">
@@ -81,7 +111,7 @@ export default function MusicXylophoneGame({ onNiaSpeak }) {
           <span className="card-badge-icon">🎵</span>
           <div>
             <h2 className="card-main-title">Le Xylophone Magique Arc-en-Ciel</h2>
-            <p className="card-subtitle">Lames de métal 3D, vraies notes de musique et chansons enfantines !</p>
+            <p className="card-subtitle">Suis la lame lumineuse pour jouer une vraie chanson ou improvise !</p>
           </div>
         </div>
 
@@ -93,13 +123,47 @@ export default function MusicXylophoneGame({ onNiaSpeak }) {
               onClick={() => handlePlaySong(song)}
               disabled={isPlayingSong}
               className="xylo-song-btn luxury-song-btn animate-pop"
-              title={`Écouter ${song.title}`}
+              style={{
+                border: guidedSong?.title === song.title ? '2.5px solid #ffd32a' : undefined,
+              }}
+              title={`Écouter et apprendre ${song.title}`}
             >
               <Play size={14} fill="#ffffff" />
               <span>{song.title}</span>
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Guided Mode Banner */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', padding: '10px 16px', background: '#f8f9fa', borderBottom: '2px solid #e9ecef' }}>
+        <div style={{ fontWeight: 800, color: '#2d3436', fontSize: '0.9rem' }}>
+          {isGuidedMode && targetNoteIdx !== null ? (
+            <span>
+              🎼 Partition <strong>{guidedSong.title}</strong> ({guidedStep + 1}/{guidedSong.notes.length}) — Touche la lame <strong>{NOTES[targetNoteIdx].name}</strong> 👇 !
+            </span>
+          ) : (
+            <span>🎹 Mode Improvisation Libre</span>
+          )}
+        </div>
+        <button
+          onClick={() => {
+            sounds.playPop();
+            setIsGuidedMode((g) => !g);
+          }}
+          style={{
+            background: isGuidedMode ? '#6c5ce7' : '#00b894',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '999px',
+            padding: '6px 14px',
+            fontWeight: 800,
+            fontSize: '0.8rem',
+            cursor: 'pointer',
+          }}
+        >
+          {isGuidedMode ? '✨ Mode Guidé Actif' : '👆 Activer Guide Lumineux'}
+        </button>
       </div>
 
       <div className="xylophone-arena crispy-xylo-arena">
@@ -123,30 +187,48 @@ export default function MusicXylophoneGame({ onNiaSpeak }) {
 
           {/* 8 Rainbow Xylophone Keys */}
           <div className="xylophone-keys-container">
-            {NOTES.map((item, idx) => (
-              <button
-                key={idx}
-                onClick={() => playNote(idx)}
-                className={`xylo-bar-btn bar-3d ${activeNoteIdx === idx ? 'is-struck' : ''}`}
-                style={{
-                  background: `linear-gradient(180deg, ${item.topColor} 0%, ${item.color} 50%, #2f3542 100%)`,
-                  height: `${240 - idx * 11}px`,
-                  boxShadow: activeNoteIdx === idx ? `0 0 25px ${item.topColor}, 0 4px 10px rgba(0,0,0,0.4)` : '0 10px 18px rgba(0,0,0,0.3)',
-                }}
-                title={`Note ${item.name}`}
-              >
-                <div className="xylo-screw top-screw"></div>
-                <div className="xylo-bar-highlight"></div>
-                <span className="xylo-note-label">{item.note}</span>
-                <span className="xylo-pitch-sub">{idx + 1}</span>
-                <div className="xylo-screw bottom-screw"></div>
-              </button>
-            ))}
+            {NOTES.map((item, idx) => {
+              const isTarget = targetNoteIdx === idx && !isPlayingSong;
+              return (
+                <button
+                  key={idx}
+                  onClick={() => playNote(idx)}
+                  className={`xylo-bar-btn bar-3d ${activeNoteIdx === idx ? 'is-struck' : ''}`}
+                  style={{
+                    background: `linear-gradient(180deg, ${item.topColor} 0%, ${item.color} 50%, #2f3542 100%)`,
+                    height: `${240 - idx * 11}px`,
+                    outline: isTarget ? '4px solid #ffffff' : 'none',
+                    boxShadow:
+                      activeNoteIdx === idx
+                        ? `0 0 28px ${item.topColor}, 0 4px 10px rgba(0,0,0,0.4)`
+                        : isTarget
+                        ? `0 0 24px #ffffff, 0 0 16px ${item.topColor}`
+                        : '0 10px 18px rgba(0,0,0,0.3)',
+                    position: 'relative',
+                  }}
+                  title={`Note ${item.name}`}
+                >
+                  {isTarget && (
+                    <span
+                      className="animate-bounce-soft"
+                      style={{ position: 'absolute', top: '-28px', fontSize: '1.35rem', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }}
+                    >
+                      👇
+                    </span>
+                  )}
+                  <div className="xylo-screw top-screw"></div>
+                  <div className="xylo-bar-highlight"></div>
+                  <span className="xylo-note-label">{item.note}</span>
+                  <span className="xylo-pitch-sub">{idx + 1}</span>
+                  <div className="xylo-screw bottom-screw"></div>
+                </button>
+              );
+            })}
           </div>
         </div>
 
         <p className="xylo-tip-banner">
-          ✨ Touche les lames avec ton doigt pour inventer une jolie mélodie !
+          ✨ Touche la lame indiquée par le doigt 👇 pour jouer la mélodie pas à pas !
         </p>
       </div>
     </div>
