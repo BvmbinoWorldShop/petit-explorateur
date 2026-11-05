@@ -1,0 +1,20 @@
+{
+  "name": "Le Monde Magique de Tyanna",
+  "short_name": "Tyanna 🌟",
+  "description": "Académie ludique d'éveil bilingue & jeux 2D/3D pour tout-petits",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#fffdf8",
+  "theme_color": "#ffd32a",
+  "categories": ["education", "games", "kids"],
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

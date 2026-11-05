@@ -4504,6 +4504,48 @@ body {
   }
 }
 
+/* =========================================================================
+   TYANNA 2D/3D KITCHEN ANIMATIONS & RESPONSIVE POLISH
+   ========================================================================= */
+.is-walking-trot .tyanna-kitchen-svg {
+  animation: tyannaWalkingTrot 0.32s infinite alternate ease-in-out;
+  transform-origin: bottom center;
+}
+
+@keyframes tyannaWalkingTrot {
+  0% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(0) rotate(2deg);
+  }
+}
+
+.is-walking-trot .tyanna-legs {
+  animation: tyannaLegsWalk 0.32s infinite alternate ease-in-out;
+  transform-origin: 80px 165px;
+}
+
+@keyframes tyannaLegsWalk {
+  0% {
+    transform: skewX(-4deg);
+  }
+  100% {
+    transform: skewX(4deg);
+  }
+}
+
+@media (max-width: 640px) {
+  .kitchen-room-arena {
+    min-height: 350px !important;
+    height: 380px !important;
+  }
+}
+
+
 
 
 

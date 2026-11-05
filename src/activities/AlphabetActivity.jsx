@@ -1,90 +1,114 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { doraVoice } from '../utils/speech';
 import { sounds } from '../utils/audio';
 import confetti from 'canvas-confetti';
-import { Sparkles, RotateCcw, Volume2, Award, BookOpen, Target, Puzzle } from 'lucide-react';
+import { Sparkles, RotateCcw, Volume2, Award, BookOpen, Target, Puzzle, PenTool, Check } from 'lucide-react';
 
-const ALPHABET = [
-  { char: 'A', lower: 'a', sound: 'Aaa', wordFr: 'Avion', wordEn: 'Airplane', emoji: '✈️', color: '#FF7675' },
-  { char: 'B', lower: 'b', sound: 'Buh', wordFr: 'Ballon', wordEn: 'Ball', emoji: '⚽', color: '#0984E3' },
-  { char: 'C', lower: 'c', sound: 'Kuh', wordFr: 'Chat', wordEn: 'Cat', emoji: '🐱', color: '#F39C12' },
-  { char: 'D', lower: 'd', sound: 'Duh', wordFr: 'Dauphin', wordEn: 'Dolphin', emoji: '🐬', color: '#00B894' },
-  { char: 'E', lower: 'e', sound: 'Euh', wordFr: 'Éléphant', wordEn: 'Elephant', emoji: '🐘', color: '#6C5CE7' },
-  { char: 'F', lower: 'f', sound: 'Fff', wordFr: 'Fleur', wordEn: 'Flower', emoji: '🌸', color: '#FD79A8' },
-  { char: 'G', lower: 'g', sound: 'Guh', wordFr: 'Girafe', wordEn: 'Giraffe', emoji: '🦒', color: '#E17055' },
-  { char: 'H', lower: 'h', sound: 'Hhh', wordFr: 'Hibou', wordEn: 'Owl', emoji: '🦉', color: '#00CEC9' },
-  { char: 'I', lower: 'i', sound: 'Iii', wordFr: 'Île', wordEn: 'Island', emoji: '🏝️', color: '#10AC84' },
-  { char: 'J', lower: 'j', sound: 'Jjj', wordFr: 'Jus', wordEn: 'Juice', emoji: '🧃', color: '#FF6B6B' },
-  { char: 'K', lower: 'k', sound: 'Kkk', wordFr: 'Koala', wordEn: 'Koala', emoji: '🐨', color: '#636E72' },
-  { char: 'L', lower: 'l', sound: 'Lll', wordFr: 'Lion', wordEn: 'Lion', emoji: '🦁', color: '#E67E22' },
-  { char: 'M', lower: 'm', sound: 'Mmm', wordFr: 'Maison', wordEn: 'House', emoji: '🏠', color: '#0984E3' },
-  { char: 'N', lower: 'n', sound: 'Nnn', wordFr: 'Nuage', wordEn: 'Cloud', emoji: '☁️', color: '#54A0FF' },
-  { char: 'O', lower: 'o', sound: 'Ooo', wordFr: 'Ours', wordEn: 'Bear', emoji: '🐻', color: '#B5651D' },
-  { char: 'P', lower: 'p', sound: 'Puh', wordFr: 'Pomme', wordEn: 'Apple', emoji: '🍎', color: '#D63031' },
-  { char: 'Q', lower: 'q', sound: 'Kuu', wordFr: 'Quatre', wordEn: 'Four', emoji: '4️⃣', color: '#00B894' },
-  { char: 'R', lower: 'r', sound: 'Rrr', wordFr: 'Robot', wordEn: 'Robot', emoji: '🤖', color: '#6C5CE7' },
-  { char: 'S', lower: 's', sound: 'Sss', wordFr: 'Soleil', wordEn: 'Sun', emoji: '☀️', color: '#F39C12' },
-  { char: 'T', lower: 't', sound: 'Tuh', wordFr: 'Train', wordEn: 'Train', emoji: '🚂', color: '#E74C3C' },
-  { char: 'U', lower: 'u', sound: 'Uuu', wordFr: 'Unicorne', wordEn: 'Unicorn', emoji: '🦄', color: '#E84393' },
-  { char: 'V', lower: 'v', sound: 'Vvv', wordFr: 'Voiture', wordEn: 'Car', emoji: '🚗', color: '#00CEC9' },
-  { char: 'W', lower: 'w', sound: 'Www', wordFr: 'Wagon', wordEn: 'Wagon', emoji: '🚃', color: '#FD9644' },
-  { char: 'X', lower: 'x', sound: 'Kss', wordFr: 'Xylophone', wordEn: 'Xylophone', emoji: '🎵', color: '#45AAF2' },
-  { char: 'Y', lower: 'y', sound: 'Yyy', wordFr: 'Yaourt', wordEn: 'Yogurt', emoji: '🥣', color: '#F1C40F' },
-  { char: 'Z', lower: 'z', sound: 'Zzz', wordFr: 'Zèbre', wordEn: 'Zebra', emoji: '🦓', color: '#2D3436' },
+// =========================================================================
+// COMPLETE A TO Z ALPHABET DATASET (26 LETTERS WITH PHONICS, WORDS & TRACING)
+// =========================================================================
+export const ALPHABET_A_TO_Z = [
+  { char: 'A', lower: 'a', sound: 'Aaa', wordFr: 'Avion', wordFr2: 'Abeille', wordEn: 'Airplane', emoji: '✈️', emoji2: '🐝', color: '#FF7675', rhyme: 'A comme l\'avion qui vole tout là-haut !' },
+  { char: 'B', lower: 'b', sound: 'Buh', wordFr: 'Ballon', wordFr2: 'Bateau', wordEn: 'Ball', emoji: '⚽', emoji2: '⛵', color: '#0984E3', rhyme: 'B comme le ballon qui rebondit !' },
+  { char: 'C', lower: 'c', sound: 'Kuh', wordFr: 'Chat', wordFr2: 'Carotte', wordEn: 'Cat', emoji: '🐱', emoji2: '🥕', color: '#F39C12', rhyme: 'C comme le chat qui fait miaou !' },
+  { char: 'D', lower: 'd', sound: 'Duh', wordFr: 'Dauphin', wordFr2: 'Dinosaure', wordEn: 'Dolphin', emoji: '🐬', emoji2: '🦖', color: '#00B894', rhyme: 'D comme le dauphin qui saute dans l\'eau !' },
+  { char: 'E', lower: 'e', sound: 'Euh', wordFr: 'Éléphant', wordFr2: 'Étoile', wordEn: 'Elephant', emoji: '🐘', emoji2: '⭐', color: '#6C5CE7', rhyme: 'E comme le grand éléphant rigolo !' },
+  { char: 'F', lower: 'f', sound: 'Fff', wordFr: 'Fleur', wordFr2: 'Fraise', wordEn: 'Flower', emoji: '🌸', emoji2: '🍓', color: '#FD79A8', rhyme: 'F comme la jolie fleur du jardin !' },
+  { char: 'G', lower: 'g', sound: 'Guh', wordFr: 'Girafe', wordFr2: 'Gâteau', wordEn: 'Giraffe', emoji: '🦒', emoji2: '🎂', color: '#E17055', rhyme: 'G comme la girafe au très long cou !' },
+  { char: 'H', lower: 'h', sound: 'Hhh', wordFr: 'Hibou', wordFr2: 'Hélicoptère', wordEn: 'Owl', emoji: '🦉', emoji2: '🚁', color: '#00CEC9', rhyme: 'H comme le hibou qui veille la nuit !' },
+  { char: 'I', lower: 'i', sound: 'Iii', wordFr: 'Île', wordFr2: 'Iguane', wordEn: 'Island', emoji: '🏝️', emoji2: '🦎', color: '#10AC84', rhyme: 'I comme l\'île au trésor ensoleillée !' },
+  { char: 'J', lower: 'j', sound: 'Jjj', wordFr: 'Jus', wordFr2: 'Jouet', wordEn: 'Juice', emoji: '🧃', emoji2: '🧸', color: '#FF6B6B', rhyme: 'J comme le bon jus de fruits frais !' },
+  { char: 'K', lower: 'k', sound: 'Kkk', wordFr: 'Koala', wordFr2: 'Kangourou', wordEn: 'Koala', emoji: '🐨', emoji2: '🦘', color: '#636E72', rhyme: 'K comme le koala tout doux dans son arbre !' },
+  { char: 'L', lower: 'l', sound: 'Lll', wordFr: 'Lion', wordFr2: 'Lune', wordEn: 'Lion', emoji: '🦁', emoji2: '🌙', color: '#E67E22', rhyme: 'L comme le roi lion dans la savane !' },
+  { char: 'M', lower: 'm', sound: 'Mmm', wordFr: 'Maison', wordFr2: 'Maman', wordEn: 'House', emoji: '🏠', emoji2: '❤️', color: '#0984E3', rhyme: 'M comme la maison de toute la famille !' },
+  { char: 'N', lower: 'n', sound: 'Nnn', wordFr: 'Nuage', wordFr2: 'Nid', wordEn: 'Cloud', emoji: '☁️', emoji2: '🪺', color: '#54A0FF', rhyme: 'N comme le doux nuage blanc dans le ciel !' },
+  { char: 'O', lower: 'o', sound: 'Ooo', wordFr: 'Ours', wordFr2: 'Oiseau', wordEn: 'Bear', emoji: '🐻', emoji2: '🐦', color: '#B5651D', rhyme: 'O comme le gros ours gourmand de miel !' },
+  { char: 'P', lower: 'p', sound: 'Puh', wordFr: 'Pomme', wordFr2: 'Panda', wordEn: 'Apple', emoji: '🍎', emoji2: '🐼', color: '#D63031', rhyme: 'P comme la belle pomme rouge croquante !' },
+  { char: 'Q', lower: 'q', sound: 'Kuu', wordFr: 'Quatre', wordFr2: 'Quiche', wordEn: 'Four', emoji: '4️⃣', emoji2: '🥧', color: '#00B894', rhyme: 'Q comme le chiffre quatre magique !' },
+  { char: 'R', lower: 'r', sound: 'Rrr', wordFr: 'Robot', wordFr2: 'Renard', wordEn: 'Robot', emoji: '🤖', emoji2: '🦊', color: '#6C5CE7', rhyme: 'R comme le robot qui s\'allume et danse !' },
+  { char: 'S', lower: 's', sound: 'Sss', wordFr: 'Soleil', wordFr2: 'Singe', wordEn: 'Sun', emoji: '☀️', emoji2: '🐵', color: '#F39C12', rhyme: 'S comme le soleil qui réchauffe le cœur !' },
+  { char: 'T', lower: 't', sound: 'Tuh', wordFr: 'Train', wordFr2: 'Tortue', wordEn: 'Train', emoji: '🚂', emoji2: '🐢', color: '#E74C3C', rhyme: 'T comme le train qui fait tchou-tchou !' },
+  { char: 'U', lower: 'u', sound: 'Uuu', wordFr: 'Unicorne', wordFr2: 'Usine', wordEn: 'Unicorn', emoji: '🦄', emoji2: '🏭', color: '#E84393', rhyme: 'U comme la licorne féerique et magique !' },
+  { char: 'V', lower: 'v', sound: 'Vvv', wordFr: 'Voiture', wordFr2: 'Vache', wordEn: 'Car', emoji: '🚗', emoji2: '🐮', color: '#00CEC9', rhyme: 'V comme la jolie voiture qui fait vroum !' },
+  { char: 'W', lower: 'w', sound: 'Www', wordFr: 'Wagon', wordFr2: 'Water-polo', wordEn: 'Wagon', emoji: '🚃', emoji2: '🤽', color: '#FD9644', rhyme: 'W comme le wagon attaché au train !' },
+  { char: 'X', lower: 'x', sound: 'Kss', wordFr: 'Xylophone', wordFr2: 'Xérus', wordEn: 'Xylophone', emoji: '🎵', emoji2: '🐿️', color: '#45AAF2', rhyme: 'X comme le xylophone aux lames multicolores !' },
+  { char: 'Y', lower: 'y', sound: 'Yyy', wordFr: 'Yaourt', wordFr2: 'Yoyo', wordEn: 'Yogurt', emoji: '🥣', emoji2: '🪀', color: '#F1C40F', rhyme: 'Y comme le yaourt doux et crémeux !' },
+  { char: 'Z', lower: 'z', sound: 'Zzz', wordFr: 'Zèbre', wordFr2: 'Zoo', wordEn: 'Zebra', emoji: '🦓', emoji2: '🦒', color: '#2D3436', rhyme: 'Z comme le zèbre et ses rayures magiques !' },
 ];
 
-const WORD_PUZZLES = [
-  { word: 'CHAT', emoji: '🐱', hintFr: 'Le petit félin qui fait Miaou', en: 'Cat' },
-  { word: 'LION', emoji: '🦁', hintFr: 'Le roi des animaux qui fait Roaaar', en: 'Lion' },
-  { word: 'MAMAN', emoji: '❤️', hintFr: 'Un mot plein d\'amour', en: 'Mommy' },
-  { word: 'POMME', emoji: '🍎', hintFr: 'Un bon fruit rouge croquant', en: 'Apple' },
-  { word: 'TRAIN', emoji: '🚂', hintFr: 'Tchou-tchou sur les rails', en: 'Train' },
-  { word: 'ROBOT', emoji: '🤖', hintFr: 'Un ami mécanique rigolo', en: 'Robot' },
+const WORDS_TO_SPELL = [
+  { word: 'AVION', emoji: '✈️', fr: 'Avion', en: 'Airplane' },
+  { word: 'CHAT', emoji: '🐱', fr: 'Chat', en: 'Cat' },
+  { word: 'LION', emoji: '🦁', fr: 'Lion', en: 'Lion' },
+  { word: 'POMME', emoji: '🍎', fr: 'Pomme', en: 'Apple' },
+  { word: 'TRAIN', emoji: '🚂', fr: 'Train', en: 'Train' },
+  { word: 'ROBOT', emoji: '🤖', fr: 'Robot', en: 'Robot' },
+  { word: 'SOLEIL', emoji: '☀️', fr: 'Soleil', en: 'Sun' },
+  { word: 'MAMAN', emoji: '❤️', fr: 'Maman', en: 'Mommy' },
 ];
 
 export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
-  const [mode, setMode] = useState('explore'); // 'explore', 'quiz', 'word'
-  const [selectedLetter, setSelectedLetter] = useState(ALPHABET[0]);
-  const [findMission, setFindMission] = useState(null);
+  const [mode, setMode] = useState('explore'); // 'explore', 'tracing', 'quiz', 'word'
+  const [selectedLetter, setSelectedLetter] = useState(ALPHABET_A_TO_Z[0]);
+
+  // Tracing State
+  const [tracedPoints, setTracedPoints] = useState([]);
+  const canvasRef = useRef(null);
+
+  // Quiz State
+  const [quizRound, setQuizRound] = useState(0);
+  const [quizTarget, setQuizTarget] = useState(ALPHABET_A_TO_Z[0]);
   const [quizChoices, setQuizChoices] = useState([]);
 
-  // Word puzzle state
+  // Word Spelling State
   const [wordIdx, setWordIdx] = useState(0);
-  const [filledCount, setFilledCount] = useState(0);
-  const [scrambledPool, setScrambledPool] = useState([]);
+  const [spelledLetters, setSpelledLetters] = useState([]);
+  const [availableScramble, setAvailableScramble] = useState([]);
 
   useEffect(() => {
     if (mode === 'explore') {
-      const msg = "Découvre l'alphabet de A à Z avec moi ! Touche une lettre pour entendre son bruit et son mot magique !";
+      const msg = `L'Alphabet magique de A à Z ! Touche n'importe quelle lettre pour entendre son bruit, ses mots et sa chanson !`;
+      onNiaSpeak(msg);
+      doraVoice.speak(msg);
+    } else if (mode === 'tracing') {
+      const msg = `Atelier de dessin magique ! Trace la lettre ${selectedLetter.char} avec ton doigt !`;
       onNiaSpeak(msg);
       doraVoice.speak(msg);
     } else if (mode === 'quiz') {
       startQuizRound();
     } else if (mode === 'word') {
-      initWordPuzzle(wordIdx);
+      initWordSpelling(wordIdx);
     }
   }, [mode, wordIdx]);
 
+  // Quiz Round Setup
   const startQuizRound = () => {
-    const target = ALPHABET[Math.floor(Math.random() * ALPHABET.length)];
-    const distractors = ALPHABET.filter((l) => l.char !== target.char)
+    const target = ALPHABET_A_TO_Z[Math.floor(Math.random() * ALPHABET_A_TO_Z.length)];
+    const others = ALPHABET_A_TO_Z.filter((l) => l.char !== target.char)
       .sort(() => Math.random() - 0.5)
       .slice(0, 3);
-    const options = [target, ...distractors].sort(() => Math.random() - 0.5);
-    setFindMission(target);
-    setQuizChoices(options);
+    const choices = [target, ...others].sort(() => Math.random() - 0.5);
 
-    const msg = `Où se cache la lettre ${target.char} comme ${target.wordFr} ? Touche la bonne carte !`;
+    setQuizTarget(target);
+    setQuizChoices(choices);
+
+    const msg = `Où se cache la lettre ${target.char} comme ${target.wordFr} ${target.emoji} ? Touche la bonne carte !`;
     onNiaSpeak(msg);
-    doraVoice.speakBilingual(msg, `Where is the letter ${target.char} for ${target.wordEn}?`);
+    doraVoice.speakBilingual(msg, `Where is letter ${target.char} for ${target.wordEn}?`);
   };
 
-  const initWordPuzzle = (idx) => {
-    const current = WORD_PUZZLES[idx % WORD_PUZZLES.length];
-    setFilledCount(0);
-    const letters = current.word.split('').map((ch, i) => ({ id: `${ch}-${i}`, char: ch, used: false }));
-    setScrambledPool([...letters].sort(() => Math.random() - 0.5));
-    const msg = `Épelons le mot ${current.word} ! (${current.hintFr}) ! Touche la lettre ${current.word[0]} !`;
+  // Word Spelling Setup
+  const initWordSpelling = (idx) => {
+    const currentWordObj = WORDS_TO_SPELL[idx % WORDS_TO_SPELL.length];
+    setSpelledLetters([]);
+    const letters = currentWordObj.word.split('').map((char, i) => ({
+      id: `${char}-${i}`,
+      char,
+      used: false,
+    }));
+    setAvailableScramble(letters.sort(() => Math.random() - 0.5));
+
+    const msg = `Épelons ensemble le mot ${currentWordObj.fr} ${currentWordObj.emoji} ! Trouve la première lettre : ${currentWordObj.word[0]} !`;
     onNiaSpeak(msg);
     doraVoice.speak(msg);
   };
@@ -92,60 +116,89 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
   const handleLetterClick = (item) => {
     setSelectedLetter(item);
     sounds.playPop();
-    const phrase = `Lettre ${item.char} ! Elle fait le son "${item.sound}" comme ${item.wordFr} !`;
+    const phrase = `Lettre ${item.char} ! Son : « ${item.sound} ». Comme ${item.wordFr} ${item.emoji} et ${item.wordFr2} ${item.emoji2} ! ${item.rhyme}`;
     onNiaSpeak(phrase);
-    doraVoice.speakBilingual(phrase, `${item.char} for ${item.wordEn}!`);
+    doraVoice.speakBilingual(
+      `Lettre ${item.char} ! ${item.wordFr} !`,
+      `Letter ${item.char}! ${item.wordEn}!`
+    );
   };
 
-  const handleQuizChoice = (item) => {
-    if (!findMission) return;
-    if (item.char === findMission.char) {
+  const handleQuizChoice = (chosen) => {
+    if (chosen.char === quizTarget.char) {
       sounds.playSuccess();
-      confetti({ particleCount: 55, spread: 65, origin: { y: 0.6 } });
+      confetti({ particleCount: 65, spread: 65, origin: { y: 0.6 } });
       if (onRewardStar) onRewardStar();
-      const praise = `Youpi ! Bravo mon ami ! C'est bien la lettre ${item.char} comme ${item.wordFr} !`;
-      onNiaSpeak(praise);
-      doraVoice.speakBilingual(praise, `Great job! ${item.char} for ${item.wordEn}!`);
-      setTimeout(startQuizRound, 2400);
+      const win = `Youpi ! C'est la lettre ${chosen.char} comme ${chosen.wordFr} ! Tu es formidable !`;
+      onNiaSpeak(win);
+      doraVoice.speakBilingual(win, `Great job! ${chosen.char} for ${chosen.wordEn}!`);
+      setTimeout(startQuizRound, 2200);
     } else {
       sounds.playBloop();
-      const hint = `Ça c'est ${item.char} comme ${item.wordFr}. Cherchons la lettre ${findMission.char} comme ${findMission.wordFr} !`;
+      const hint = `Ça c'est la lettre ${chosen.char} comme ${chosen.wordFr}. Cherchons la lettre ${quizTarget.char} comme ${quizTarget.wordFr} !`;
       onNiaSpeak(hint);
       doraVoice.speak(hint);
     }
   };
 
-  const handleTapScrambledLetter = (poolItem) => {
+  const handleTapWordLetter = (poolItem) => {
     if (poolItem.used) return;
-    const currentPuzzle = WORD_PUZZLES[wordIdx % WORD_PUZZLES.length];
-    const expectedChar = currentPuzzle.word[filledCount];
+    const currentWordObj = WORDS_TO_SPELL[wordIdx % WORDS_TO_SPELL.length];
+    const expectedChar = currentWordObj.word[spelledLetters.length];
 
     if (poolItem.char === expectedChar) {
       sounds.playPop();
-      const nextFilled = filledCount + 1;
-      setFilledCount(nextFilled);
-      setScrambledPool((prev) =>
-        prev.map((p) => (p.id === poolItem.id ? { ...p, used: true } : p))
+      const nextSpelled = [...spelledLetters, poolItem.char];
+      setSpelledLetters(nextSpelled);
+      setAvailableScramble((prev) =>
+        prev.map((item) => (item.id === poolItem.id ? { ...item, used: true } : item))
       );
 
-      if (nextFilled === currentPuzzle.word.length) {
+      if (nextSpelled.length === currentWordObj.word.length) {
         sounds.playSuccess();
-        confetti({ particleCount: 70, spread: 70 });
+        confetti({ particleCount: 75, spread: 70 });
         if (onRewardStar) onRewardStar();
-        const win = `Bravo ! Tu as écrit le mot ${currentPuzzle.word} ! Super champion !`;
+        const win = `Bravo champion ! Tu as épelé le mot ${currentWordObj.word} !`;
         onNiaSpeak(win);
-        doraVoice.speakBilingual(win, `Awesome! You spelled ${currentPuzzle.en}!`);
-        setTimeout(() => setWordIdx((i) => i + 1), 2600);
+        doraVoice.speakBilingual(win, `Awesome! You spelled ${currentWordObj.en}!`);
+        setTimeout(() => setWordIdx((i) => i + 1), 2400);
       } else {
-        const nextChar = currentPuzzle.word[nextFilled];
-        doraVoice.speak(`${poolItem.char} ! Maintenant trouve la lettre ${nextChar} !`);
+        const nextChar = currentWordObj.word[nextSpelled.length];
+        doraVoice.speak(`${poolItem.char} ! Maintenant cherche la lettre ${nextChar} !`);
       }
     } else {
       sounds.playBloop();
-      const msg = `Cherche d'abord la lettre ${expectedChar} pour écrire ${currentPuzzle.word} !`;
-      onNiaSpeak(msg);
-      doraVoice.speak(msg);
+      doraVoice.speak(`Cherche la lettre ${expectedChar} pour continuer le mot !`);
     }
+  };
+
+  // Tracing drawing handlers
+  const handleTouchDraw = (e) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+
+    setTracedPoints((prev) => [...prev, { x, y }]);
+    sounds.playPop();
+  };
+
+  const clearTracing = () => {
+    sounds.playPop();
+    setTracedPoints([]);
+    doraVoice.speak(`Feuille magique effacée ! Trace à nouveau la lettre ${selectedLetter.char} !`);
+  };
+
+  const completeTracing = () => {
+    sounds.playSuccess();
+    confetti({ particleCount: 50, spread: 60 });
+    if (onRewardStar) onRewardStar();
+    const praise = `Wouah ! Tu as magnifiquement tracé la lettre ${selectedLetter.char} ! Bravo petit artiste !`;
+    onNiaSpeak(praise);
+    doraVoice.speak(praise);
   };
 
   return (
@@ -154,8 +207,8 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
         <div className="header-info">
           <span className="card-badge-icon">🔤</span>
           <div>
-            <h2 className="card-main-title">L'Alphabet Magique de A à Z</h2>
-            <p className="card-subtitle">Apprends les lettres, leurs sons et les mots avec Tyanna !</p>
+            <h2 className="card-main-title">L'Académie des 26 Lettres A à Z</h2>
+            <p className="card-subtitle">Abécédaire 3D, sons phoniques, traçage du doigt et mots magiques avec Tyanna !</p>
           </div>
         </div>
       </div>
@@ -166,50 +219,89 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
           onClick={() => { sounds.playPop(); setMode('explore'); }}
           className={`num-mode-tab-btn ${mode === 'explore' ? 'active' : ''}`}
         >
-          <BookOpen size={18} /> Découvrir A-Z
+          <BookOpen size={18} /> Abécédaire A-Z (26)
+        </button>
+        <button
+          onClick={() => { sounds.playPop(); setMode('tracing'); }}
+          className={`num-mode-tab-btn ${mode === 'tracing' ? 'active' : ''}`}
+        >
+          <PenTool size={18} /> Traçage au Doigt ✍️
         </button>
         <button
           onClick={() => { sounds.playPop(); setMode('quiz'); }}
           className={`num-mode-tab-btn ${mode === 'quiz' ? 'active' : ''}`}
         >
-          <Target size={18} /> Défi 4 Cartes
+          <Target size={18} /> Défi 4 Cartes 🎯
         </button>
         <button
           onClick={() => { sounds.playPop(); setMode('word'); }}
           className={`num-mode-tab-btn ${mode === 'word' ? 'active' : ''}`}
         >
-          <Puzzle size={18} /> Mot Magique
+          <Puzzle size={18} /> Fabrique à Mots 🧩
         </button>
       </div>
 
-      {/* ================= MODE 1: EXPLORE A-Z ================= */}
+      {/* =========================================================================
+          MODE 1: EXPLORE FULL A-Z WITH SOUNDS, WORDS & 3D JUMBO CARD
+         ========================================================================= */}
       {mode === 'explore' && (
-        <>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          {/* Spotlight Card */}
           <div className="letter-jumbo-spotlight" style={{ borderColor: selectedLetter.color }}>
             <div className="jumbo-char" style={{ color: selectedLetter.color }}>
-              {selectedLetter.char}<span style={{ fontSize: '0.62em', opacity: 0.85, marginLeft: '4px' }}>{selectedLetter.lower}</span>
+              {selectedLetter.char}
+              <span style={{ fontSize: '0.62em', opacity: 0.85, marginLeft: '6px' }}>{selectedLetter.lower}</span>
             </div>
-            <div className="jumbo-details">
-              <span
-                className="jumbo-emoji animate-bounce-soft"
-                onClick={() => handleLetterClick(selectedLetter)}
-                style={{ cursor: 'pointer' }}
-              >
-                {selectedLetter.emoji}
-              </span>
-              <h3 className="jumbo-word-fr">{selectedLetter.wordFr}</h3>
-              <p className="jumbo-word-en">Son : « {selectedLetter.sound} » • ({selectedLetter.wordEn})</p>
-              <button
-                onClick={() => handleLetterClick(selectedLetter)}
-                className="listen-again-btn"
-              >
-                <Volume2 size={20} /> Écouter Tyanna
-              </button>
+
+            <div className="jumbo-details" style={{ flex: 1 }}>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <span
+                  className="jumbo-emoji animate-bounce-soft"
+                  onClick={() => handleLetterClick(selectedLetter)}
+                  style={{ cursor: 'pointer', fontSize: '3.6rem' }}
+                >
+                  {selectedLetter.emoji}
+                </span>
+                <span
+                  className="jumbo-emoji animate-bounce-soft"
+                  onClick={() => handleLetterClick(selectedLetter)}
+                  style={{ cursor: 'pointer', fontSize: '3.6rem' }}
+                >
+                  {selectedLetter.emoji2}
+                </span>
+              </div>
+
+              <h3 className="jumbo-word-fr" style={{ margin: '4px 0' }}>
+                {selectedLetter.char} comme {selectedLetter.wordFr} & {selectedLetter.wordFr2}
+              </h3>
+              <p className="jumbo-word-en" style={{ margin: '0 0 6px 0' }}>
+                Son magique : « {selectedLetter.sound} » • Anglais : ({selectedLetter.wordEn})
+              </p>
+              <p style={{ margin: '0 0 10px 0', fontSize: '0.88rem', color: '#636e72', fontWeight: 700 }}>
+                💡 <em>{selectedLetter.rhyme}</em>
+              </p>
+
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <button onClick={() => handleLetterClick(selectedLetter)} className="listen-again-btn">
+                  <Volume2 size={20} /> Écouter Tyanna parler !
+                </button>
+                <button
+                  onClick={() => {
+                    sounds.playPop();
+                    setMode('tracing');
+                  }}
+                  className="listen-again-btn"
+                  style={{ background: 'linear-gradient(135deg, #10ac84, #00cec9)', color: '#fff', border: 'none' }}
+                >
+                  <PenTool size={18} /> Tracer la lettre {selectedLetter.char} !
+                </button>
+              </div>
             </div>
           </div>
 
+          {/* Full Grid of All 26 Letters */}
           <div className="alphabet-grid-container">
-            {ALPHABET.map((item) => {
+            {ALPHABET_A_TO_Z.map((item) => {
               const isSelected = selectedLetter.char === item.char;
               return (
                 <button
@@ -217,6 +309,7 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
                   onClick={() => handleLetterClick(item)}
                   className={`letter-tile-btn ${isSelected ? 'selected' : ''}`}
                   style={{ backgroundColor: item.color }}
+                  title={`Lettre ${item.char} comme ${item.wordFr}`}
                 >
                   <span className="tile-char">{item.char}{item.lower}</span>
                   <span className="tile-emoji">{item.emoji}</span>
@@ -224,23 +317,156 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
               );
             })}
           </div>
-        </>
+        </div>
       )}
 
-      {/* ================= MODE 2: 4-CARD TODDLER QUIZ ================= */}
-      {mode === 'quiz' && findMission && (
+      {/* =========================================================================
+          MODE 2: MAGIC TRACING / FINGER DRAWING
+         ========================================================================= */}
+      {mode === 'tracing' && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px', padding: '10px 0' }}>
+          <div className="mission-question-card" style={{ width: '100%', maxWidth: '520px', textAlign: 'center' }}>
+            <span className="mission-badge">Traçage au doigt :</span>
+            <h3 style={{ fontSize: '1.35rem', margin: '6px 0' }}>
+              Trace la lettre <strong style={{ color: selectedLetter.color }}>{selectedLetter.char} {selectedLetter.lower}</strong> comme {selectedLetter.wordFr} {selectedLetter.emoji} !
+            </h3>
+            <p style={{ margin: 0, fontWeight: 700, color: '#636e72' }}>Glisse ton doigt le long de la lettre scintillante !</p>
+          </div>
+
+          {/* Interactive Tracing Board */}
+          <div
+            ref={canvasRef}
+            onPointerDown={handleTouchDraw}
+            onPointerMove={(e) => {
+              if (e.buttons > 0) handleTouchDraw(e);
+            }}
+            onTouchMove={handleTouchDraw}
+            style={{
+              width: '320px',
+              height: '320px',
+              borderRadius: '32px',
+              border: `5px solid ${selectedLetter.color}`,
+              background: '#ffffff',
+              boxShadow: '0 12px 28px rgba(0,0,0,0.15)',
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'crosshair',
+              overflow: 'hidden',
+              touchAction: 'none',
+              userSelect: 'none',
+            }}
+          >
+            {/* Guide letter in background */}
+            <span
+              style={{
+                fontSize: '15rem',
+                fontWeight: 900,
+                color: '#f1f2f6',
+                fontFamily: "'Fredoka', 'Quicksand', sans-serif",
+                position: 'absolute',
+                userSelect: 'none',
+                pointerEvents: 'none',
+                textShadow: `0 0 20px ${selectedLetter.color}33`,
+              }}
+            >
+              {selectedLetter.char}
+            </span>
+
+            {/* Glowing Trace Points Drawn by Toddler */}
+            {tracedPoints.map((pt, idx) => (
+              <div
+                key={idx}
+                style={{
+                  position: 'absolute',
+                  left: `${pt.x - 14}px`,
+                  top: `${pt.y - 14}px`,
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '50%',
+                  background: selectedLetter.color,
+                  boxShadow: `0 0 14px ${selectedLetter.color}`,
+                  pointerEvents: 'none',
+                }}
+              />
+            ))}
+
+            <span style={{ position: 'absolute', bottom: '12px', fontSize: '0.8rem', fontWeight: 800, color: '#b2bec3' }}>
+              ✨ Glisse ton doigt ici ✨
+            </span>
+          </div>
+
+          {/* Tracing Controls */}
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <button
+              onClick={completeTracing}
+              style={{
+                background: 'linear-gradient(135deg, #2ed573, #10ac84)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '999px',
+                padding: '10px 22px',
+                fontSize: '0.95rem',
+                fontWeight: 900,
+                cursor: 'pointer',
+                boxShadow: '0 4px 0 #0b684f, 0 8px 16px rgba(16, 172, 132, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+            >
+              <Check size={20} /> J'ai fini de tracer ! ⭐
+            </button>
+            <button onClick={clearTracing} className="refresh-mission-btn">
+              <RotateCcw size={18} /> Effacer la feuille
+            </button>
+          </div>
+
+          {/* Quick Letter Switcher for Tracing */}
+          <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', maxWidth: '100%', padding: '4px' }}>
+            {ALPHABET_A_TO_Z.map((item) => (
+              <button
+                key={item.char}
+                onClick={() => {
+                  setSelectedLetter(item);
+                  setTracedPoints([]);
+                  sounds.playPop();
+                }}
+                style={{
+                  background: selectedLetter.char === item.char ? item.color : '#ffffff',
+                  color: selectedLetter.char === item.char ? '#ffffff' : '#2d3436',
+                  border: '2px solid #dfe6e9',
+                  borderRadius: '12px',
+                  padding: '6px 10px',
+                  fontWeight: 900,
+                  cursor: 'pointer',
+                  minWidth: '42px',
+                }}
+              >
+                {item.char}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          MODE 3: 4-CARD TODDLER MYSTERY QUIZ
+         ========================================================================= */}
+      {mode === 'quiz' && (
         <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
           <div className="mission-question-card" style={{ width: '100%', maxWidth: '540px', textAlign: 'center' }}>
-            <span className="mission-badge">Défi avec Tyanna :</span>
+            <span className="mission-badge">Défi Mystère avec Tyanna :</span>
             <h3 style={{ fontSize: '1.35rem', margin: '8px 0' }}>
-              Trouve la lettre <strong style={{ color: findMission.color, fontSize: '1.6rem' }}>{findMission.char}</strong> comme <strong>{findMission.wordFr}</strong> {findMission.emoji} !
+              Trouve la lettre <strong style={{ color: quizTarget.color, fontSize: '1.7rem' }}>{quizTarget.char}</strong> comme <strong>{quizTarget.wordFr}</strong> {quizTarget.emoji} !
             </h3>
             <button onClick={startQuizRound} className="listen-again-btn" style={{ marginTop: '6px' }}>
               <Volume2 size={18} /> Réécouter la question
             </button>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '14px', width: '100%', maxWidth: '500px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '14px', width: '100%', maxWidth: '480px' }}>
             {quizChoices.map((item) => (
               <button
                 key={item.char}
@@ -258,43 +484,47 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
                   flexDirection: 'column',
                   alignItems: 'center',
                   gap: '6px',
-                  fontFamily: 'var(--font-family)'
+                  fontFamily: 'var(--font-family)',
                 }}
               >
-                <span style={{ fontSize: '3.2rem', fontWeight: 900, lineHeight: 1 }}>{item.char}{item.lower}</span>
-                <span style={{ fontSize: '2.2rem' }}>{item.emoji}</span>
-                <span style={{ fontSize: '1rem', fontWeight: 800 }}>{item.wordFr}</span>
+                <span style={{ fontSize: '3.4rem', fontWeight: 900, lineHeight: 1 }}>{item.char}{item.lower}</span>
+                <span style={{ fontSize: '2.4rem' }}>{item.emoji}</span>
+                <span style={{ fontSize: '1rem', fontWeight: 900 }}>{item.wordFr}</span>
               </button>
             ))}
           </div>
         </div>
       )}
 
-      {/* ================= MODE 3: ENDLESS ALPHABET WORD PUZZLE ================= */}
+      {/* =========================================================================
+          MODE 4: WORD BUILDER & SPELLING
+         ========================================================================= */}
       {mode === 'word' && (() => {
-        const currentPuzzle = WORD_PUZZLES[wordIdx % WORD_PUZZLES.length];
+        const currentWordObj = WORDS_TO_SPELL[wordIdx % WORDS_TO_SPELL.length];
         return (
           <div style={{ padding: '18px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '18px' }}>
             <div className="mission-question-card" style={{ width: '100%', maxWidth: '540px', textAlign: 'center' }}>
-              <div style={{ fontSize: '4rem', lineHeight: 1.1 }}>{currentPuzzle.emoji}</div>
-              <h3 style={{ fontSize: '1.3rem', margin: '6px 0' }}>{currentPuzzle.hintFr} ({currentPuzzle.en})</h3>
+              <div style={{ fontSize: '4.2rem', lineHeight: 1.1 }} className="animate-bounce-soft">{currentWordObj.emoji}</div>
+              <h3 style={{ fontSize: '1.4rem', margin: '6px 0' }}>
+                Écris le mot : <strong>{currentWordObj.fr}</strong> ({currentWordObj.en})
+              </h3>
               <p style={{ margin: 0, fontWeight: 700, color: '#636e72' }}>
-                Touche les lettres dans l'ordre pour écrire le mot !
+                Touche les lettres dans le bon ordre pour compléter le mot !
               </p>
             </div>
 
-            {/* Word Slots */}
+            {/* Word Letter Slots */}
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
-              {currentPuzzle.word.split('').map((ch, idx) => {
-                const isFilled = idx < filledCount;
-                const isNext = idx === filledCount;
+              {currentWordObj.word.split('').map((ch, idx) => {
+                const isFilled = idx < spelledLetters.length;
+                const isNext = idx === spelledLetters.length;
                 return (
                   <div
                     key={idx}
                     style={{
-                      width: '62px',
-                      height: '72px',
-                      borderRadius: '18px',
+                      width: '64px',
+                      height: '74px',
+                      borderRadius: '20px',
                       border: isFilled ? '3px solid #10ac84' : isNext ? '3px dashed #f39c12' : '3px dashed #b2bec3',
                       background: isFilled ? '#1dd1a1' : isNext ? '#fff9db' : '#f1f2f6',
                       color: isFilled ? '#ffffff' : '#b2bec3',
@@ -304,10 +534,10 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
                       alignItems: 'center',
                       justifyContent: 'center',
                       boxShadow: isFilled ? '0 5px 0 #10ac84' : 'none',
-                      transition: 'all 0.2s'
+                      transition: 'all 0.2s',
                     }}
                   >
-                    {ch}
+                    {isFilled ? ch : isNext ? '?' : ''}
                   </div>
                 );
               })}
@@ -315,10 +545,10 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
 
             {/* Scrambled Letters to Tap */}
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '6px' }}>
-              {scrambledPool.map((item) => (
+              {availableScramble.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => handleTapScrambledLetter(item)}
+                  onClick={() => handleTapWordLetter(item)}
                   disabled={item.used}
                   className="animate-bounce-soft"
                   style={{
@@ -328,7 +558,7 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
                     border: '3px solid #ffffff',
                     background: item.used ? '#dfe6e9' : 'linear-gradient(135deg, #0984e3, #6c5ce7)',
                     color: '#ffffff',
-                    fontSize: '2rem',
+                    fontSize: '2.2rem',
                     fontWeight: 900,
                     cursor: item.used ? 'default' : 'pointer',
                     opacity: item.used ? 0.25 : 1,
