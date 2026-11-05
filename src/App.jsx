@@ -11,8 +11,6 @@ import AnimalFarmGame from './games/AnimalFarmGame';
 import MusicXylophoneGame from './games/MusicXylophoneGame';
 import NiaDressingRoom from './components/NiaDressingRoom';
 import StickerBook from './components/StickerBook';
-import FirefighterGame from './games/FirefighterGame';
-import DrivingGame from './games/DrivingGame';
 import CookingGame from './games/CookingGame';
 import { doraVoice } from './utils/speech';
 import { sounds } from './utils/audio';
@@ -58,11 +56,38 @@ const MENU_CARDS = [
   {
     id: 'animals',
     title: 'Le Zoo des Animaux',
-    subtitle: 'Grand, marron & cris',
+    subtitle: '36 animaux, sons & safari',
     emoji: '🦁',
     badge: 'INTERACTIVE',
     bgGrad: 'linear-gradient(135deg, #FF922B, #FFC078)',
-    iconText: '🐘 🐭 🐻'
+    iconText: '🐘 🦁 🐻'
+  },
+  {
+    id: 'cooking',
+    title: 'La Grande Cuisine',
+    subtitle: 'Tyanna chef, feu, marmite & recettes',
+    emoji: '🍲',
+    badge: 'COOKING',
+    bgGrad: 'linear-gradient(135deg, #845EF7, #B197FC)',
+    iconText: '🔥 🍲 👨‍🍳'
+  },
+  {
+    id: 'coloring',
+    title: 'Dessin & Coloriage',
+    subtitle: 'Dessin libre, gommettes & modèles',
+    emoji: '🎨',
+    badge: 'CREATIVE',
+    bgGrad: 'linear-gradient(135deg, #20C997, #63E6BE)',
+    iconText: '🖌️ 🌈 🏡'
+  },
+  {
+    id: 'maze',
+    title: 'Labyrinthe 3D Animaux',
+    subtitle: 'Pas à pas sur le bon carré !',
+    emoji: '🦆',
+    badge: 'MAZE 3D',
+    bgGrad: 'linear-gradient(135deg, #2ED573, #7BED9F)',
+    iconText: '🦆 👣 🛁'
   },
   {
     id: 'balloons',
@@ -74,15 +99,6 @@ const MENU_CARDS = [
     iconText: '🎈 ⭐ 💥'
   },
   {
-    id: 'maze',
-    title: 'Labyrinthe Canard',
-    subtitle: 'Direction le bain !',
-    emoji: '🦆',
-    badge: 'MAZE GAMES',
-    bgGrad: 'linear-gradient(135deg, #2ED573, #7BED9F)',
-    iconText: '🦆 🛁 🌿'
-  },
-  {
     id: 'music',
     title: 'Xylophone Musical',
     subtitle: 'Do, Ré, Mi, Fa, Sol',
@@ -92,15 +108,6 @@ const MENU_CARDS = [
     iconText: '🎶 🎹 🌈'
   },
   {
-    id: 'coloring',
-    title: 'Coloriage Magique',
-    subtitle: 'Pompier & Canard',
-    emoji: '🎨',
-    badge: 'COLORING',
-    bgGrad: 'linear-gradient(135deg, #20C997, #63E6BE)',
-    iconText: '🦆 🚒 🖌️'
-  },
-  {
     id: 'memory',
     title: 'Mémoire & Paires',
     subtitle: 'Chiens, chats & doudous',
@@ -108,33 +115,6 @@ const MENU_CARDS = [
     badge: 'MEMORY',
     bgGrad: 'linear-gradient(135deg, #FCC419, #FFE066)',
     iconText: '🐶 🐾 🐱'
-  },
-  {
-    id: 'firefighter',
-    title: 'Pompier & Eau',
-    subtitle: 'De l\'eau sur le feu !',
-    emoji: '🚒',
-    badge: 'ACTION',
-    bgGrad: 'linear-gradient(135deg, #FA5252, #FF8787)',
-    iconText: '💦 🔥 🚒'
-  },
-  {
-    id: 'driving',
-    title: 'Petite Voiture',
-    subtitle: 'Vroum vroum & feux',
-    emoji: '🚗',
-    badge: 'DRIVING',
-    bgGrad: 'linear-gradient(135deg, #339AF0, #74C0FC)',
-    iconText: '🚗 🚦 💨'
-  },
-  {
-    id: 'cooking',
-    title: 'Petite Cuisine',
-    subtitle: 'Soupe du chef',
-    emoji: '🍲',
-    badge: 'COOKING',
-    bgGrad: 'linear-gradient(135deg, #845EF7, #B197FC)',
-    iconText: '🍅 🥕 🥣'
   },
 ];
 
@@ -174,25 +154,19 @@ export default function App() {
         prompt = "Éclate un maximum de ballons avec ton doigt ! Pop pop !";
         break;
       case 'maze':
-        prompt = "Aide le petit canard à traverser le labyrinthe pour rejoindre son bain !";
+        prompt = "Guide ton petit animal pas à pas sur les dalles dorées du labyrinthe !";
         break;
       case 'music':
         prompt = "Touche les lames du xylophone pour jouer une belle chanson !";
         break;
       case 'coloring':
-        prompt = "Sortons les pinceaux magiques ! Peins le canard et le pompier !";
+        prompt = "Sortons les pinceaux magiques ! Dessine librement ou colorie de jolis modèles !";
         break;
       case 'memory':
         prompt = "Retrouve les paires d'animaux cachées !";
         break;
-      case 'firefighter':
-        prompt = "Vite pompier ! Arrose le feu avec de l'eau pour sauver la forêt !";
-        break;
-      case 'driving':
-        prompt = "En voiture ! Fais Tut-tut et attention au feu rouge !";
-        break;
       case 'cooking':
-        prompt = "Miam ! Préparons une bonne soupe chaude avec de bons légumes !";
+        prompt = "Miam ! Allume le feu de la cuisinière et cuisinons ensemble !";
         break;
       case 'dressing':
         prompt = "Choisis un joli chapeau pour me déguiser !";
@@ -388,14 +362,8 @@ export default function App() {
                   onNiaSpeak={setTyannaMessage}
                 />
               )}
-              {activeGame === 'firefighter' && (
-                <FirefighterGame onTeacherPrompt={setTyannaMessage} />
-              )}
-              {activeGame === 'driving' && (
-                <DrivingGame onTeacherPrompt={setTyannaMessage} />
-              )}
               {activeGame === 'cooking' && (
-                <CookingGame onTeacherPrompt={setTyannaMessage} />
+                <CookingGame onTeacherPrompt={setTyannaMessage} onRewardStar={handleRewardStar} />
               )}
             </div>
           )}

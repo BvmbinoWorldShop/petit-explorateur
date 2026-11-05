@@ -265,11 +265,13 @@ export const KITCHEN_RECIPES = [
 // =========================================================================
 // MAIN KITCHEN EXPERIENCE COMPONENT
 // =========================================================================
-export default function CookingGame({ onTeacherPrompt }) {
+export default function CookingGame({ onTeacherPrompt, onRewardStar }) {
   const [recipeIdx, setRecipeIdx] = useState(0);
   const [inPot, setInPot] = useState([]);
   const [isFridgeOpen, setIsFridgeOpen] = useState(false);
   const [isCabinetOpen, setIsCabinetOpen] = useState(false);
+  const [isFireOn, setIsFireOn] = useState(true);
+  const [showPlateModal, setShowPlateModal] = useState(false);
 
   // Tyanna Walking State Machine
   // positions: 15% (fridge), 48% (prep counter / center), 82% (stove)
@@ -295,6 +297,7 @@ export default function CookingGame({ onTeacherPrompt }) {
     const r = KITCHEN_RECIPES[idx % KITCHEN_RECIPES.length];
     setInPot([]);
     setDishReady(false);
+    setShowPlateModal(false);
     setCarriedItem(null);
     setTyannaAction('idle');
     setTyannaX(48);
@@ -306,6 +309,23 @@ export default function CookingGame({ onTeacherPrompt }) {
     const prompt = `C'est l'heure de cuisiner ! Préparons ensemble : ${r.title} ! Tyanna va chercher ${firstIng.nameFr} ${where} !`;
     onTeacherPrompt(prompt);
     teacher.speakBilingual(prompt, `Let's cook! Let's get the ${firstIng.nameEn}!`);
+  };
+
+  const handleToggleFire = () => {
+    const next = !isFireOn;
+    setIsFireOn(next);
+    if (next) {
+      sounds.playFireIgnite();
+      sounds.playCookingSizzle();
+      const fireMsg = "Youpi ! Le feu de la cuisinière crépite ! La marmite commence à chauffer et bouillonner !";
+      onTeacherPrompt(fireMsg);
+      teacher.speakFrench(fireMsg);
+    } else {
+      sounds.playPop();
+      const offMsg = "Feu éteint sur la cuisinière ! Fais attention à ne pas te brûler !";
+      onTeacherPrompt(offMsg);
+      teacher.speakFrench(offMsg);
+    }
   };
 
   // Move Tyanna across the kitchen floor to pick up an ingredient!
@@ -345,7 +365,12 @@ export default function CookingGame({ onTeacherPrompt }) {
 
       // 3. Drop into pot / stove!
       setTimeout(() => {
+        if (!isFireOn) {
+          sounds.playFireIgnite();
+          setIsFireOn(true);
+        }
         sounds.playCookingSizzle();
+        sounds.playBoilBubble();
         setInPot((prev) => [...prev, ing.id]);
         setCarriedItem(null);
         setTyannaAction('idle');
@@ -380,21 +405,30 @@ export default function CookingGame({ onTeacherPrompt }) {
       return;
     }
 
+    if (!isFireOn) {
+      sounds.playFireIgnite();
+      setIsFireOn(true);
+    }
+
     sounds.playFootstep();
     setTyannaFacing('right');
     setTyannaX(78);
     setTyannaAction('stirring');
     sounds.playCookingSizzle();
+    sounds.playBoilBubble();
 
     setTimeout(() => {
       setDishReady(true);
+      setShowPlateModal(true);
       setTyannaAction('cheering');
       sounds.playSuccess();
-      confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+      sounds.playChime();
+      confetti({ particleCount: 85, spread: 75, origin: { y: 0.5 } });
+      if (onRewardStar) onRewardStar();
 
-      const cheer = `Tadaaa ! ${currentRecipe.title} est cuisinée à la perfection ! Goûte avec Tyanna !`;
+      const cheer = `Tadaaa ! ${currentRecipe.title} est cuisinée à la perfection ! Regarde le magnifique plat avec Tyanna !`;
       onTeacherPrompt(cheer);
-      teacher.speakBilingual(cheer, "Yummy! The dish is ready! Let's taste it!");
+      teacher.speakBilingual(cheer, "Yummy! The dish is ready! Look at the delicious plate!");
     }, 1600);
   };
 
@@ -404,7 +438,8 @@ export default function CookingGame({ onTeacherPrompt }) {
     sounds.playSuccess();
     setTastedTimes((t) => t + 1);
     setTyannaAction('tasting');
-    confetti({ particleCount: 45, spread: 60 });
+    confetti({ particleCount: 50, spread: 60 });
+    if (onRewardStar) onRewardStar();
 
     const praise = "Miam miam miam ! C'est absolument délicieux ! Tyanna et toi formez une équipe de chefs étoilés !";
     onTeacherPrompt(praise);
@@ -702,35 +737,63 @@ export default function CookingGame({ onTeacherPrompt }) {
           onClick={handleCookAndStir}
           style={{
             position: 'absolute',
-            bottom: '65px',
-            right: '16px',
-            width: '160px',
-            height: '145px',
+            bottom: '55px',
+            right: '14px',
+            width: '175px',
+            height: '165px',
             background: 'linear-gradient(135deg, #2d3436 0%, #1e272e 100%)',
-            borderRadius: '20px 20px 10px 10px',
-            border: '3px solid #485460',
-            boxShadow: '0 12px 24px rgba(0,0,0,0.3)',
+            borderRadius: '22px 22px 12px 12px',
+            border: isFireOn ? '3px solid #ff4757' : '3px solid #485460',
+            boxShadow: isFireOn
+              ? '0 12px 28px rgba(255, 71, 87, 0.4), 0 0 20px rgba(255, 165, 2, 0.3)'
+              : '0 12px 24px rgba(0,0,0,0.3)',
             zIndex: 10,
             cursor: 'pointer',
-            padding: '10px 8px',
+            padding: '8px 6px',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+            transition: 'all 0.3s ease',
           }}
           title="Touche pour faire cuire et mélanger !"
         >
-          {/* Stovetop Burners */}
-          <div style={{ display: 'flex', gap: '14px', alignItems: 'center', position: 'relative' }}>
+          {/* Billowing Steam & Scent Clouds Rising Up from Pot */}
+          {isFireOn && inPot.length > 0 && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '-42px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                pointerEvents: 'none',
+                display: 'flex',
+                gap: '12px',
+                zIndex: 20,
+              }}
+            >
+              <span className="kitchen-steam-puff steam-1">💨</span>
+              <span className="kitchen-steam-puff steam-2">♨️</span>
+              <span className="kitchen-steam-puff steam-3">💨</span>
+            </div>
+          )}
+
+          {/* Stovetop Burners & Flames */}
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', position: 'relative' }}>
             {/* Glowing Flame */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div style={{ fontSize: '1.6rem', lineHeight: 1 }} className="animate-flicker">🔥</div>
+              {isFireOn ? (
+                <div style={{ fontSize: '1.75rem', lineHeight: 1 }} className="animate-flicker">🔥</div>
+              ) : (
+                <div style={{ fontSize: '1.2rem', lineHeight: 1, opacity: 0.3 }}>♨️</div>
+              )}
+
               {/* Cast Iron Pot / Dutch Oven */}
               <div
                 style={{
-                  width: '95px',
-                  height: '58px',
+                  width: '100px',
+                  height: '60px',
                   background: 'linear-gradient(180deg, #e74c3c 0%, #c0392b 100%)',
-                  borderRadius: '6px 6px 20px 20px',
+                  borderRadius: '6px 6px 22px 22px',
                   border: '3px solid #962d2d',
                   boxShadow: '0 6px 14px rgba(0,0,0,0.35)',
                   position: 'relative',
@@ -744,16 +807,44 @@ export default function CookingGame({ onTeacherPrompt }) {
                 <div style={{ position: 'absolute', right: '-12px', top: '16px', width: '12px', height: '16px', borderRadius: '4px', border: '3px solid #7f1d1d' }} />
 
                 {/* Pot Rim & Bubbling Soup Inside */}
-                <div style={{ width: '85px', height: '42px', background: '#ff9f43', borderRadius: '50%', border: '2px solid #e67e22', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', position: 'relative' }}>
+                <div
+                  style={{
+                    width: '90px',
+                    height: '44px',
+                    background: inPot.length > 0 ? (isFireOn ? '#e67e22' : '#f39c12') : '#bdc3c7',
+                    borderRadius: '50%',
+                    border: '2px solid #d35400',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    overflow: 'hidden',
+                    position: 'relative',
+                  }}
+                >
                   {inPot.length === 0 ? (
                     <span style={{ fontSize: '0.62rem', fontWeight: 800, color: '#fff' }}>Vide...</span>
                   ) : (
-                    <div style={{ display: 'flex', gap: '3px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                      {inPot.map((id, i) => (
-                        <span key={i} style={{ fontSize: '0.9rem' }}>
-                          {KITCHEN_INGREDIENTS.find((ing) => ing.id === id)?.emoji}
-                        </span>
-                      ))}
+                    <div style={{ width: '100%', height: '100%', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {/* Animated Boiling Bubbles */}
+                      {isFireOn && (
+                        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+                          <span className="soup-bubble sb-1" />
+                          <span className="soup-bubble sb-2" />
+                          <span className="soup-bubble sb-3" />
+                          <span className="soup-bubble sb-4" />
+                        </div>
+                      )}
+                      {/* Floating Ingredients inside Boiling Soup */}
+                      <div
+                        style={{ display: 'flex', gap: '2px', flexWrap: 'wrap', justifyContent: 'center', zIndex: 2 }}
+                        className={isFireOn ? 'animate-soup-boil' : ''}
+                      >
+                        {inPot.map((id, i) => (
+                          <span key={i} style={{ fontSize: '0.82rem' }}>
+                            {KITCHEN_INGREDIENTS.find((ing) => ing.id === id)?.emoji}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -761,27 +852,49 @@ export default function CookingGame({ onTeacherPrompt }) {
             </div>
           </div>
 
-          {/* Spoon / Stir Button */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleCookAndStir();
-            }}
-            style={{
-              marginTop: '10px',
-              background: 'linear-gradient(135deg, #f1c40f, #e67e22)',
-              color: '#2d3436',
-              border: 'none',
-              borderRadius: '999px',
-              padding: '6px 14px',
-              fontSize: '0.78rem',
-              fontWeight: 900,
-              cursor: 'pointer',
-              boxShadow: '0 3px 0 #b7791f',
-            }}
-          >
-            🥄 {dishReady ? 'Prêt ! (Mélanger)' : `Cuire (${inPot.length}/${currentRecipe.steps.length})`}
-          </button>
+          {/* Stovetop Controls: Fire Button & Stir Button */}
+          <div style={{ display: 'flex', gap: '6px', marginTop: '8px', alignItems: 'center' }}>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleToggleFire();
+              }}
+              style={{
+                background: isFireOn ? 'linear-gradient(135deg, #ff4757, #ff6b81)' : 'linear-gradient(135deg, #57606f, #747d8c)',
+                color: '#fff',
+                border: '1.5px solid #fff',
+                borderRadius: '999px',
+                padding: '4px 8px',
+                fontSize: '0.68rem',
+                fontWeight: 900,
+                cursor: 'pointer',
+                boxShadow: isFireOn ? '0 0 8px #ff4757' : 'none',
+              }}
+              title="Allumer ou éteindre le feu de la cuisinière"
+            >
+              {isFireOn ? '🔥 Feu ON' : '🔘 Allumer'}
+            </button>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleCookAndStir();
+              }}
+              style={{
+                background: 'linear-gradient(135deg, #f1c40f, #e67e22)',
+                color: '#2d3436',
+                border: 'none',
+                borderRadius: '999px',
+                padding: '5px 10px',
+                fontSize: '0.72rem',
+                fontWeight: 900,
+                cursor: 'pointer',
+                boxShadow: '0 3px 0 #b7791f',
+              }}
+            >
+              🥄 {dishReady ? 'Mélanger' : `Cuire (${inPot.length}/${currentRecipe.steps.length})`}
+            </button>
+          </div>
         </div>
 
         {/* =====================================================================
@@ -1040,6 +1153,13 @@ export default function CookingGame({ onTeacherPrompt }) {
             </h3>
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
               <button
+                onClick={() => setShowPlateModal(true)}
+                className="action-button primary"
+                style={{ background: 'linear-gradient(135deg, #f1c40f, #e67e22)', color: '#2d3436' }}
+              >
+                🍽️ Voir le Grand Plat & la Recette !
+              </button>
+              <button
                 onClick={handleTasteDish}
                 style={{
                   background: 'linear-gradient(135deg, #ff6b81, #e84393)',
@@ -1056,8 +1176,12 @@ export default function CookingGame({ onTeacherPrompt }) {
                 😋 Goûter avec Tyanna ! (Miam ×{tastedTimes})
               </button>
               <button
-                onClick={() => setRecipeIdx((i) => (i + 1) % KITCHEN_RECIPES.length)}
-                className="action-button primary"
+                onClick={() => {
+                  const next = (recipeIdx + 1) % KITCHEN_RECIPES.length;
+                  setRecipeIdx(next);
+                  startNewRecipe(next);
+                }}
+                className="action-button secondary"
               >
                 Nouvelle Recette 👩‍🍳
               </button>
@@ -1065,6 +1189,158 @@ export default function CookingGame({ onTeacherPrompt }) {
           </div>
         )}
       </div>
+
+      {/* =====================================================================
+          FINAL PLATE PRESENTATION MODAL WITH RECIPE SUMMARY & TASTING
+         ===================================================================== */}
+      {showPlateModal && (
+        <div className="final-plate-modal-backdrop" onClick={() => setShowPlateModal(false)}>
+          <div className="final-plate-dialog animate-pop" onClick={(e) => e.stopPropagation()}>
+            {/* Close button */}
+            <button
+              onClick={() => setShowPlateModal(false)}
+              style={{
+                position: 'absolute',
+                top: '12px',
+                right: '12px',
+                background: '#f1f2f6',
+                border: 'none',
+                borderRadius: '50%',
+                width: '38px',
+                height: '38px',
+                fontSize: '1.2rem',
+                cursor: 'pointer',
+                fontWeight: 900,
+                color: '#57606f',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+              }}
+            >
+              ✕
+            </button>
+
+            {/* Golden Chef Trophy Badge */}
+            <div style={{ fontSize: '2.4rem', marginBottom: '2px' }} className="animate-bounce-soft">
+              🏆👨‍🍳⭐
+            </div>
+
+            <h2 style={{ fontSize: '1.45rem', fontWeight: 900, color: '#d35400', margin: '4px 0' }}>
+              {currentRecipe.title}
+            </h2>
+            <p style={{ fontSize: '0.88rem', color: '#2d3436', fontWeight: 700, margin: '2px 0 10px 0' }}>
+              {currentRecipe.resultTitle}
+            </p>
+
+            {/* The 3D Golden Serving Platter with Steaming Meal */}
+            <div
+              className="gourmet-platter-3d"
+              style={{
+                width: '270px',
+                height: '150px',
+                background: 'linear-gradient(135deg, #f5f6fa 0%, #dcdde1 50%, #b2bec3 100%)',
+                borderRadius: '50%',
+                border: '6px solid #f1c40f',
+                boxShadow: '0 16px 36px rgba(0,0,0,0.35), inset 0 4px 12px #ffffff',
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '8px 0 14px 0',
+              }}
+            >
+              {/* Steam Puffs over the Plate */}
+              <div style={{ position: 'absolute', top: '-26px', display: 'flex', gap: '14px', fontSize: '1.3rem' }}>
+                <span className="kitchen-steam-puff steam-1">💨</span>
+                <span className="kitchen-steam-puff steam-2">♨️</span>
+                <span className="kitchen-steam-puff steam-3">💨</span>
+              </div>
+
+              {/* Jumbo Dish Emoji / Graphic */}
+              <span style={{ fontSize: '4.2rem', filter: 'drop-shadow(0 6px 12px rgba(0,0,0,0.25))' }} className="animate-bounce-soft">
+                {currentRecipe.resultEmoji}
+              </span>
+            </div>
+
+            {/* Recipe Checklist: Visual What Was Done Card */}
+            <div
+              style={{
+                width: '100%',
+                background: '#f8f9fa',
+                border: '2px solid #e1e8ed',
+                borderRadius: '18px',
+                padding: '12px 14px',
+                marginBottom: '16px',
+              }}
+            >
+              <h4 style={{ fontSize: '0.82rem', fontWeight: 900, color: '#636e72', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                📋 Ingrédients Cuisinés avec Succès :
+              </h4>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+                {currentRecipe.steps.map((ingId) => {
+                  const ing = KITCHEN_INGREDIENTS.find((i) => i.id === ingId);
+                  return (
+                    <div
+                      key={ingId}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        background: '#ffffff',
+                        padding: '6px 10px',
+                        borderRadius: '12px',
+                        border: '1.5px solid #2ecc71',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
+                      }}
+                    >
+                      <span style={{ fontSize: '1.2rem' }}>{ing?.emoji}</span>
+                      <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#2d3436', flex: 1, textAlign: 'left' }}>
+                        {ing?.nameFr}
+                      </span>
+                      <span style={{ color: '#27ae60', fontWeight: 900, fontSize: '0.9rem' }}>✅</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Interactive Action Buttons */}
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center', width: '100%' }}>
+              <button
+                onClick={handleTasteDish}
+                className="step-forward-btn"
+                style={{
+                  background: 'linear-gradient(135deg, #e84393, #fd79a8)',
+                  color: '#fff',
+                  fontSize: '0.95rem',
+                  padding: '10px 18px',
+                  border: 'none',
+                }}
+              >
+                😋 Goûter le Plat ! ({tastedTimes}x)
+              </button>
+
+              <button
+                onClick={() => {
+                  sounds.playPop();
+                  const nextIdx = (recipeIdx + 1) % KITCHEN_RECIPES.length;
+                  setRecipeIdx(nextIdx);
+                  startNewRecipe(nextIdx);
+                }}
+                className="step-forward-btn"
+                style={{
+                  background: 'linear-gradient(135deg, #2ecc71, #10ac84)',
+                  color: '#fff',
+                  fontSize: '0.95rem',
+                  padding: '10px 18px',
+                  border: 'none',
+                }}
+              >
+                👨‍🍳 Recette Suivante ➡️
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -361,6 +361,69 @@ class SoundFX {
       osc.stop(now + idx * 0.06 + 0.4);
     });
   }
+
+  playFireIgnite() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+    // Spark click
+    const oscClick = this.ctx.createOscillator();
+    const gainClick = this.ctx.createGain();
+    oscClick.type = 'square';
+    oscClick.frequency.setValueAtTime(1200, now);
+    oscClick.frequency.exponentialRampToValueAtTime(200, now + 0.04);
+    gainClick.gain.setValueAtTime(0.3, now);
+    gainClick.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+    oscClick.connect(gainClick);
+    gainClick.connect(this.ctx.destination);
+    oscClick.start(now);
+    oscClick.stop(now + 0.05);
+
+    // Flame whoosh
+    const bufferSize = this.ctx.sampleRate * 0.35;
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.4));
+    }
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(450, now);
+    filter.frequency.linearRampToValueAtTime(180, now + 0.35);
+
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.25, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.ctx.destination);
+    noise.start(now);
+  }
+
+  playBoilBubble() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+    [0, 0.08, 0.16, 0.24].forEach((offset, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      const baseF = 300 + idx * 80 + Math.random() * 60;
+      osc.frequency.setValueAtTime(baseF, now + offset);
+      osc.frequency.exponentialRampToValueAtTime(baseF * 1.8, now + offset + 0.06);
+      gain.gain.setValueAtTime(0.18, now + offset);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.06);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now + offset);
+      osc.stop(now + offset + 0.06);
+    });
+  }
 }
 
 export const sounds = new SoundFX();
