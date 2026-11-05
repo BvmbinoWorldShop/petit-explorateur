@@ -281,20 +281,25 @@ export default function DuckMazeGame({ onNiaSpeak, onRewardStar }) {
         ))}
       </div>
 
-      <div className="maze-playground-arena">
+      <div className="maze-playground-arena" style={{ width: '100%', maxWidth: '100%', overflowX: 'hidden', boxSizing: 'border-box' }}>
         {/* Visual 3D Maze Grid (5x4) */}
         <div
           className="maze-board-grid"
           style={{
             background: 'linear-gradient(180deg, #1b4d3e 0%, #13392d 100%)',
-            padding: '16px',
-            borderRadius: '26px',
-            border: '5px solid #2ed573',
-            boxShadow: '0 18px 36px rgba(0,0,0,0.3), inset 0 2px 6px rgba(255,255,255,0.2)',
+            padding: '12px 8px',
+            borderRadius: '24px',
+            border: '4px solid #2ed573',
+            boxShadow: '0 16px 36px rgba(0,0,0,0.3), inset 0 2px 6px rgba(255,255,255,0.2)',
+            width: '100%',
+            maxWidth: '380px',
+            boxSizing: 'border-box',
+            margin: '0 auto',
+            overflowX: 'hidden',
           }}
         >
           {Array.from({ length: 4 }).map((_, r) => (
-            <div key={r} className="maze-row" style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+            <div key={r} className="maze-row" style={{ display: 'flex', gap: '6px', marginBottom: '6px', width: '100%', justifyContent: 'center' }}>
               {Array.from({ length: 5 }).map((_, c) => {
                 const pathIndex = currentPath.findIndex((p) => p.x === c && p.y === r);
                 const isPath = pathIndex !== -1;
@@ -311,8 +316,11 @@ export default function DuckMazeGame({ onNiaSpeak, onRewardStar }) {
                     onClick={() => handleCellClick(r, c)}
                     className={`maze-cell ${isPath ? 'is-path' : 'is-hedge'} ${isFinish ? 'is-finish-pond' : ''} ${isWrong ? 'animate-wiggle' : ''}`}
                     style={{
-                      width: '64px',
-                      height: '64px',
+                      flex: 1,
+                      maxWidth: '64px',
+                      minWidth: '42px',
+                      aspectRatio: '1 / 1',
+                      height: 'auto',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',

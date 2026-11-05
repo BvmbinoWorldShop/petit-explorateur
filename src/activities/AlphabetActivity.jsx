@@ -53,6 +53,7 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
 
   // Tracing State
   const [tracedPoints, setTracedPoints] = useState([]);
+  const [isAutoRecognized, setIsAutoRecognized] = useState(false);
   const canvasRef = useRef(null);
 
   // Quiz State
@@ -172,8 +173,9 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
     }
   };
 
-  // Tracing drawing handlers
+  // Tracing drawing handlers with automatic recognition
   const handleTouchDraw = (e) => {
+    if (isAutoRecognized) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
@@ -182,23 +184,59 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
     const x = clientX - rect.left;
     const y = clientY - rect.top;
 
-    setTracedPoints((prev) => [...prev, { x, y }]);
     sounds.playPop();
+    const newPoints = [...tracedPoints, { x, y }];
+    setTracedPoints(newPoints);
+
+    // Automatic letter recognition logic:
+    // When the toddler has traced enough points with sufficient spatial coverage of the letter
+    if (newPoints.length >= 10 && !isAutoRecognized) {
+      const minX = Math.min(...newPoints.map((p) => p.x));
+      const maxX = Math.max(...newPoints.map((p) => p.x));
+      const minY = Math.min(...newPoints.map((p) => p.y));
+      const maxY = Math.max(...newPoints.map((p) => p.y));
+      const spreadX = maxX - minX;
+      const spreadY = maxY - minY;
+
+      // When the finger stroke spans at least 65px wide and 70px tall, or 18+ points traced
+      if ((spreadX > 65 && spreadY > 70 && newPoints.length >= 12) || newPoints.length >= 22) {
+        triggerAutoSuccess();
+      }
+    }
+  };
+
+  const triggerAutoSuccess = () => {
+    setIsAutoRecognized(true);
+    sounds.playSuccess();
+    sounds.playChime();
+    confetti({ particleCount: 75, spread: 70 });
+    if (onRewardStar) onRewardStar();
+
+    const praise = `Bravo champion ! Tu as magnifiquement tracé la lettre ${selectedLetter.char} ! Passons à la lettre suivante !`;
+    onNiaSpeak(praise);
+    doraVoice.speak(praise);
+
+    // Automatically transition to the next letter of the alphabet after short celebration!
+    setTimeout(() => {
+      const currentIdx = ALPHABET_A_TO_Z.findIndex((l) => l.char === selectedLetter.char);
+      const nextLetter = ALPHABET_A_TO_Z[(currentIdx + 1) % ALPHABET_A_TO_Z.length];
+      setSelectedLetter(nextLetter);
+      setTracedPoints([]);
+      setIsAutoRecognized(false);
+    }, 1800);
   };
 
   const clearTracing = () => {
     sounds.playPop();
     setTracedPoints([]);
+    setIsAutoRecognized(false);
     doraVoice.speak(`Feuille magique effacée ! Trace à nouveau la lettre ${selectedLetter.char} !`);
   };
 
   const completeTracing = () => {
-    sounds.playSuccess();
-    confetti({ particleCount: 50, spread: 60 });
-    if (onRewardStar) onRewardStar();
-    const praise = `Wouah ! Tu as magnifiquement tracé la lettre ${selectedLetter.char} ! Bravo petit artiste !`;
-    onNiaSpeak(praise);
-    doraVoice.speak(praise);
+    if (!isAutoRecognized) {
+      triggerAutoSuccess();
+    }
   };
 
   return (
@@ -321,135 +359,215 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
       )}
 
       {/* =========================================================================
-          MODE 2: MAGIC TRACING / FINGER DRAWING
+          MODE 2: MAGIC TRACING / FINGER DRAWING (WITH AUTOMATIC RECOGNITION)
          ========================================================================= */}
-      {mode === 'tracing' && (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px', padding: '10px 0' }}>
-          <div className="mission-question-card" style={{ width: '100%', maxWidth: '520px', textAlign: 'center' }}>
-            <span className="mission-badge">Traçage au doigt :</span>
-            <h3 style={{ fontSize: '1.35rem', margin: '6px 0' }}>
-              Trace la lettre <strong style={{ color: selectedLetter.color }}>{selectedLetter.char} {selectedLetter.lower}</strong> comme {selectedLetter.wordFr} {selectedLetter.emoji} !
-            </h3>
-            <p style={{ margin: 0, fontWeight: 700, color: '#636e72' }}>Glisse ton doigt le long de la lettre scintillante !</p>
-          </div>
+      {mode === 'tracing' && (() => {
+        const pointsCount = tracedPoints.length;
+        const minX = pointsCount > 0 ? Math.min(...tracedPoints.map((p) => p.x)) : 0;
+        const maxX = pointsCount > 0 ? Math.max(...tracedPoints.map((p) => p.x)) : 0;
+        const minY = pointsCount > 0 ? Math.min(...tracedPoints.map((p) => p.y)) : 0;
+        const maxY = pointsCount > 0 ? Math.max(...tracedPoints.map((p) => p.y)) : 0;
+        const spreadX = maxX - minX;
+        const spreadY = maxY - minY;
+        const rawPercent = Math.min(
+          100,
+          Math.round(
+            Math.min(pointsCount / 14, 1) * 40 +
+            Math.min(spreadX / 65, 1) * 30 +
+            Math.min(spreadY / 70, 1) * 30
+          )
+        );
+        const tracingPercent = isAutoRecognized ? 100 : rawPercent;
 
-          {/* Interactive Tracing Board */}
-          <div
-            ref={canvasRef}
-            onPointerDown={handleTouchDraw}
-            onPointerMove={(e) => {
-              if (e.buttons > 0) handleTouchDraw(e);
-            }}
-            onTouchMove={handleTouchDraw}
-            style={{
-              width: '320px',
-              height: '320px',
-              borderRadius: '32px',
-              border: `5px solid ${selectedLetter.color}`,
-              background: '#ffffff',
-              boxShadow: '0 12px 28px rgba(0,0,0,0.15)',
-              position: 'relative',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'crosshair',
-              overflow: 'hidden',
-              touchAction: 'none',
-              userSelect: 'none',
-            }}
-          >
-            {/* Guide letter in background */}
-            <span
-              style={{
-                fontSize: '15rem',
-                fontWeight: 900,
-                color: '#f1f2f6',
-                fontFamily: "'Fredoka', 'Quicksand', sans-serif",
-                position: 'absolute',
-                userSelect: 'none',
-                pointerEvents: 'none',
-                textShadow: `0 0 20px ${selectedLetter.color}33`,
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px', padding: '10px 0', width: '100%' }}>
+            <div className="mission-question-card" style={{ width: '100%', maxWidth: '520px', textAlign: 'center' }}>
+              <span className="mission-badge">Traçage magique automatique :</span>
+              <h3 style={{ fontSize: '1.35rem', margin: '6px 0' }}>
+                Trace la lettre <strong style={{ color: selectedLetter.color }}>{selectedLetter.char} {selectedLetter.lower}</strong> comme {selectedLetter.wordFr} {selectedLetter.emoji} !
+              </h3>
+              <p style={{ margin: 0, fontWeight: 700, color: '#636e72' }}>
+                Glisse ton doigt sur la lettre : elle se valide automatiquement dès que c'est bien tracé !
+              </p>
+            </div>
+
+            {/* Magic Tracing Progress Meter */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', width: '100%', maxWidth: '320px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: '0.88rem', fontWeight: 900, color: '#2d3436' }}>
+                <span>✨ Jauge Magique du Tracé :</span>
+                <span style={{ color: isAutoRecognized ? '#10ac84' : '#e67e22' }}>
+                  {isAutoRecognized ? '⭐ 100% Validé !' : `${tracingPercent}%`}
+                </span>
+              </div>
+              <div className="tracing-magic-meter-bar">
+                <div
+                  className="tracing-magic-meter-fill"
+                  style={{
+                    width: `${tracingPercent}%`,
+                    background: isAutoRecognized ? 'linear-gradient(90deg, #10ac84, #2ed573)' : undefined,
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Interactive Tracing Board */}
+            <div
+              ref={canvasRef}
+              onPointerDown={handleTouchDraw}
+              onPointerMove={(e) => {
+                if (e.buttons > 0) handleTouchDraw(e);
               }}
-            >
-              {selectedLetter.char}
-            </span>
-
-            {/* Glowing Trace Points Drawn by Toddler */}
-            {tracedPoints.map((pt, idx) => (
-              <div
-                key={idx}
-                style={{
-                  position: 'absolute',
-                  left: `${pt.x - 14}px`,
-                  top: `${pt.y - 14}px`,
-                  width: '28px',
-                  height: '28px',
-                  borderRadius: '50%',
-                  background: selectedLetter.color,
-                  boxShadow: `0 0 14px ${selectedLetter.color}`,
-                  pointerEvents: 'none',
-                }}
-              />
-            ))}
-
-            <span style={{ position: 'absolute', bottom: '12px', fontSize: '0.8rem', fontWeight: 800, color: '#b2bec3' }}>
-              ✨ Glisse ton doigt ici ✨
-            </span>
-          </div>
-
-          {/* Tracing Controls */}
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
-            <button
-              onClick={completeTracing}
+              onTouchMove={handleTouchDraw}
               style={{
-                background: 'linear-gradient(135deg, #2ed573, #10ac84)',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '999px',
-                padding: '10px 22px',
-                fontSize: '0.95rem',
-                fontWeight: 900,
-                cursor: 'pointer',
-                boxShadow: '0 4px 0 #0b684f, 0 8px 16px rgba(16, 172, 132, 0.3)',
+                width: 'min(320px, calc(100vw - 36px))',
+                height: 'min(320px, calc(100vw - 36px))',
+                borderRadius: '32px',
+                border: `5px solid ${selectedLetter.color}`,
+                background: '#ffffff',
+                boxShadow: isAutoRecognized
+                  ? '0 0 28px rgba(46, 213, 115, 0.7), 0 12px 28px rgba(0,0,0,0.15)'
+                  : '0 12px 28px rgba(0,0,0,0.15)',
+                position: 'relative',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
+                justifyContent: 'center',
+                cursor: 'crosshair',
+                overflow: 'hidden',
+                touchAction: 'none',
+                userSelect: 'none',
+                transition: 'box-shadow 0.25s ease',
               }}
             >
-              <Check size={20} /> J'ai fini de tracer ! ⭐
-            </button>
-            <button onClick={clearTracing} className="refresh-mission-btn">
-              <RotateCcw size={18} /> Effacer la feuille
-            </button>
-          </div>
-
-          {/* Quick Letter Switcher for Tracing */}
-          <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', maxWidth: '100%', padding: '4px' }}>
-            {ALPHABET_A_TO_Z.map((item) => (
-              <button
-                key={item.char}
-                onClick={() => {
-                  setSelectedLetter(item);
-                  setTracedPoints([]);
-                  sounds.playPop();
-                }}
+              {/* Guide letter in background */}
+              <span
                 style={{
-                  background: selectedLetter.char === item.char ? item.color : '#ffffff',
-                  color: selectedLetter.char === item.char ? '#ffffff' : '#2d3436',
-                  border: '2px solid #dfe6e9',
-                  borderRadius: '12px',
-                  padding: '6px 10px',
+                  fontSize: 'clamp(8.5rem, 38vw, 15rem)',
                   fontWeight: 900,
-                  cursor: 'pointer',
-                  minWidth: '42px',
+                  color: '#f1f2f6',
+                  fontFamily: "'Fredoka', 'Quicksand', sans-serif",
+                  position: 'absolute',
+                  userSelect: 'none',
+                  pointerEvents: 'none',
+                  textShadow: `0 0 20px ${selectedLetter.color}33`,
                 }}
               >
-                {item.char}
+                {selectedLetter.char}
+              </span>
+
+              {/* Glowing Trace Points Drawn by Toddler */}
+              {tracedPoints.map((pt, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    position: 'absolute',
+                    left: `${pt.x - 14}px`,
+                    top: `${pt.y - 14}px`,
+                    width: '28px',
+                    height: '28px',
+                    borderRadius: '50%',
+                    background: selectedLetter.color,
+                    boxShadow: `0 0 14px ${selectedLetter.color}`,
+                    pointerEvents: 'none',
+                  }}
+                />
+              ))}
+
+              {/* Automatic Recognition Celebration Overlay */}
+              {isAutoRecognized && (
+                <div
+                  className="animate-pop"
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'rgba(255, 255, 255, 0.92)',
+                    backdropFilter: 'blur(4px)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 25,
+                    padding: '16px',
+                    textAlign: 'center',
+                  }}
+                >
+                  <span style={{ fontSize: '4.2rem' }} className="animate-bounce-soft">🎉⭐</span>
+                  <h3 style={{ color: '#10ac84', fontWeight: 900, margin: '6px 0', fontSize: '1.45rem' }}>
+                    Bien tracé ! Bravo !
+                  </h3>
+                  <p style={{ margin: 0, fontWeight: 800, color: '#2d3436', fontSize: '0.92rem' }}>
+                    Lettre suivante en cours... 🚀
+                  </p>
+                </div>
+              )}
+
+              {!isAutoRecognized && tracedPoints.length === 0 && (
+                <span style={{ position: 'absolute', bottom: '12px', fontSize: '0.8rem', fontWeight: 800, color: '#b2bec3' }}>
+                  ✨ Glisse ton doigt ici ✨
+                </span>
+              )}
+            </div>
+
+            {/* Tracing Controls */}
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
+              <button
+                onClick={completeTracing}
+                style={{
+                  background: 'linear-gradient(135deg, #2ed573, #10ac84)',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '999px',
+                  padding: '10px 22px',
+                  fontSize: '0.95rem',
+                  fontWeight: 900,
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 0 #0b684f, 0 8px 16px rgba(16, 172, 132, 0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
+                <Check size={20} /> Valider le tracé ⭐
               </button>
-            ))}
+              <button onClick={clearTracing} className="refresh-mission-btn">
+                <RotateCcw size={18} /> Effacer la feuille
+              </button>
+            </div>
+
+            {/* Quick Large Letter Switcher Ribbon */}
+            <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', maxWidth: '100%', padding: '6px 2px' }}>
+              {ALPHABET_A_TO_Z.map((item) => (
+                <button
+                  key={item.char}
+                  onClick={() => {
+                    setSelectedLetter(item);
+                    setTracedPoints([]);
+                    setIsAutoRecognized(false);
+                    sounds.playPop();
+                  }}
+                  style={{
+                    background: selectedLetter.char === item.char ? item.color : '#ffffff',
+                    color: selectedLetter.char === item.char ? '#ffffff' : '#2d3436',
+                    border: selectedLetter.char === item.char ? '3px solid #ffffff' : '2px solid #dfe6e9',
+                    borderRadius: '16px',
+                    padding: '8px 12px',
+                    fontWeight: 900,
+                    cursor: 'pointer',
+                    minWidth: '50px',
+                    height: '50px',
+                    fontSize: '1.25rem',
+                    boxShadow: selectedLetter.char === item.char ? '0 4px 12px rgba(0,0,0,0.2)' : 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {item.char}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* =========================================================================
           MODE 3: 4-CARD TODDLER MYSTERY QUIZ
