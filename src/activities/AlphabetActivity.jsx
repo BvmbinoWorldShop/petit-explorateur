@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { doraVoice } from '../utils/speech';
 import { sounds } from '../utils/audio';
+import { haptics } from '../utils/haptics';
+import { getLetterWaypoints, evaluateStrokeTouch } from '../utils/letterPaths';
 import confetti from 'canvas-confetti';
 import { Sparkles, RotateCcw, Volume2, Award, BookOpen, Target, Puzzle, PenTool, Check } from 'lucide-react';
 
@@ -53,6 +55,7 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
 
   // Tracing State
   const [tracedPoints, setTracedPoints] = useState([]);
+  const [validatedWaypointIds, setValidatedWaypointIds] = useState(new Set());
   const [isAutoRecognized, setIsAutoRecognized] = useState(false);
   const canvasRef = useRef(null);
 
@@ -173,7 +176,7 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
     }
   };
 
-  // Tracing drawing handlers with automatic recognition
+  // Accurate tracing drawing handlers with true letter stroke path tracking
   const handleTouchDraw = (e) => {
     if (isAutoRecognized) return;
     const canvas = canvasRef.current;
@@ -184,22 +187,22 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
     const x = clientX - rect.left;
     const y = clientY - rect.top;
 
-    sounds.playPop();
-    const newPoints = [...tracedPoints, { x, y }];
+    const waypoints = getLetterWaypoints(selectedLetter.char);
+    const strokeEval = evaluateStrokeTouch(x, y, rect.width, rect.height, waypoints, validatedWaypointIds, 16);
+
+    const newPoints = [...tracedPoints, { x, y, isOnPath: strokeEval.isOnPath }];
     setTracedPoints(newPoints);
 
-    // Automatic letter recognition logic:
-    // When the toddler has traced enough points with sufficient spatial coverage of the letter
-    if (newPoints.length >= 10 && !isAutoRecognized) {
-      const minX = Math.min(...newPoints.map((p) => p.x));
-      const maxX = Math.max(...newPoints.map((p) => p.x));
-      const minY = Math.min(...newPoints.map((p) => p.y));
-      const maxY = Math.max(...newPoints.map((p) => p.y));
-      const spreadX = maxX - minX;
-      const spreadY = maxY - minY;
+    if (strokeEval.newlyHitId) {
+      sounds.playPop();
+      haptics.pop();
+      const nextSet = new Set(validatedWaypointIds);
+      nextSet.add(strokeEval.newlyHitId);
+      setValidatedWaypointIds(nextSet);
 
-      // When the finger stroke spans at least 65px wide and 70px tall, or 18+ points traced
-      if ((spreadX > 65 && spreadY > 70 && newPoints.length >= 12) || newPoints.length >= 22) {
+      // Require tracing along at least 75% of the letter's stroke waypoints
+      const threshold = Math.max(3, Math.ceil(waypoints.length * 0.75));
+      if (nextSet.size >= threshold && !isAutoRecognized) {
         triggerAutoSuccess();
       }
     }
@@ -208,29 +211,32 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
   const triggerAutoSuccess = () => {
     setIsAutoRecognized(true);
     sounds.playSuccess();
-    sounds.playChime();
-    confetti({ particleCount: 75, spread: 70 });
+    haptics.celebrate();
+    confetti({ particleCount: 50, spread: 60 });
     if (onRewardStar) onRewardStar();
 
-    const praise = `Bravo champion ! Tu as magnifiquement tracé la lettre ${selectedLetter.char} ! Passons à la lettre suivante !`;
+    const praise = `Bravo, la lettre ${selectedLetter.char} est bien tracée ! Passons à la suivante.`;
     onNiaSpeak(praise);
     doraVoice.speak(praise);
 
-    // Automatically transition to the next letter of the alphabet after short celebration!
+    // Transition to the next letter smoothly
     setTimeout(() => {
       const currentIdx = ALPHABET_A_TO_Z.findIndex((l) => l.char === selectedLetter.char);
       const nextLetter = ALPHABET_A_TO_Z[(currentIdx + 1) % ALPHABET_A_TO_Z.length];
       setSelectedLetter(nextLetter);
       setTracedPoints([]);
+      setValidatedWaypointIds(new Set());
       setIsAutoRecognized(false);
     }, 1800);
   };
 
   const clearTracing = () => {
     sounds.playPop();
+    haptics.tap();
     setTracedPoints([]);
+    setValidatedWaypointIds(new Set());
     setIsAutoRecognized(false);
-    doraVoice.speak(`Feuille magique effacée ! Trace à nouveau la lettre ${selectedLetter.char} !`);
+    doraVoice.speak(`C'est effacé ! Trace à nouveau la lettre ${selectedLetter.char}.`);
   };
 
   const completeTracing = () => {
@@ -337,14 +343,15 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
             </div>
           </div>
 
-          {/* Horizontal Swiping Ribbon A to Z (Scroll Left to Right) */}
+          {/* Square Glassy Morphic Letter Ribbon (Scroll Left to Right) */}
           <div style={{ width: '100%', marginBottom: '4px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-              <span style={{ fontSize: '0.82rem', fontWeight: 900, color: '#636e72', textTransform: 'uppercase' }}>
-                🔤 Défilement de gauche à droite (A à Z) ➡️
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <span style={{ fontSize: '0.82rem', fontWeight: 900, color: '#636e72', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                ✨ 26 Lettres Morphiques Carrées (Défilement fluide) ➡️
               </span>
             </div>
             <div
+              className="glassy-letters-scroll-deck"
               style={{
                 display: 'flex',
                 gap: '8px',
@@ -362,38 +369,47 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
                   <button
                     key={`ribbon-${item.char}`}
                     onClick={() => handleLetterClick(item)}
-                    className="letter-tile-btn animate-pop"
+                    className={`glassy-square-letter-btn ${isSelected ? 'active-selected' : ''}`}
                     style={{
-                      flex: '0 0 54px',
-                      minHeight: '54px',
-                      background: `linear-gradient(135deg, ${item.color} 0%, #2d3436 180%)`,
-                      border: isSelected ? '3px solid #ffffff' : '2px solid rgba(255,255,255,0.85)',
-                      transform: isSelected ? 'scale(1.06)' : undefined,
-                      padding: '4px 2px',
+                      borderColor: isSelected ? item.color : 'rgba(255, 255, 255, 0.75)',
+                      boxShadow: isSelected
+                        ? `0 0 16px ${item.color}88, 0 6px 14px rgba(0,0,0,0.12)`
+                        : '0 4px 12px rgba(0, 0, 0, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)',
+                      background: isSelected
+                        ? `linear-gradient(135deg, ${item.color}22 0%, rgba(255,255,255,0.9) 100%)`
+                        : 'rgba(255, 255, 255, 0.7)',
                     }}
                   >
-                    <span className="tile-letter-char" style={{ fontSize: '1.25rem' }}>{item.char}</span>
-                    <span className="tile-word-fr" style={{ fontSize: '0.62rem' }}>{item.emoji} {item.wordFr}</span>
+                    <span className="glassy-char" style={{ color: isSelected ? item.color : '#2d3436' }}>{item.char}</span>
+                    <span className="glassy-emoji">{item.emoji}</span>
                   </button>
                 );
               })}
             </div>
           </div>
 
-          {/* Full Grid of All 26 Letters */}
-          <div className="alphabet-grid-container">
+          {/* Full Grid of All 26 Letters in Square Glassy Morphic Style */}
+          <div className="alphabet-grid-container glassy-grid">
             {ALPHABET_A_TO_Z.map((item) => {
               const isSelected = selectedLetter.char === item.char;
               return (
                 <button
                   key={item.char}
                   onClick={() => handleLetterClick(item)}
-                  className={`letter-tile-btn ${isSelected ? 'selected' : ''}`}
-                  style={{ backgroundColor: item.color }}
+                  className={`glassy-square-letter-btn ${isSelected ? 'active-selected' : ''}`}
+                  style={{
+                    borderColor: isSelected ? item.color : 'rgba(255, 255, 255, 0.75)',
+                    boxShadow: isSelected
+                      ? `0 0 16px ${item.color}88, 0 6px 14px rgba(0,0,0,0.12)`
+                      : '0 4px 10px rgba(0, 0, 0, 0.05), inset 0 1px 1px rgba(255,255,255,0.9)',
+                    background: isSelected
+                      ? `linear-gradient(135deg, ${item.color}22 0%, rgba(255,255,255,0.9) 100%)`
+                      : 'rgba(255, 255, 255, 0.7)',
+                  }}
                   title={`Lettre ${item.char} comme ${item.wordFr}`}
                 >
-                  <span className="tile-char">{item.char}{item.lower}</span>
-                  <span className="tile-emoji">{item.emoji}</span>
+                  <span className="glassy-char" style={{ color: isSelected ? item.color : '#2d3436' }}>{item.char}</span>
+                  <span className="glassy-emoji">{item.emoji}</span>
                 </button>
               );
             })}
@@ -402,25 +418,13 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
       )}
 
       {/* =========================================================================
-          MODE 2: MAGIC TRACING / FINGER DRAWING (WITH AUTOMATIC RECOGNITION)
+          MODE 2: ACCURATE FINGER LETTER TRACING (SENSES EXACT LETTER PATH)
          ========================================================================= */}
       {mode === 'tracing' && (() => {
-        const pointsCount = tracedPoints.length;
-        const minX = pointsCount > 0 ? Math.min(...tracedPoints.map((p) => p.x)) : 0;
-        const maxX = pointsCount > 0 ? Math.max(...tracedPoints.map((p) => p.x)) : 0;
-        const minY = pointsCount > 0 ? Math.min(...tracedPoints.map((p) => p.y)) : 0;
-        const maxY = pointsCount > 0 ? Math.max(...tracedPoints.map((p) => p.y)) : 0;
-        const spreadX = maxX - minX;
-        const spreadY = maxY - minY;
-        const rawPercent = Math.min(
-          100,
-          Math.round(
-            Math.min(pointsCount / 14, 1) * 40 +
-            Math.min(spreadX / 65, 1) * 30 +
-            Math.min(spreadY / 70, 1) * 30
-          )
-        );
-        const tracingPercent = isAutoRecognized ? 100 : rawPercent;
+        const waypoints = getLetterWaypoints(selectedLetter.char);
+        const hitCount = validatedWaypointIds.size;
+        const totalCount = waypoints.length || 1;
+        const progressPct = isAutoRecognized ? 100 : Math.min(100, Math.round((hitCount / totalCount) * 100));
 
         const currentIdx = ALPHABET_A_TO_Z.findIndex((l) => l.char === selectedLetter.char);
         const prevLetter = ALPHABET_A_TO_Z[(currentIdx - 1 + ALPHABET_A_TO_Z.length) % ALPHABET_A_TO_Z.length];
@@ -429,21 +433,23 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
         const selectLetter = (item) => {
           setSelectedLetter(item);
           setTracedPoints([]);
+          setValidatedWaypointIds(new Set());
           setIsAutoRecognized(false);
           sounds.playPop();
-          doraVoice.speak(`Lettre ${item.char} ! ${item.rhyme}`);
+          haptics.tap();
+          doraVoice.speak(`Lettre ${item.char}. ${item.rhyme}`);
         };
 
         return (
           <div className="tracing-mode-container">
             {/* Top Guidance Card (Compact in Landscape) */}
             <div className="mission-question-card tracing-header-card" style={{ width: '100%', maxWidth: '540px', textAlign: 'center' }}>
-              <span className="mission-badge">Traçage au doigt automatique :</span>
+              <span className="mission-badge">Traçage précis du contour :</span>
               <h3 style={{ fontSize: '1.25rem', margin: '4px 0' }}>
-                Trace la lettre <strong style={{ color: selectedLetter.color }}>{selectedLetter.char} {selectedLetter.lower}</strong> ({selectedLetter.wordFr} {selectedLetter.emoji}) !
+                Suis le chemin de la lettre <strong style={{ color: selectedLetter.color }}>{selectedLetter.char} {selectedLetter.lower}</strong> ({selectedLetter.wordFr} {selectedLetter.emoji}) !
               </h3>
               <p className="tracing-guide-sub" style={{ margin: 0, fontWeight: 700, color: '#636e72', fontSize: '0.85rem' }}>
-                Glisse ton doigt : elle se valide automatiquement dès que c'est bien tracé !
+                Passe ton doigt sur les points numérotés pour bien former la lettre !
               </p>
             </div>
 
@@ -461,13 +467,13 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
 
                 <div className="tracing-meter-pill">
                   <span style={{ fontSize: '0.78rem', fontWeight: 900 }}>
-                    {isAutoRecognized ? '⭐ 100%' : `${tracingPercent}%`}
+                    {isAutoRecognized ? '⭐ 100%' : `${progressPct}%`}
                   </span>
                   <div className="tracing-magic-meter-bar mini-meter">
                     <div
                       className="tracing-magic-meter-fill"
                       style={{
-                        width: `${tracingPercent}%`,
+                        width: `${progressPct}%`,
                         background: isAutoRecognized ? 'linear-gradient(90deg, #10ac84, #2ed573)' : undefined,
                       }}
                     />
@@ -503,19 +509,54 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
                     {selectedLetter.char}
                   </span>
 
-                  {/* Glowing Trace Points Drawn by Toddler */}
+                  {/* Waypoint Guide Dots along the true letter path */}
+                  {waypoints.map((wp, idx) => {
+                    const isHit = validatedWaypointIds.has(wp.id);
+                    return (
+                      <div
+                        key={wp.id}
+                        style={{
+                          position: 'absolute',
+                          left: `${wp.x}%`,
+                          top: `${wp.y}%`,
+                          transform: 'translate(-50%, -50%)',
+                          width: isHit ? '22px' : '16px',
+                          height: isHit ? '22px' : '16px',
+                          borderRadius: '50%',
+                          background: isHit ? '#2ed573' : 'rgba(255, 255, 255, 0.9)',
+                          border: isHit ? '2px solid #ffffff' : `2px solid ${selectedLetter.color}`,
+                          boxShadow: isHit
+                            ? '0 0 14px #2ed573'
+                            : `0 0 8px ${selectedLetter.color}55`,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '0.62rem',
+                          fontWeight: 900,
+                          color: isHit ? '#ffffff' : '#636e72',
+                          pointerEvents: 'none',
+                          transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                          zIndex: 10,
+                        }}
+                      >
+                        {isHit ? '⭐' : idx + 1}
+                      </div>
+                    );
+                  })}
+
+                  {/* Glowing Trace Points Drawn by Child */}
                   {tracedPoints.map((pt, idx) => (
                     <div
                       key={idx}
                       style={{
                         position: 'absolute',
-                        left: `${pt.x - 14}px`,
-                        top: `${pt.y - 14}px`,
-                        width: '28px',
-                        height: '28px',
+                        left: `${pt.x - 12}px`,
+                        top: `${pt.y - 12}px`,
+                        width: '24px',
+                        height: '24px',
                         borderRadius: '50%',
-                        background: selectedLetter.color,
-                        boxShadow: `0 0 14px ${selectedLetter.color}`,
+                        background: pt.isOnPath ? selectedLetter.color : 'rgba(200, 200, 200, 0.35)',
+                        boxShadow: pt.isOnPath ? `0 0 12px ${selectedLetter.color}` : 'none',
                         pointerEvents: 'none',
                       }}
                     />
@@ -528,7 +569,7 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
                       style={{
                         position: 'absolute',
                         inset: 0,
-                        background: 'rgba(255, 255, 255, 0.92)',
+                        background: 'rgba(255, 255, 255, 0.94)',
                         backdropFilter: 'blur(4px)',
                         display: 'flex',
                         flexDirection: 'column',
@@ -541,7 +582,7 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
                     >
                       <span style={{ fontSize: '3.6rem' }} className="animate-bounce-soft">🎉⭐</span>
                       <h3 style={{ color: '#10ac84', fontWeight: 900, margin: '4px 0', fontSize: '1.35rem' }}>
-                        Bien tracé ! Bravo !
+                        Bien tracé !
                       </h3>
                       <p style={{ margin: 0, fontWeight: 800, color: '#2d3436', fontSize: '0.85rem' }}>
                         Lettre suivante en cours... 🚀
@@ -550,8 +591,8 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
                   )}
 
                   {!isAutoRecognized && tracedPoints.length === 0 && (
-                    <span style={{ position: 'absolute', bottom: '12px', fontSize: '0.8rem', fontWeight: 800, color: '#b2bec3' }}>
-                      ✨ Glisse ton doigt ici ✨
+                    <span style={{ position: 'absolute', bottom: '12px', fontSize: '0.8rem', fontWeight: 800, color: '#b2bec3', zIndex: 12 }}>
+                      ✨ Glisse ton doigt sur les points ✨
                     </span>
                   )}
                 </div>

@@ -5626,6 +5626,363 @@ body {
   }
 }
 
+/* =========================================================================
+   SQUARE GLASSY-MORPHIC LETTER CARDS & HORIZONTAL SCROLL DECK
+   ========================================================================= */
+.glassy-square-letter-btn {
+  width: 52px;
+  height: 52px;
+  aspect-ratio: 1 / 1;
+  border-radius: 16px;
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  flex: 0 0 52px;
+  box-sizing: border-box;
+}
+
+.glassy-square-letter-btn:active {
+  transform: scale(0.94);
+}
+
+.glassy-square-letter-btn.active-selected {
+  transform: scale(1.08);
+}
+
+.glassy-square-letter-btn .glassy-char {
+  font-size: 1.35rem;
+  font-weight: 900;
+  line-height: 1;
+  font-family: var(--font-family);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.glassy-square-letter-btn .glassy-emoji {
+  font-size: 0.95rem;
+  line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
+}
+
+.alphabet-grid-container.glassy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+  gap: 7px;
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  .alphabet-grid-container.glassy-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+}
+
+/* =========================================================================
+   ACCURATE LETTER TRACING WAYPOINT GUIDE DOTS
+   ========================================================================= */
+.tracing-guide-dot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.62rem;
+  font-weight: 900;
+  pointer-events: none;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 10;
+}
+
+.tracing-guide-dot.dot-waiting {
+  width: 18px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #636e72;
+}
+
+.tracing-guide-dot.dot-hit {
+  width: 22px;
+  height: 22px;
+  background: #2ed573;
+  color: #ffffff;
+  border-color: #ffffff !important;
+  box-shadow: 0 0 14px #2ed573;
+}
+
+/* =========================================================================
+   FARM OVERHAUL: BIG MEADOW AT TOP + IN-FARM EGG & GRAIN RESERVE DEPOT
+   ========================================================================= */
+.mega-farm-top-land {
+  min-height: 380px !important;
+  height: 52vh !important;
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+}
+
+@media (max-width: 600px) {
+  .mega-farm-top-land {
+    min-height: 340px !important;
+    height: 48vh !important;
+  }
+}
+
+.farm-top-bar-strip {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  z-index: 12;
+}
+
+/* 3D EGG & GRAIN RESERVE DEPOT INSIDE THE FARM LAND */
+.in-farm-reserve-depot {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: min(230px, 50vw);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  padding: 8px 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), inset 0 1px 1px #ffffff;
+  z-index: 14;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  transition: all 0.25s ease;
+}
+
+.in-farm-reserve-depot.reserve-has-eggs {
+  border-color: #f59e0b;
+  box-shadow: 0 0 18px rgba(245, 158, 11, 0.4), 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.depot-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.depot-badge {
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: #2d3436;
+}
+
+.depot-status-pill {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #e67e22;
+}
+
+.depot-flow-banner {
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-align: center;
+}
+
+.depot-flow-in {
+  background: #d4edda;
+  color: #155724;
+}
+
+.depot-flow-out {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.depot-egg-rack {
+  min-height: 48px;
+  max-height: 80px;
+  overflow-y: auto;
+  background: rgba(241, 242, 246, 0.75);
+  border-radius: 12px;
+  padding: 4px;
+}
+
+.empty-depot-placeholder {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.65rem;
+  color: #a4b0be;
+  font-weight: 700;
+  justify-content: center;
+  height: 100%;
+}
+
+.depot-eggs-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  align-items: center;
+}
+
+.depot-egg-item {
+  font-size: 1.15rem;
+  line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+
+.depot-extra-eggs-badge {
+  font-size: 0.7rem;
+  font-weight: 900;
+  color: #d35400;
+  background: #ffeaa7;
+  padding: 1px 5px;
+  border-radius: 8px;
+}
+
+.depot-grain-footer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  color: #2d3436;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding-top: 3px;
+}
+
+.depot-grain-footer strong {
+  color: #0984e3;
+}
+
+/* =========================================================================
+   SEAMLESS UI GLASSY-MORPHIC ACTION PILL BUTTONS (BELOW FARM LAND)
+   ========================================================================= */
+.glassy-farm-action-dock {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 12px 0 16px 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .glassy-farm-action-dock {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin: 8px 0 12px 0;
+  }
+}
+
+.glassy-dock-pill-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 18px;
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  cursor: pointer;
+  position: relative;
+  font-family: var(--font-family);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  text-align: left;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.95);
+}
+
+.glassy-dock-pill-btn:active:not(:disabled) {
+  transform: translateY(2px) scale(0.97);
+}
+
+.glassy-dock-pill-btn:disabled {
+  opacity: 0.5;
+  filter: grayscale(0.5);
+  cursor: not-allowed;
+}
+
+.btn-glass-blue {
+  background: linear-gradient(135deg, rgba(72, 219, 251, 0.35) 0%, rgba(9, 132, 227, 0.5) 100%);
+  border-color: rgba(72, 219, 251, 0.9);
+}
+
+.btn-glass-yellow {
+  background: linear-gradient(135deg, rgba(254, 202, 87, 0.38) 0%, rgba(255, 159, 67, 0.52) 100%);
+  border-color: rgba(254, 202, 87, 0.9);
+}
+
+.btn-glass-green {
+  background: linear-gradient(135deg, rgba(29, 209, 161, 0.35) 0%, rgba(16, 172, 132, 0.5) 100%);
+  border-color: rgba(29, 209, 161, 0.9);
+}
+
+.btn-glass-purple {
+  background: linear-gradient(135deg, rgba(162, 155, 254, 0.35) 0%, rgba(108, 92, 231, 0.5) 100%);
+  border-color: rgba(162, 155, 254, 0.9);
+}
+
+.glassy-btn-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.glassy-btn-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.glassy-btn-title {
+  font-size: 0.8rem;
+  font-weight: 900;
+  color: #1e272e;
+}
+
+.glassy-btn-sub {
+  font-size: 0.65rem;
+  color: #57606f;
+  font-weight: 700;
+}
+
+.glassy-btn-badge {
+  font-size: 0.72rem;
+  font-weight: 900;
+  padding: 3px 7px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #2d3436;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* =========================================================================
+   SEQUENTIAL STAGE: CASH REGISTER THEN VAULT
+   ========================================================================= */
+.farm-sequential-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+
 
 
 

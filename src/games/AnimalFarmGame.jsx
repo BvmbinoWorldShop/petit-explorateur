@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { doraVoice } from '../utils/speech';
 import { sounds } from '../utils/audio';
 import { playRealAnimalSound } from '../utils/realAnimalSounds';
+import { haptics } from '../utils/haptics';
 import confetti from 'canvas-confetti';
 import { Coins, Sparkles, Store, Users, ArrowUpRight, ArrowDownRight, Bell, Banknote, ShieldCheck } from 'lucide-react';
 
@@ -770,73 +771,17 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
       </div>
 
       {/* ========================================================= */}
-      {/* 1. MASSIVE EXPANSIVE MEADOW (OCCUPIES ALMOST HALF THE SCREEN) */}
+      {/* 1. THE FARM MEADOW ALL THE WAY TO TOP (BIGGER LAND + INSIDE RESERVE) */}
       {/* ========================================================= */}
-      <div className="pasture-canvas-field expansive-pasture mega-farm-pasture">
-        {/* Sleek top control bar inside meadow */}
-        <div className="pasture-header-row sleek-dock-bar">
-          <div className="pasture-status-badges">
-            <span className="pasture-tag glowing-tag">
-              🐔 <strong>{chickens.length}</strong> Poules Pixar {chickens.length >= 30 ? '🎉 OBJECTIF 30+ ATTEINT !' : '(Objectif : 30+)'}
-            </span>
-
-            {/* VISUAL GRAIN RESERVE (Seeds store that visibly receives bought food) */}
-            <div className={`grain-reserve-indicator ${isGrainFlying ? 'receiving-seeds-pulse' : ''}`} title="Réserve de nourriture des poules">
-              <span className="reserve-icon">🌾</span>
-              <span className="reserve-text">Réserve : <strong>{seeds}</strong> graines</span>
-              {isGrainFlying && (
-                <span className="flying-seeds-badge animate-bounce-soft">
-                  +10 Graines ! 🌾
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Compact Sleek Action Controls */}
-          <div className="sleek-pasture-actions">
-            <button
-              onClick={buySeeds}
-              className={`sleek-buy-seeds-btn ${seeds === 0 ? 'pulse-need-seeds' : ''}`}
-              title="Acheter 10 graines (3 pièces)"
-              disabled={coins < 3}
-            >
-              <span className="pill-icon">🌾</span>
-              <span>+10 Graines</span>
-              <span className="tiny-price">3🪙</span>
-            </button>
-
-            <button
-              onClick={feedAllChickens}
-              className="sleek-feed-pill-btn"
-              title="Faire tomber des graines pour toutes les poules"
-            >
-              <span className="pill-icon">🌽</span>
-              <span>Nourrir Tout ({chickens.length})</span>
-            </button>
-
-            <button
-              onClick={() => addChickens(1)}
-              className="sleek-add-pill-btn"
-              title="Acheter 1 poule supplémentaire (10 pièces)"
-              disabled={coins < 10}
-            >
-              <span>+1 🐔</span>
-              <span className="tiny-price">10🪙</span>
-            </button>
-
-            <button
-              onClick={() => addChickens(5)}
-              className="sleek-super-flock-btn"
-              title="Ajouter 5 poules pour vite atteindre 30+ !"
-              disabled={coins < 35}
-            >
-              <span>🐣 +5 Poules !</span>
-              <span className="tiny-price">35🪙</span>
-            </button>
-          </div>
+      <div className="pasture-canvas-field expansive-pasture mega-farm-top-land">
+        {/* Top Status Tag */}
+        <div className="pasture-header-row farm-top-bar-strip">
+          <span className="pasture-tag glowing-tag">
+            🐔 <strong>{chickens.length}</strong> Poules Pixar {chickens.length >= 30 ? '🎉 OBJECTIF 30+ ATTEINT !' : '(Objectif : 30+)'}
+          </span>
         </div>
 
-        {/* Scenic Meadow Decorations with 2D/3D Interactivity */}
+        {/* Scenic Meadow Wildflowers */}
         <div className="field-grass-tufts mega-tufts">🌱 🌼 🌻 🌾 🌿 🌼 🌻 🌱 🌾 🌼 🌻 🌿</div>
         
         {/* INTERACTIVE 3D DUCK POND */}
@@ -865,6 +810,48 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
           {isCoopOpen && (
             <span className="coop-surprise-hen animate-pop">🐔🥚</span>
           )}
+        </div>
+
+        {/* 3D EGG & GRAIN RESERVE DEPOT (INSIDE THE FARM LAND) */}
+        <div className={`in-farm-reserve-depot ${eggs > 0 ? 'reserve-has-eggs' : 'reserve-empty'}`}>
+          <div className="depot-header">
+            <span className="depot-badge">🥚 Réserve du Pré</span>
+            <span className="depot-status-pill">
+              {eggs === 0 ? 'Vide... donne des graines !' : `${eggs} œuf${eggs > 1 ? 's' : ''} en stock`}
+            </span>
+          </div>
+
+          {lastEggChange && (
+            <div className={`depot-flow-banner ${lastEggChange.type === 'in' ? 'depot-flow-in' : 'depot-flow-out'} animate-pop`}>
+              {lastEggChange.type === 'in' ? `+${lastEggChange.amount} Œuf ! 🥚` : `-${lastEggChange.amount} Vendu ! 🪙`}
+            </div>
+          )}
+
+          {/* Visible 3D Egg Stacking Rack */}
+          <div className="depot-egg-rack">
+            {eggs === 0 ? (
+              <div className="empty-depot-placeholder">
+                <span>🌾</span>
+                <p>Nourris tes poules pour remplir le casier !</p>
+              </div>
+            ) : (
+              <div className="depot-eggs-grid">
+                {Array.from({ length: Math.min(eggs, 24) }).map((_, i) => (
+                  <span key={i} className="depot-egg-item animate-pop" title="Œuf frais du pré">
+                    🥚
+                  </span>
+                ))}
+                {eggs > 24 && <span className="depot-extra-eggs-badge">+{eggs - 24}</span>}
+              </div>
+            )}
+          </div>
+
+          {/* Grain level in reserve */}
+          <div className="depot-grain-footer">
+            <span className="grain-icon">🌾</span>
+            <span className="grain-text">Graines : <strong>{seeds}</strong></span>
+            {isGrainFlying && <span className="grain-pop animate-bounce-soft">+10 Graines !</span>}
+          </div>
         </div>
 
         {/* VISUALLY DROPPED SEEDS SCATTERED IN THE GARDEN WHEN FEEDING */}
@@ -910,107 +897,74 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
       </div>
 
       {/* ========================================================= */}
-      {/* 2. CHUNKY 3D TACTILE ACTION DOCK (DIRECTLY BELOW PASTURE) */}
+      {/* 2. SEAMLESS UI GLASSY-MORPHIC ACTION PILL BUTTONS */}
       {/* ========================================================= */}
-      <div className="farm-kid-action-dock">
-        {/* BUY FOOD BUTTON: PROMINENT & EASILY ACCESSIBLE FOR KIDS */}
+      <div className="glassy-farm-action-dock">
+        {/* BUY GRAIN SEEDS */}
         <button
           onClick={buySeeds}
-          className={`kid-dock-pill-btn btn-food-blue ${seeds === 0 ? 'pulse-prompt-alert' : ''}`}
+          className={`glassy-dock-pill-btn btn-glass-blue ${seeds === 0 ? 'pulse-prompt-alert' : ''}`}
           disabled={coins < 3}
           title="Acheter 10 graines (3 pièces)"
         >
-          <div className="dock-btn-icon-circle">🌾</div>
-          <div className="dock-btn-labels">
-            <span className="dock-btn-title">Acheter Graines</span>
-            <span className="dock-btn-desc">+10 au stock</span>
+          <div className="glassy-btn-icon">🌾</div>
+          <div className="glassy-btn-content">
+            <span className="glassy-btn-title">Acheter Graines</span>
+            <span className="glassy-btn-sub">+10 au stock</span>
           </div>
-          <div className="dock-btn-price-badge">3 🪙</div>
+          <div className="glassy-btn-badge">3 🪙</div>
         </button>
 
         {/* FEED ALL CHICKENS */}
         <button
           onClick={feedAllChickens}
-          className="kid-dock-pill-btn btn-feed-yellow"
+          className="glassy-dock-pill-btn btn-glass-yellow"
           disabled={seeds < 1}
           title="Faire tomber des graines pour toutes les poules"
         >
-          <div className="dock-btn-icon-circle">🌽</div>
-          <div className="dock-btn-labels">
-            <span className="dock-btn-title">Nourrir Tout</span>
-            <span className="dock-btn-desc">{chickens.length} poules</span>
+          <div className="glassy-btn-icon">🌽</div>
+          <div className="glassy-btn-content">
+            <span className="glassy-btn-title">Nourrir Tout</span>
+            <span className="glassy-btn-sub">{chickens.length} poules</span>
           </div>
-          <div className="dock-btn-cost-badge">{chickens.length} 🌾</div>
+          <div className="glassy-btn-badge">{chickens.length} 🌾</div>
         </button>
 
         {/* BUY 1 CHICKEN */}
         <button
           onClick={() => addChickens(1)}
-          className="kid-dock-pill-btn btn-hen-green"
+          className="glassy-dock-pill-btn btn-glass-green"
           disabled={coins < 10}
           title="Ajouter 1 poule (10 pièces)"
         >
-          <div className="dock-btn-icon-circle">🐔</div>
-          <div className="dock-btn-labels">
-            <span className="dock-btn-title">+1 Poule</span>
-            <span className="dock-btn-desc">Nouvelle poule</span>
+          <div className="glassy-btn-icon">🐔</div>
+          <div className="glassy-btn-content">
+            <span className="glassy-btn-title">+1 Poule</span>
+            <span className="glassy-btn-sub">Nouvelle poule</span>
           </div>
-          <div className="dock-btn-price-badge">10 🪙</div>
+          <div className="glassy-btn-badge">10 🪙</div>
         </button>
 
         {/* BUY 5 CHICKENS */}
         <button
           onClick={() => addChickens(5)}
-          className="kid-dock-pill-btn btn-flock-purple"
+          className="glassy-dock-pill-btn btn-glass-purple"
           disabled={coins < 35}
           title="Ajouter 5 poules d'un coup (35 pièces)"
         >
-          <div className="dock-btn-icon-circle">🐣</div>
-          <div className="dock-btn-labels">
-            <span className="dock-btn-title">+5 Poules</span>
-            <span className="dock-btn-desc">Super troupeau</span>
+          <div className="glassy-btn-icon">🐣</div>
+          <div className="glassy-btn-content">
+            <span className="glassy-btn-title">+5 Poules</span>
+            <span className="glassy-btn-sub">Super troupeau</span>
           </div>
-          <div className="dock-btn-price-badge">35 🪙</div>
+          <div className="glassy-btn-badge">35 🪙</div>
         </button>
       </div>
 
       {/* ========================================================= */}
-      {/* 3. LOWER SECTION: EGGS SILO + 3D CASH REGISTER + 3D VAULT */}
+      {/* 3. CASH REGISTER & CLIENT COUNTER (FOLLOWS ACTION DOCK) */}
       {/* ========================================================= */}
-      <div className="farm-merchant-bottom-stage">
-        {/* --- LEFT: EGG TRAY SILO --- */}
-        <div className="visual-silo-column egg-silo compact-silo">
-          <div className="silo-header">
-            <h4>🥚 Casier à Œufs</h4>
-            <span className="silo-count-badge">{eggs}</span>
-          </div>
-
-          {lastEggChange && (
-            <div className={`flow-indicator-banner ${lastEggChange.type === 'in' ? 'flow-in' : 'flow-out'} animate-pop`}>
-              {lastEggChange.type === 'in' ? (
-                <span><ArrowDownRight size={14} /> +{lastEggChange.amount} Œuf</span>
-              ) : (
-                <span><ArrowUpRight size={14} /> -{lastEggChange.amount} Vendu</span>
-              )}
-            </div>
-          )}
-
-          <div className="egg-stack-rack compact-rack">
-            {eggs === 0 ? (
-              <p className="empty-rack-hint">Casier vide... Nourris tes poules !</p>
-            ) : (
-              <div className="rack-eggs-grid mini-grid">
-                {Array.from({ length: Math.min(eggs, 24) }).map((_, i) => (
-                  <span key={i} className="rack-egg-unit animate-pop">
-                    🥚
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* --- CENTER: THE 3D CASH REGISTER & HUMAN CUSTOMER COUNTER --- */}
+      <div className="farm-merchant-bottom-stage farm-sequential-stage">
         <div className="center-cash-register-desk">
           <div className="register-desk-header">
             <Store size={22} color="#0984e3" />

@@ -62,6 +62,8 @@ class DoraVoiceEngine {
     this.isSpeaking = false;
     this.mode = 'fr'; // 'fr' (100% French) or 'bilingual' (FR + EN)
     this.listeners = new Set();
+    this.lastSpokenText = '';
+    this.lastSpokenTime = 0;
     this.initVoices();
 
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -146,32 +148,40 @@ class DoraVoiceEngine {
       return;
     }
 
+    // Gentle teacher speech throttle: avoid robot spam on rapid successive touches
+    const now = Date.now();
+    if (this.lastSpokenText === cleaned && now - this.lastSpokenTime < 2200) {
+      if (onComplete) onComplete();
+      return;
+    }
+    this.lastSpokenText = cleaned;
+    this.lastSpokenTime = now;
+
     window.speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(cleaned);
 
     if (this.frenchVoice) {
       utterance.voice = this.frenchVoice;
-      // Match the exact voice lang (e.g. fr-CA for Amélie on iOS) so iOS doesn't revert to Thomas (fr-FR)
       utterance.lang = this.frenchVoice.lang || 'fr-FR';
     } else {
       utterance.lang = 'fr-FR';
     }
 
-    // Natural, warm human female voice pitch & cadence
+    // Natural, warm, affectionate human female teacher tone (never screaming or squeaky)
     const voiceName = (this.frenchVoice?.name || '').toLowerCase();
     if (voiceName.includes('natural') || voiceName.includes('online')) {
-      utterance.pitch = 1.05;
-      utterance.rate = 0.98;
+      utterance.pitch = 1.0;
+      utterance.rate = 0.93;
     } else if (voiceName.includes('google')) {
-      utterance.pitch = 1.08;
-      utterance.rate = 0.96;
+      utterance.pitch = 1.02;
+      utterance.rate = 0.92;
     } else if (this.frenchVoice && isMaleVoice(this.frenchVoice)) {
-      utterance.pitch = 1.45;
-      utterance.rate = 0.96;
+      utterance.pitch = 1.15;
+      utterance.rate = 0.92;
     } else {
-      utterance.pitch = 1.10;
-      utterance.rate = 0.97;
+      utterance.pitch = 1.0;
+      utterance.rate = 0.92;
     }
 
     utterance.onstart = () => this.notify(true);

@@ -863,8 +863,21 @@ export default function AnimalsActivity({ onNiaSpeak, onRewardStar }) {
         </div>
       </div>
 
-      {/* Main Mode Tabs */}
-      <div className="numbers-mode-switcher" style={{ marginBottom: '12px' }}>
+      {/* Main Mode Tabs (Scrollable Left to Right) */}
+      <div
+        className="numbers-mode-switcher animals-mode-ribbon"
+        style={{
+          display: 'flex',
+          gap: '8px',
+          overflowX: 'auto',
+          touchAction: 'pan-x',
+          WebkitOverflowScrolling: 'touch',
+          width: '100%',
+          boxSizing: 'border-box',
+          paddingBottom: '4px',
+          marginBottom: '12px',
+        }}
+      >
         {GAME_MODES.map((m) => (
           <button
             key={m.id}
@@ -873,6 +886,7 @@ export default function AnimalsActivity({ onNiaSpeak, onRewardStar }) {
               setActiveMode(m.id);
             }}
             className={`num-mode-tab-btn ${activeMode === m.id ? 'active' : ''}`}
+            style={{ flex: '0 0 auto', whiteSpace: 'nowrap' }}
           >
             {m.label}
           </button>
@@ -883,9 +897,20 @@ export default function AnimalsActivity({ onNiaSpeak, onRewardStar }) {
           MODE 1: SAFARI ZOO - 36 ANIMALS EXPLORER BY HABITAT
          ========================================================================= */}
       {activeMode === 'safari' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          {/* Habitat Filter Pills */}
-          <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%' }}>
+          {/* Habitat Filter Pills (Scrollable Left to Right) */}
+          <div
+            style={{
+              display: 'flex',
+              gap: '8px',
+              overflowX: 'auto',
+              touchAction: 'pan-x',
+              WebkitOverflowScrolling: 'touch',
+              width: '100%',
+              boxSizing: 'border-box',
+              paddingBottom: '4px',
+            }}
+          >
             {HABITAT_TABS.map((h) => (
               <button
                 key={h.id}
@@ -894,7 +919,7 @@ export default function AnimalsActivity({ onNiaSpeak, onRewardStar }) {
                   setActiveHabitat(h.id);
                 }}
                 className={`num-mode-tab-btn ${activeHabitat === h.id ? 'active' : ''}`}
-                style={{ whiteSpace: 'nowrap', padding: '6px 14px', fontSize: '0.84rem' }}
+                style={{ flex: '0 0 auto', whiteSpace: 'nowrap', padding: '6px 14px', fontSize: '0.84rem' }}
               >
                 <span>{h.emoji} {h.label}</span>
               </button>
