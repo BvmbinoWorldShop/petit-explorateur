@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { doraVoice } from '../utils/speech';
 import { sounds } from '../utils/audio';
+import { playRealAnimalSound } from '../utils/realAnimalSounds';
 import confetti from 'canvas-confetti';
 import { Coins, Sparkles, Store, Users, ArrowUpRight, ArrowDownRight, Bell, Banknote, ShieldCheck } from 'lucide-react';
 
@@ -419,6 +420,12 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
   const [isRegisterRinging, setIsRegisterRinging] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
+  // 2D/3D Interactive Elements State
+  const [isCoopOpen, setIsCoopOpen] = useState(false);
+  const [isPondSplashing, setIsPondSplashing] = useState(false);
+  const [tappedChickenId, setTappedChickenId] = useState(null);
+  const [vaultSpin, setVaultSpin] = useState(false);
+
   // Real human neighbors queue
   const [customerLine, setCustomerLine] = useState([
     { ...PIXAR_CUSTOMERS[0], wants: 1 },
@@ -675,6 +682,59 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
     doraVoice.speak(msg);
   };
 
+  // 6. Interactive 3D Chicken Coop Click
+  const handleCoopClick = async () => {
+    setIsCoopOpen(true);
+    sounds.playPop();
+    await playRealAnimalSound('chicken');
+    confetti({ particleCount: 30, spread: 50, origin: { y: 0.35 } });
+
+    // Gift 1 bonus egg from the coop!
+    setEggs((prev) => prev + 1);
+    setLastEggChange({ type: 'in', amount: 1 });
+    setTimeout(() => setLastEggChange(null), 1800);
+
+    const cheer = "Cocorico ! La poule du poulailler a pondu un bel œuf frais pour toi !";
+    onNiaSpeak(cheer);
+    doraVoice.speak(cheer);
+
+    setTimeout(() => setIsCoopOpen(false), 2400);
+  };
+
+  // 7. Interactive 3D Duck Pond Click
+  const handlePondClick = async () => {
+    setIsPondSplashing(true);
+    sounds.playPop();
+    await playRealAnimalSound('duck');
+    confetti({ particleCount: 25, spread: 40, origin: { y: 0.35 } });
+
+    const quackMsg = "Coin-coin ! Les canards s'amusent et barbotent dans la mare d'eau fraîche !";
+    onNiaSpeak(quackMsg);
+    doraVoice.speak(quackMsg);
+
+    setTimeout(() => setIsPondSplashing(false), 2000);
+  };
+
+  // 8. Interactive Direct Chicken Tap
+  const handleTapChicken = async (chickId) => {
+    setTappedChickenId(chickId);
+    sounds.playPop();
+    await playRealAnimalSound('chicken');
+    feedChicken(chickId);
+    setTimeout(() => setTappedChickenId(null), 1200);
+  };
+
+  // 9. Interactive 3D Vault Door Spin
+  const handleSpinVault = () => {
+    setVaultSpin(true);
+    sounds.playCashRegister();
+    confetti({ particleCount: 30, spread: 50 });
+    const vaultMsg = `Le coffre-fort scintille avec ${coins} pièces dorées et ${bills} liasses de billets !`;
+    onNiaSpeak(vaultMsg);
+    doraVoice.speak(vaultMsg);
+    setTimeout(() => setVaultSpin(false), 1600);
+  };
+
   const activeCustomer = customerLine[0] || null;
   const currentPrice = activeCustomer ? activeCustomer.wants * 5 : 0;
 
@@ -776,10 +836,36 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
           </div>
         </div>
 
-        {/* Scenic Meadow Decorations */}
+        {/* Scenic Meadow Decorations with 2D/3D Interactivity */}
         <div className="field-grass-tufts mega-tufts">🌱 🌼 🌻 🌾 🌿 🌼 🌻 🌱 🌾 🌼 🌻 🌿</div>
-        <div className="farm-pond-corner">🦆 💦 Mare aux canards</div>
-        <div className="farm-wooden-coop compact-coop">🏡 Poulailler</div>
+        
+        {/* INTERACTIVE 3D DUCK POND */}
+        <div
+          onClick={handlePondClick}
+          className={`farm-pond-corner interactive-3d-pond ${isPondSplashing ? 'pond-splash-active' : ''}`}
+          title="Touche la mare pour faire barboter les canards !"
+        >
+          <span className="pond-duck animate-bounce-soft">🦆</span>
+          <span className="pond-label">💦 Mare aux canards</span>
+          {isPondSplashing && (
+            <div className="pond-splash-bubbles animate-pop">
+              <span>🫧</span><span>💧</span><span>🫧</span>
+            </div>
+          )}
+        </div>
+
+        {/* INTERACTIVE 3D WOODEN COOP */}
+        <div
+          onClick={handleCoopClick}
+          className={`farm-wooden-coop interactive-3d-coop ${isCoopOpen ? 'coop-door-open' : ''}`}
+          title="Touche le poulailler pour récolter un œuf surprise !"
+        >
+          <span className="coop-roof">🏡</span>
+          <span className="coop-label">Poulailler 3D</span>
+          {isCoopOpen && (
+            <span className="coop-surprise-hen animate-pop">🐔🥚</span>
+          )}
+        </div>
 
         {/* VISUALLY DROPPED SEEDS SCATTERED IN THE GARDEN WHEN FEEDING */}
         {droppedFood.map((food) => (
@@ -799,8 +885,8 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
         {chickens.map((chick) => (
           <div
             key={chick.id}
-            onClick={() => feedChicken(chick.id)}
-            className={`running-chicken-entity flock-chicken ${chick.isEating ? 'eating-state' : ''}`}
+            onClick={() => handleTapChicken(chick.id)}
+            className={`running-chicken-entity flock-chicken ${chick.isEating ? 'eating-state' : ''} ${tappedChickenId === chick.id ? 'tapped-chicken-bounce' : ''}`}
             style={{
               left: `${chick.x}%`,
               top: `${chick.y}%`,
@@ -994,14 +1080,18 @@ export default function AnimalFarmGame({ onNiaSpeak, onRewardStar }) {
 
         {/* --- RIGHT: 3D REINFORCED MONEY VAULT (BILLS & COINS ONLY IN VAULT, COUNT AT BOTTOM) --- */}
         <div className="farm-bank-vault-widget">
-          <div className="vault-metallic-box">
+          <div
+            className={`vault-metallic-box interactive-3d-vault ${vaultSpin ? 'vault-spin-dial-active' : ''}`}
+            onClick={handleSpinVault}
+            title="Touche le coffre-fort pour faire briller tes pièces et billets !"
+          >
             {/* Vault Outer Header */}
             <div className="vault-safe-door-header">
               <div className="vault-title-wrap">
                 <ShieldCheck size={18} color="#f59e0b" />
                 <span className="vault-brand">COFFRE-FORT 3D</span>
               </div>
-              <span className="vault-lock-dial">⚙️ 🔒</span>
+              <span className={`vault-lock-dial ${vaultSpin ? 'spinning-dial' : ''}`}>⚙️ 🔒</span>
             </div>
 
             {/* INSIDE VAULT CHAMBER: ONLY PHYSICAL BILLS & SHINY COINS! */}

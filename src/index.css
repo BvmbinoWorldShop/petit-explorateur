@@ -4802,38 +4802,45 @@ body {
 
 .alphabet-grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: 8px;
   width: 100%;
   box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
   .alphabet-grid-container {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 7px;
   }
 }
 
-@media (max-width: 420px) {
+@media (max-width: 480px) {
   .alphabet-grid-container {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
   }
 }
 
-/* Big 3D Tactile Letter Buttons - Easy to Tap for Toddlers */
+@media (max-width: 360px) {
+  .alphabet-grid-container {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+  }
+}
+
+/* Small, Neat 3D Tactile Letter Buttons That Fit Mobile Screen Width */
 .letter-tile-btn {
-  min-height: 88px;
-  padding: 10px 4px;
-  border-radius: 22px;
-  border: 3.5px solid rgba(255, 255, 255, 0.85);
-  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.28), 0 10px 20px rgba(0, 0, 0, 0.22);
+  min-height: 56px;
+  padding: 6px 2px;
+  border-radius: 14px;
+  border: 2.5px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.22), 0 6px 12px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 2px;
   cursor: pointer;
   touch-action: manipulation;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -4843,41 +4850,43 @@ body {
 
 @media (max-width: 600px) {
   .letter-tile-btn {
-    min-height: 78px;
-    padding: 8px 2px;
-    border-radius: 18px;
+    min-height: 50px;
+    padding: 4px 2px;
+    border-radius: 12px;
+    border-width: 2px;
+    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.12);
   }
 }
 
 .letter-tile-btn .tile-char {
-  font-size: 2.2rem;
+  font-size: 1.4rem;
   font-weight: 900;
   line-height: 1;
   color: #ffffff;
-  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
   font-family: var(--font-family);
 }
 
 @media (max-width: 600px) {
   .letter-tile-btn .tile-char {
-    font-size: 1.85rem;
+    font-size: 1.25rem;
   }
 }
 
 .letter-tile-btn .tile-emoji {
-  font-size: 1.6rem;
+  font-size: 1.1rem;
   line-height: 1;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
 }
 
 @media (max-width: 600px) {
   .letter-tile-btn .tile-emoji {
-    font-size: 1.35rem;
+    font-size: 0.92rem;
   }
 }
 
 .letter-tile-btn:hover {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
   box-shadow: 0 9px 0 rgba(0, 0, 0, 0.28), 0 14px 24px rgba(0, 0, 0, 0.3);
 }
 
@@ -5124,6 +5133,499 @@ body {
   font-weight: 900;
   margin-top: 3px;
 }
+
+/* =========================================================================
+   FARM GAME RESIZED BUTTONS & 2D/3D INTERACTIVE ELEMENTS
+   ========================================================================= */
+.interactive-3d-coop {
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.interactive-3d-coop:hover {
+  transform: scale(1.06);
+}
+
+.interactive-3d-coop:active,
+.interactive-3d-coop.coop-door-open {
+  animation: coopBounce 0.5s ease-in-out;
+  box-shadow: 0 0 16px #f39c12;
+}
+
+@keyframes coopBounce {
+  0%, 100% { transform: scale(1); }
+  35% { transform: scale(1.15) rotate(-3deg); }
+  65% { transform: scale(1.1) rotate(3deg); }
+}
+
+.interactive-3d-pond {
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.interactive-3d-pond:hover {
+  transform: scale(1.06);
+}
+
+.interactive-3d-pond:active,
+.interactive-3d-pond.pond-splash-active {
+  animation: pondSplashWobble 0.6s ease;
+}
+
+@keyframes pondSplashWobble {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.12) rotate(-2deg); }
+  50% { transform: scale(0.95) rotate(2deg); }
+  75% { transform: scale(1.05); }
+}
+
+.pond-splash-bubbles {
+  display: flex;
+  gap: 3px;
+  font-size: 1.1rem;
+}
+
+.interactive-3d-vault {
+  cursor: pointer;
+  transition: box-shadow 0.25s ease, transform 0.2s ease;
+}
+
+.interactive-3d-vault:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.35);
+}
+
+.interactive-3d-vault.vault-spin-dial-active {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.7);
+}
+
+.spinning-dial {
+  display: inline-block;
+  animation: dialSpin 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes dialSpin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.2); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.tapped-chicken-bounce {
+  animation: chickBackflip 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+@keyframes chickBackflip {
+  0% { transform: translate(-50%, -50%) scale(1); }
+  40% { transform: translate(-50%, -85%) scale(1.25) rotate(-15deg); }
+  75% { transform: translate(-50%, -45%) scale(0.95) rotate(8deg); }
+  100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+}
+
+/* =========================================================================
+   TRACING MODE LAYOUT: NORMAL (PORTRAIT) VIEW & LANDSCAPE EXTENDED VIEW
+   ========================================================================= */
+.tracing-mode-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.tracing-stage-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.tracing-canvas-card {
+  width: min(320px, calc(100vw - 36px));
+  height: min(320px, calc(100vw - 36px));
+  border-radius: 32px;
+  border-width: 5px;
+  border-style: solid;
+  background: #ffffff;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: crosshair;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  transition: box-shadow 0.25s ease;
+  margin: 0 auto;
+}
+
+.tracing-ghost-letter {
+  font-size: clamp(8.5rem, 38vw, 15rem);
+  font-weight: 900;
+  font-family: 'Fredoka', 'Quicksand', sans-serif;
+  position: absolute;
+  user-select: none;
+  pointer-events: none;
+}
+
+.tracing-side-panel {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+.tracing-meter-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 999px;
+  padding: 4px 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.tracing-magic-meter-bar.mini-meter {
+  width: 80px;
+  height: 8px;
+}
+
+.tracing-action-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 20px;
+  font-size: 0.92rem;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s ease;
+}
+
+.tracing-action-btn:active {
+  transform: scale(0.96);
+}
+
+.tracing-btn-validate {
+  background: linear-gradient(135deg, #2ed573, #10ac84);
+  color: #fff;
+  box-shadow: 0 4px 0 #0b684f, 0 8px 16px rgba(16, 172, 132, 0.35);
+}
+
+.tracing-btn-clear {
+  background: #f1f2f6;
+  color: #636e72;
+  border: 2px solid #dfe6e9;
+  box-shadow: 0 3px 0 #b2bec3;
+}
+
+.tracing-nav-arrow-btn {
+  background: linear-gradient(135deg, #ffd32a, #f39c12);
+  color: #2d3436;
+  border: 2px solid #ffffff;
+  border-radius: 16px;
+  padding: 8px 14px;
+  font-weight: 900;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #b7791f, 0 4px 10px rgba(243, 156, 18, 0.3);
+}
+
+.tracing-bottom-ribbon {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  max-width: 100%;
+  padding: 6px 2px;
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tracing-quick-pill {
+  border-radius: 14px;
+  border: 2px solid #dfe6e9;
+  padding: 6px 10px;
+  font-weight: 900;
+  cursor: pointer;
+  min-width: 44px;
+  height: 44px;
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease;
+}
+
+.tracing-quick-pill.active {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transform: scale(1.08);
+}
+
+/* =========================================================================
+   COMPREHENSIVE EXTENDED VIEW FOR LANDSCAPE PHONE/TABLET
+   (ADAPTS ALL GAMES: FARM, KITCHEN, MEMORY, XYLOPHONE, TRACING, DRAWING, MAZE)
+   ========================================================================= */
+@media (orientation: landscape) and (max-height: 600px) {
+  /* 1. Global App Bar in Landscape: Ultra compact header */
+  .app-header,
+  .brand-header-banner {
+    padding: 4px 12px !important;
+    min-height: auto !important;
+  }
+
+  .mascot-avatar-container {
+    width: 38px !important;
+    height: 38px !important;
+  }
+
+  .app-nav-tabs,
+  .primary-nav-scroller {
+    padding: 3px 6px !important;
+    gap: 6px !important;
+  }
+
+  .nav-pill-btn {
+    padding: 4px 10px !important;
+    font-size: 0.78rem !important;
+  }
+
+  .center-activity-card {
+    padding: 8px 12px !important;
+  }
+
+  .activity-card-header {
+    padding: 6px 12px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .card-main-title {
+    font-size: 1.15rem !important;
+  }
+
+  .card-subtitle {
+    display: none !important;
+  }
+
+  /* 2. Finger Letter Tracing in Landscape: "only put the letter in the middle in landscape" */
+  .tracing-mode-container {
+    gap: 6px !important;
+    padding: 0 !important;
+  }
+
+  .tracing-header-card {
+    padding: 4px 12px !important;
+    margin: 0 !important;
+  }
+
+  .tracing-header-card .mission-badge {
+    display: none !important;
+  }
+
+  .tracing-header-card h3 {
+    font-size: 0.95rem !important;
+    margin: 0 !important;
+  }
+
+  .tracing-guide-sub {
+    display: none !important;
+  }
+
+  .tracing-stage-layout {
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 18px !important;
+    width: 100% !important;
+  }
+
+  .tracing-center-board-box {
+    flex: 0 0 auto !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  .tracing-canvas-card {
+    width: min(65vh, 275px) !important;
+    height: min(65vh, 275px) !important;
+    border-radius: 24px !important;
+  }
+
+  .tracing-ghost-letter {
+    font-size: clamp(6.5rem, 26vh, 10rem) !important;
+  }
+
+  .tracing-side-panel {
+    flex-direction: column !important;
+    gap: 8px !important;
+    align-items: center !important;
+  }
+
+  .tracing-action-btn {
+    padding: 8px 14px !important;
+    font-size: 0.82rem !important;
+  }
+
+  .tracing-nav-arrow-btn {
+    padding: 6px 12px !important;
+    font-size: 0.85rem !important;
+  }
+
+  .tracing-bottom-ribbon {
+    display: none !important; /* Keep center stage exclusively for the letter */
+  }
+
+  /* 3. Farm Game in Landscape: Extended panoramic pasture & compact docks */
+  .pasture-canvas-field.expansive-pasture {
+    min-height: 230px !important;
+    height: 48vh !important;
+  }
+
+  .farm-kid-action-dock {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 8px !important;
+    margin: 6px 0 10px 0 !important;
+  }
+
+  .kid-dock-pill-btn {
+    padding: 6px 8px !important;
+    border-radius: 14px !important;
+    gap: 6px !important;
+  }
+
+  .dock-btn-icon-circle {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 1rem !important;
+  }
+
+  .dock-btn-title {
+    font-size: 0.74rem !important;
+  }
+
+  .dock-btn-desc {
+    display: none !important;
+  }
+
+  .dock-btn-price-badge,
+  .dock-btn-cost-badge {
+    font-size: 0.68rem !important;
+    padding: 2px 4px !important;
+  }
+
+  .farm-merchant-bottom-stage {
+    display: grid !important;
+    grid-template-columns: 1fr 1.6fr 1fr !important;
+    gap: 10px !important;
+  }
+
+  /* 4. Kitchen / Cooking Game in Landscape */
+  .kitchen-game-arena {
+    height: 64vh !important;
+    min-height: 260px !important;
+  }
+
+  .cooking-stations-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .assembly-burger-modal {
+    max-height: 90vh !important;
+    padding: 10px 14px !important;
+  }
+
+  .assembly-layers-tray {
+    max-height: 45vh !important;
+  }
+
+  /* 5. Memory Game in Landscape: 6 columns x 4 rows for 24 cards */
+  .memory-cards-grid {
+    grid-template-columns: repeat(6, 1fr) !important;
+    gap: 8px !important;
+    max-width: 90vw !important;
+  }
+
+  .memory-card-btn {
+    min-height: 62px !important;
+    border-radius: 14px !important;
+  }
+
+  .memory-card-btn .card-emoji {
+    font-size: 1.8rem !important;
+  }
+
+  /* 6. Musical Xylophone in Landscape: Extended rainbow bars */
+  .xylophone-bars-container {
+    height: 52vh !important;
+    min-height: 220px !important;
+    gap: 8px !important;
+  }
+
+  .xylo-bar-btn {
+    border-radius: 18px !important;
+  }
+
+  /* 7. Coloring Activity in Landscape: Flex-row centered canvas */
+  .coloring-studio-arena {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 12px !important;
+  }
+
+  .coloring-drawing-canvas-wrap {
+    flex: 0 0 auto !important;
+    width: min(65vh, 320px) !important;
+    height: min(65vh, 320px) !important;
+  }
+
+  .coloring-controls-dock {
+    flex-direction: column !important;
+    max-height: 65vh !important;
+    overflow-y: auto !important;
+  }
+
+  /* 8. Duck Maze Game in Landscape: Centered maze, docked D-pad */
+  .maze-board-container {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 16px !important;
+  }
+
+  .maze-grid-matrix {
+    width: min(65vh, 290px) !important;
+    height: min(65vh, 290px) !important;
+  }
+
+  /* 9. Alphabet & Numbers grids in Landscape */
+  .alphabet-grid-container {
+    grid-template-columns: repeat(9, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  .letter-tile-btn {
+    min-height: 48px !important;
+  }
+}
+
 
 
 

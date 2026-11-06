@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { doraVoice } from '../utils/speech';
 import { sounds } from '../utils/audio';
+import { playRealAnimalSound } from '../utils/realAnimalSounds';
 import confetti from 'canvas-confetti';
 import { RotateCcw, Volume2, Sparkles, CheckCircle2, Heart, Search, Filter } from 'lucide-react';
 
@@ -719,16 +720,30 @@ export default function AnimalsActivity({ onNiaSpeak, onRewardStar }) {
     }
   };
 
-  const handleSelectAnimal = (animal) => {
+  const handleSelectAnimal = async (animal) => {
     setSelectedAnimal(animal);
     setIsFed(false);
-    sounds.playPop();
+
+    // Play authentic real animal sound first so toddler hears real animal
+    const playedReal = await playRealAnimalSound(animal.id);
+
     const msg = `Voici ${animal.nameFr} (${animal.nameEn}) ! Il vit dans la ${animal.habitatName}. Son cri : « ${animal.soundFr} »`;
     onNiaSpeak(msg);
-    doraVoice.speakBilingual(
-      `${animal.nameFr} ! ${animal.soundFr}`,
-      `${animal.nameEn}! ${animal.soundEn}`
-    );
+
+    // Tyanna introduces bilingual name and sound cleanly
+    setTimeout(() => {
+      doraVoice.speakBilingual(
+        `${animal.nameFr} ! ${animal.soundFr}`,
+        `${animal.nameEn}! ${animal.soundEn}`
+      );
+    }, playedReal ? 1200 : 80);
+  };
+
+  const handlePlayAnimalSoundOnly = async (animal = selectedAnimal) => {
+    const played = await playRealAnimalSound(animal.id);
+    if (!played) {
+      doraVoice.speak(`${animal.nameFr} fait ${animal.soundFr} !`);
+    }
   };
 
   const handleFeedAnimal = (animal = selectedAnimal) => {
@@ -920,11 +935,11 @@ export default function AnimalsActivity({ onNiaSpeak, onRewardStar }) {
 
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                 <button
-                  onClick={() => handleSelectAnimal(selectedAnimal)}
+                  onClick={() => handlePlayAnimalSoundOnly(selectedAnimal)}
                   className="listen-again-btn"
                   style={{ background: 'linear-gradient(135deg, #0984e3, #00cec9)', color: '#fff', border: 'none' }}
                 >
-                  <Volume2 size={18} /> Écouter le Cri !
+                  <Volume2 size={18} /> 🎵 Vrai Cri de l'Animal !
                 </button>
                 <button
                   onClick={() => handleFeedAnimal(selectedAnimal)}

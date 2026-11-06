@@ -364,16 +364,16 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
                     onClick={() => handleLetterClick(item)}
                     className="letter-tile-btn animate-pop"
                     style={{
-                      flex: '0 0 74px',
-                      minHeight: '74px',
+                      flex: '0 0 54px',
+                      minHeight: '54px',
                       background: `linear-gradient(135deg, ${item.color} 0%, #2d3436 180%)`,
-                      border: isSelected ? '4px solid #ffffff' : '3px solid rgba(255,255,255,0.85)',
+                      border: isSelected ? '3px solid #ffffff' : '2px solid rgba(255,255,255,0.85)',
                       transform: isSelected ? 'scale(1.06)' : undefined,
-                      padding: '6px 2px',
+                      padding: '4px 2px',
                     }}
                   >
-                    <span className="tile-letter-char" style={{ fontSize: '1.7rem' }}>{item.char}</span>
-                    <span className="tile-word-fr" style={{ fontSize: '0.7rem' }}>{item.emoji} {item.wordFr}</span>
+                    <span className="tile-letter-char" style={{ fontSize: '1.25rem' }}>{item.char}</span>
+                    <span className="tile-word-fr" style={{ fontSize: '0.62rem' }}>{item.emoji} {item.wordFr}</span>
                   </button>
                 );
               })}
@@ -422,242 +422,188 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
         );
         const tracingPercent = isAutoRecognized ? 100 : rawPercent;
 
+        const currentIdx = ALPHABET_A_TO_Z.findIndex((l) => l.char === selectedLetter.char);
+        const prevLetter = ALPHABET_A_TO_Z[(currentIdx - 1 + ALPHABET_A_TO_Z.length) % ALPHABET_A_TO_Z.length];
+        const nextLetter = ALPHABET_A_TO_Z[(currentIdx + 1) % ALPHABET_A_TO_Z.length];
+
+        const selectLetter = (item) => {
+          setSelectedLetter(item);
+          setTracedPoints([]);
+          setIsAutoRecognized(false);
+          sounds.playPop();
+          doraVoice.speak(`Lettre ${item.char} ! ${item.rhyme}`);
+        };
+
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px', padding: '10px 0', width: '100%' }}>
-            {/* Horizontal Swiping Letter Selector (Scroll Left to Right) */}
-            <div
-              style={{
-                display: 'flex',
-                gap: '8px',
-                overflowX: 'auto',
-                padding: '4px 2px 8px 2px',
-                touchAction: 'pan-x',
-                WebkitOverflowScrolling: 'touch',
-                width: '100%',
-                maxWidth: '520px',
-                boxSizing: 'border-box',
-              }}
-            >
+          <div className="tracing-mode-container">
+            {/* Top Guidance Card (Compact in Landscape) */}
+            <div className="mission-question-card tracing-header-card" style={{ width: '100%', maxWidth: '540px', textAlign: 'center' }}>
+              <span className="mission-badge">Traçage au doigt automatique :</span>
+              <h3 style={{ fontSize: '1.25rem', margin: '4px 0' }}>
+                Trace la lettre <strong style={{ color: selectedLetter.color }}>{selectedLetter.char} {selectedLetter.lower}</strong> ({selectedLetter.wordFr} {selectedLetter.emoji}) !
+              </h3>
+              <p className="tracing-guide-sub" style={{ margin: 0, fontWeight: 700, color: '#636e72', fontSize: '0.85rem' }}>
+                Glisse ton doigt : elle se valide automatiquement dès que c'est bien tracé !
+              </p>
+            </div>
+
+            {/* Tracing Stage: Adapts in Landscape so the Letter Canvas is Centered */}
+            <div className="tracing-stage-layout">
+              {/* Left Side Dock in Landscape (Previous Letter & Progress) */}
+              <div className="tracing-side-panel tracing-panel-left">
+                <button
+                  onClick={() => selectLetter(prevLetter)}
+                  className="tracing-nav-arrow-btn"
+                  title={`Lettre précédente : ${prevLetter.char}`}
+                >
+                  <span>⬅️ {prevLetter.char}</span>
+                </button>
+
+                <div className="tracing-meter-pill">
+                  <span style={{ fontSize: '0.78rem', fontWeight: 900 }}>
+                    {isAutoRecognized ? '⭐ 100%' : `${tracingPercent}%`}
+                  </span>
+                  <div className="tracing-magic-meter-bar mini-meter">
+                    <div
+                      className="tracing-magic-meter-fill"
+                      style={{
+                        width: `${tracingPercent}%`,
+                        background: isAutoRecognized ? 'linear-gradient(90deg, #10ac84, #2ed573)' : undefined,
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* CENTER: THE BIG TRACING BOARD */}
+              <div className="tracing-center-board-box">
+                <div
+                  ref={canvasRef}
+                  onPointerDown={handleTouchDraw}
+                  onPointerMove={(e) => {
+                    if (e.buttons > 0) handleTouchDraw(e);
+                  }}
+                  onTouchMove={handleTouchDraw}
+                  className="tracing-canvas-card"
+                  style={{
+                    borderColor: selectedLetter.color,
+                    boxShadow: isAutoRecognized
+                      ? '0 0 28px rgba(46, 213, 115, 0.7), 0 12px 28px rgba(0,0,0,0.15)'
+                      : '0 12px 28px rgba(0,0,0,0.15)',
+                  }}
+                >
+                  {/* Guide letter in background */}
+                  <span
+                    className="tracing-ghost-letter"
+                    style={{
+                      color: '#f1f2f6',
+                      textShadow: `0 0 20px ${selectedLetter.color}33`,
+                    }}
+                  >
+                    {selectedLetter.char}
+                  </span>
+
+                  {/* Glowing Trace Points Drawn by Toddler */}
+                  {tracedPoints.map((pt, idx) => (
+                    <div
+                      key={idx}
+                      style={{
+                        position: 'absolute',
+                        left: `${pt.x - 14}px`,
+                        top: `${pt.y - 14}px`,
+                        width: '28px',
+                        height: '28px',
+                        borderRadius: '50%',
+                        background: selectedLetter.color,
+                        boxShadow: `0 0 14px ${selectedLetter.color}`,
+                        pointerEvents: 'none',
+                      }}
+                    />
+                  ))}
+
+                  {/* Automatic Recognition Celebration Overlay */}
+                  {isAutoRecognized && (
+                    <div
+                      className="animate-pop"
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        background: 'rgba(255, 255, 255, 0.92)',
+                        backdropFilter: 'blur(4px)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 25,
+                        padding: '16px',
+                        textAlign: 'center',
+                      }}
+                    >
+                      <span style={{ fontSize: '3.6rem' }} className="animate-bounce-soft">🎉⭐</span>
+                      <h3 style={{ color: '#10ac84', fontWeight: 900, margin: '4px 0', fontSize: '1.35rem' }}>
+                        Bien tracé ! Bravo !
+                      </h3>
+                      <p style={{ margin: 0, fontWeight: 800, color: '#2d3436', fontSize: '0.85rem' }}>
+                        Lettre suivante en cours... 🚀
+                      </p>
+                    </div>
+                  )}
+
+                  {!isAutoRecognized && tracedPoints.length === 0 && (
+                    <span style={{ position: 'absolute', bottom: '12px', fontSize: '0.8rem', fontWeight: 800, color: '#b2bec3' }}>
+                      ✨ Glisse ton doigt ici ✨
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Right Side Dock in Landscape (Validate, Clear & Next Letter) */}
+              <div className="tracing-side-panel tracing-panel-right">
+                <button
+                  onClick={() => selectLetter(nextLetter)}
+                  className="tracing-nav-arrow-btn"
+                  title={`Lettre suivante : ${nextLetter.char}`}
+                >
+                  <span>{nextLetter.char} ➡️</span>
+                </button>
+
+                <button
+                  onClick={completeTracing}
+                  className="tracing-action-btn tracing-btn-validate"
+                  title="Valider la lettre tracée"
+                >
+                  <Check size={18} /> Valider ⭐
+                </button>
+
+                <button
+                  onClick={clearTracing}
+                  className="tracing-action-btn tracing-btn-clear"
+                  title="Effacer le tracé"
+                >
+                  <RotateCcw size={16} /> Effacer
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Letter Ribbon at the Bottom */}
+            <div className="tracing-bottom-ribbon">
               {ALPHABET_A_TO_Z.map((item) => {
                 const isSelected = selectedLetter.char === item.char;
                 return (
                   <button
-                    key={`trace-pick-${item.char}`}
-                    onClick={() => {
-                      sounds.playPop();
-                      setSelectedLetter(item);
-                      setTracedPoints([]);
-                      setIsAutoRecognized(false);
-                      doraVoice.speak(`Lettre ${item.char} ! ${item.rhyme}`);
-                    }}
+                    key={item.char}
+                    onClick={() => selectLetter(item)}
+                    className={`tracing-quick-pill ${isSelected ? 'active' : ''}`}
                     style={{
-                      flex: '0 0 54px',
-                      height: '54px',
-                      borderRadius: '16px',
-                      border: isSelected ? '3.5px solid #ffffff' : '2px solid rgba(255,255,255,0.7)',
-                      background: isSelected ? '#ffd32a' : item.color,
-                      color: isSelected ? '#2d3436' : '#ffffff',
-                      fontSize: '1.4rem',
-                      fontWeight: 900,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: isSelected ? '0 0 12px #ffd32a' : '0 3px 6px rgba(0,0,0,0.15)',
-                      transform: isSelected ? 'scale(1.08)' : undefined,
+                      background: isSelected ? item.color : '#ffffff',
+                      color: isSelected ? '#ffffff' : '#2d3436',
+                      borderColor: isSelected ? '#ffffff' : '#e2e8f0',
                     }}
-                    title={`Choisir la lettre ${item.char}`}
                   >
-                    <span>{item.char}</span>
+                    {item.char}
                   </button>
                 );
               })}
-            </div>
-
-            <div className="mission-question-card" style={{ width: '100%', maxWidth: '520px', textAlign: 'center' }}>
-              <span className="mission-badge">Traçage magique automatique :</span>
-              <h3 style={{ fontSize: '1.35rem', margin: '6px 0' }}>
-                Trace la lettre <strong style={{ color: selectedLetter.color }}>{selectedLetter.char} {selectedLetter.lower}</strong> comme {selectedLetter.wordFr} {selectedLetter.emoji} !
-              </h3>
-              <p style={{ margin: 0, fontWeight: 700, color: '#636e72' }}>
-                Glisse ton doigt sur la lettre : elle se valide automatiquement dès que c'est bien tracé !
-              </p>
-            </div>
-
-            {/* Magic Tracing Progress Meter */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', width: '100%', maxWidth: '320px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: '0.88rem', fontWeight: 900, color: '#2d3436' }}>
-                <span>✨ Jauge Magique du Tracé :</span>
-                <span style={{ color: isAutoRecognized ? '#10ac84' : '#e67e22' }}>
-                  {isAutoRecognized ? '⭐ 100% Validé !' : `${tracingPercent}%`}
-                </span>
-              </div>
-              <div className="tracing-magic-meter-bar">
-                <div
-                  className="tracing-magic-meter-fill"
-                  style={{
-                    width: `${tracingPercent}%`,
-                    background: isAutoRecognized ? 'linear-gradient(90deg, #10ac84, #2ed573)' : undefined,
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Interactive Tracing Board */}
-            <div
-              ref={canvasRef}
-              onPointerDown={handleTouchDraw}
-              onPointerMove={(e) => {
-                if (e.buttons > 0) handleTouchDraw(e);
-              }}
-              onTouchMove={handleTouchDraw}
-              style={{
-                width: 'min(320px, calc(100vw - 36px))',
-                height: 'min(320px, calc(100vw - 36px))',
-                borderRadius: '32px',
-                border: `5px solid ${selectedLetter.color}`,
-                background: '#ffffff',
-                boxShadow: isAutoRecognized
-                  ? '0 0 28px rgba(46, 213, 115, 0.7), 0 12px 28px rgba(0,0,0,0.15)'
-                  : '0 12px 28px rgba(0,0,0,0.15)',
-                position: 'relative',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'crosshair',
-                overflow: 'hidden',
-                touchAction: 'none',
-                userSelect: 'none',
-                transition: 'box-shadow 0.25s ease',
-              }}
-            >
-              {/* Guide letter in background */}
-              <span
-                style={{
-                  fontSize: 'clamp(8.5rem, 38vw, 15rem)',
-                  fontWeight: 900,
-                  color: '#f1f2f6',
-                  fontFamily: "'Fredoka', 'Quicksand', sans-serif",
-                  position: 'absolute',
-                  userSelect: 'none',
-                  pointerEvents: 'none',
-                  textShadow: `0 0 20px ${selectedLetter.color}33`,
-                }}
-              >
-                {selectedLetter.char}
-              </span>
-
-              {/* Glowing Trace Points Drawn by Toddler */}
-              {tracedPoints.map((pt, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    position: 'absolute',
-                    left: `${pt.x - 14}px`,
-                    top: `${pt.y - 14}px`,
-                    width: '28px',
-                    height: '28px',
-                    borderRadius: '50%',
-                    background: selectedLetter.color,
-                    boxShadow: `0 0 14px ${selectedLetter.color}`,
-                    pointerEvents: 'none',
-                  }}
-                />
-              ))}
-
-              {/* Automatic Recognition Celebration Overlay */}
-              {isAutoRecognized && (
-                <div
-                  className="animate-pop"
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    background: 'rgba(255, 255, 255, 0.92)',
-                    backdropFilter: 'blur(4px)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 25,
-                    padding: '16px',
-                    textAlign: 'center',
-                  }}
-                >
-                  <span style={{ fontSize: '4.2rem' }} className="animate-bounce-soft">🎉⭐</span>
-                  <h3 style={{ color: '#10ac84', fontWeight: 900, margin: '6px 0', fontSize: '1.45rem' }}>
-                    Bien tracé ! Bravo !
-                  </h3>
-                  <p style={{ margin: 0, fontWeight: 800, color: '#2d3436', fontSize: '0.92rem' }}>
-                    Lettre suivante en cours... 🚀
-                  </p>
-                </div>
-              )}
-
-              {!isAutoRecognized && tracedPoints.length === 0 && (
-                <span style={{ position: 'absolute', bottom: '12px', fontSize: '0.8rem', fontWeight: 800, color: '#b2bec3' }}>
-                  ✨ Glisse ton doigt ici ✨
-                </span>
-              )}
-            </div>
-
-            {/* Tracing Controls */}
-            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
-              <button
-                onClick={completeTracing}
-                style={{
-                  background: 'linear-gradient(135deg, #2ed573, #10ac84)',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '999px',
-                  padding: '10px 22px',
-                  fontSize: '0.95rem',
-                  fontWeight: 900,
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 0 #0b684f, 0 8px 16px rgba(16, 172, 132, 0.3)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                }}
-              >
-                <Check size={20} /> Valider le tracé ⭐
-              </button>
-              <button onClick={clearTracing} className="refresh-mission-btn">
-                <RotateCcw size={18} /> Effacer la feuille
-              </button>
-            </div>
-
-            {/* Quick Large Letter Switcher Ribbon */}
-            <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', maxWidth: '100%', padding: '6px 2px' }}>
-              {ALPHABET_A_TO_Z.map((item) => (
-                <button
-                  key={item.char}
-                  onClick={() => {
-                    setSelectedLetter(item);
-                    setTracedPoints([]);
-                    setIsAutoRecognized(false);
-                    sounds.playPop();
-                  }}
-                  style={{
-                    background: selectedLetter.char === item.char ? item.color : '#ffffff',
-                    color: selectedLetter.char === item.char ? '#ffffff' : '#2d3436',
-                    border: selectedLetter.char === item.char ? '3px solid #ffffff' : '2px solid #dfe6e9',
-                    borderRadius: '16px',
-                    padding: '8px 12px',
-                    fontWeight: 900,
-                    cursor: 'pointer',
-                    minWidth: '50px',
-                    height: '50px',
-                    fontSize: '1.25rem',
-                    boxShadow: selectedLetter.char === item.char ? '0 4px 12px rgba(0,0,0,0.2)' : 'none',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {item.char}
-                </button>
-              ))}
             </div>
           </div>
         );
