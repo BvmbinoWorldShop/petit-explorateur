@@ -199,6 +199,80 @@ export function RealisticFoodSVG({ id, size = 50 }) {
           <circle cx="70" cy="42" r="4" fill="#ede0d4" />
         </svg>
       );
+    case 'burger':
+    case 'bun_bottom':
+    case 'bun_top':
+      return (
+        <svg viewBox="0 0 100 100" width={size} height={size} className="realistic-food-svg">
+          <ellipse cx="50" cy="78" rx="42" ry="12" fill="#d35400" />
+          <ellipse cx="50" cy="75" rx="40" ry="10" fill="#f39c12" />
+          {/* Patty & Cheese */}
+          <rect x="14" y="60" width="72" height="12" rx="6" fill="#4a2c11" />
+          <polygon points="18,66 82,66 78,73 22,73" fill="#f1c40f" />
+          {/* Lettuce & Tomato */}
+          <path d="M 10 56 Q 25 50 40 56 Q 60 50 80 56 Q 90 52 90 58 L 10 58 Z" fill="#2ed573" />
+          <ellipse cx="38" cy="52" rx="16" ry="6" fill="#ff4757" />
+          <ellipse cx="64" cy="52" rx="16" ry="6" fill="#ff4757" />
+          {/* Top Bun with sesame */}
+          <path d="M 12 48 C 12 18 88 18 88 48 Z" fill="#e67e22" stroke="#d35400" strokeWidth="1.5" />
+          <ellipse cx="34" cy="30" rx="2" ry="1" fill="#fff" transform="rotate(-15 34 30)" />
+          <ellipse cx="48" cy="26" rx="2" ry="1" fill="#fff" />
+          <ellipse cx="62" cy="30" rx="2" ry="1" fill="#fff" transform="rotate(15 62 30)" />
+          <ellipse cx="52" cy="36" rx="2" ry="1" fill="#fff" />
+        </svg>
+      );
+    case 'hotdog':
+    case 'hd_bun':
+    case 'hd_sausage':
+      return (
+        <svg viewBox="0 0 100 100" width={size} height={size} className="realistic-food-svg">
+          {/* Hot Dog Bun */}
+          <ellipse cx="50" cy="54" rx="46" ry="24" fill="#e67e22" stroke="#d35400" strokeWidth="2" />
+          <ellipse cx="50" cy="50" rx="42" ry="18" fill="#f5cd79" />
+          {/* Sausage */}
+          <rect x="10" y="42" width="80" height="18" rx="9" fill="#c0392b" stroke="#962d2d" strokeWidth="1.5" />
+          {/* Mustard swirl */}
+          <path d="M 16 48 Q 28 40 38 52 Q 50 40 62 52 Q 74 40 84 48" fill="none" stroke="#f1c40f" strokeWidth="4" strokeLinecap="round" />
+          {/* Ketchup drizzle */}
+          <path d="M 22 52 Q 34 44 46 54 Q 58 44 72 54" fill="none" stroke="#e74c3c" strokeWidth="3" strokeLinecap="round" />
+        </svg>
+      );
+    case 'patty':
+      return (
+        <svg viewBox="0 0 100 100" width={size} height={size} className="realistic-food-svg">
+          <ellipse cx="50" cy="50" rx="44" ry="22" fill="#5d381a" stroke="#3b220e" strokeWidth="2" />
+          <ellipse cx="50" cy="46" rx="40" ry="18" fill="#795548" />
+          <line x1="20" y1="42" x2="45" y2="52" stroke="#3b220e" strokeWidth="3" strokeLinecap="round" />
+          <line x1="40" y1="40" x2="65" y2="50" stroke="#3b220e" strokeWidth="3" strokeLinecap="round" />
+          <line x1="60" y1="42" x2="80" y2="50" stroke="#3b220e" strokeWidth="3" strokeLinecap="round" />
+        </svg>
+      );
+    case 'pickle':
+      return (
+        <svg viewBox="0 0 100 100" width={size} height={size} className="realistic-food-svg">
+          <ellipse cx="36" cy="48" rx="22" ry="20" fill="#2ecc71" stroke="#27ae60" strokeWidth="3" />
+          <ellipse cx="36" cy="48" rx="16" ry="14" fill="#a8e6cf" />
+          <ellipse cx="64" cy="54" rx="22" ry="20" fill="#2ecc71" stroke="#27ae60" strokeWidth="3" />
+          <ellipse cx="64" cy="54" rx="16" ry="14" fill="#a8e6cf" />
+        </svg>
+      );
+    case 'lettuce':
+    case 'hd_lettuce':
+      return (
+        <svg viewBox="0 0 100 100" width={size} height={size} className="realistic-food-svg">
+          <path d="M 12 60 C 10 35 30 20 50 25 C 70 20 90 35 88 60 C 75 75 25 75 12 60 Z" fill="#2ed573" stroke="#26af5f" strokeWidth="2.5" />
+          <path d="M 50 65 L 50 35 M 50 45 L 35 38 M 50 52 L 65 44" stroke="#a8e6cf" strokeWidth="3" strokeLinecap="round" />
+        </svg>
+      );
+    case 'sauce':
+    case 'hd_sauce':
+      return (
+        <svg viewBox="0 0 100 100" width={size} height={size} className="realistic-food-svg">
+          <path d="M 32 20 L 40 20 L 40 10 L 60 10 L 60 20 L 68 20 C 74 20 78 30 76 80 C 75 88 68 90 50 90 C 32 90 25 88 24 80 C 22 30 26 20 32 20 Z" fill="#e74c3c" stroke="#c0392b" strokeWidth="2" />
+          <ellipse cx="50" cy="55" rx="14" ry="18" fill="#ff7675" />
+          <text x="50" y="60" fill="#fff" fontSize="12" fontWeight="900" textAnchor="middle">SAUCE</text>
+        </svg>
+      );
     default:
       return <span>🍽️</span>;
   }
@@ -213,6 +287,10 @@ export const KITCHEN_INGREDIENTS = [
   { id: 'strawberry', location: 'fridge', nameFr: 'Les Bonnes Fraises', nameEn: 'Strawberries', emoji: '🍓', color: '#e84393' },
   { id: 'tomato', location: 'fridge', nameFr: 'La Tomate Juteuse', nameEn: 'Juicy Tomato', emoji: '🍅', color: '#ff4757' },
   { id: 'broccoli', location: 'fridge', nameFr: 'Le Brocoli Croquant', nameEn: 'Broccoli', emoji: '🥦', color: '#2ed573' },
+  { id: 'patty', location: 'fridge', nameFr: 'Le Steak Haché', nameEn: 'Burger Patty', emoji: '🥩', color: '#5d381a' },
+  { id: 'pickle', location: 'fridge', nameFr: 'Les Cornichons', nameEn: 'Pickles', emoji: '🥒', color: '#27ae60' },
+  { id: 'lettuce', location: 'fridge', nameFr: 'La Salade Verte', nameEn: 'Crisp Lettuce', emoji: '🥬', color: '#2ed573' },
+  { id: 'hd_sausage', location: 'fridge', nameFr: 'La Saucisse Dorée', nameEn: 'Sausage', emoji: '🌭', color: '#c0392b' },
 
   // IN THE CABINET / PANTRY
   { id: 'flour', location: 'cabinet', nameFr: 'La Farine Blanche', nameEn: 'Wheat Flour', emoji: '🌾', color: '#d4c3a3' },
@@ -221,9 +299,36 @@ export const KITCHEN_INGREDIENTS = [
   { id: 'honey', location: 'cabinet', nameFr: 'Le Miel Gourmand', nameEn: 'Golden Honey', emoji: '🍯', color: '#f39c12' },
   { id: 'mushroom', location: 'cabinet', nameFr: 'Les Champignons', nameEn: 'Mushrooms', emoji: '🍄', color: '#b08968' },
   { id: 'carrot', location: 'cabinet', nameFr: 'La Belle Carotte', nameEn: 'Carrot', emoji: '🥕', color: '#e67e22' },
+  { id: 'bun_bottom', location: 'cabinet', nameFr: 'Le Pain Brioché', nameEn: 'Brioche Bun', emoji: '🍞', color: '#e67e22' },
+  { id: 'sauce', location: 'cabinet', nameFr: 'La Sauce Burger', nameEn: 'Burger Sauce', emoji: '🥫', color: '#e74c3c' },
+  { id: 'bun_top', location: 'cabinet', nameFr: 'Le Pain Sésame', nameEn: 'Sesame Bun', emoji: '🍞', color: '#d35400' },
+  { id: 'hd_bun', location: 'cabinet', nameFr: 'Le Pain Hot-Dog', nameEn: 'Hot-Dog Bun', emoji: '🥖', color: '#e67e22' },
+  { id: 'hd_sauce', location: 'cabinet', nameFr: 'Ketchup & Moutarde', nameEn: 'Mustard Sauce', emoji: '🥫', color: '#f39c12' },
 ];
 
 export const KITCHEN_RECIPES = [
+  {
+    id: 'burger',
+    title: 'Le Grand Burger Gourmand 🍔',
+    description: 'Pain brioché, sauce, steak grillé, cheddar fondant, cornichons, tomates et salade fraîche !',
+    steps: ['bun_bottom', 'sauce', 'patty', 'cheese', 'pickle', 'tomato', 'lettuce', 'bun_top'],
+    isAssembly: true,
+    assemblyType: 'burger',
+    stoveAction: 'Assembler le grand burger gourmet étage par étage !',
+    resultEmoji: '🍔🍟',
+    resultTitle: 'Un burger gourmet géant ultra croustillant !',
+  },
+  {
+    id: 'hotdog',
+    title: 'Le Délicieux Hot-Dog Royal 🌭',
+    description: 'Pain moelleux, saucisse dorée, ketchup moutarde, fromage fondant et cornichons !',
+    steps: ['hd_bun', 'hd_sausage', 'hd_sauce', 'cheese', 'pickle', 'lettuce'],
+    isAssembly: true,
+    assemblyType: 'hotdog',
+    stoveAction: 'Garnir le savoureux hot-dog moelleux !',
+    resultEmoji: '🌭✨',
+    resultTitle: 'Le meilleur hot-dog gourmand de Tyanna !',
+  },
   {
     id: 'crepes',
     title: 'Les Crêpes Gourmandes aux Fraises 🥞',
@@ -263,6 +368,594 @@ export const KITCHEN_RECIPES = [
 ];
 
 // =========================================================================
+// INTERACTIVE 2D/3D BURGER & HOT-DOG POP-UP ASSEMBLY MODAL
+// =========================================================================
+export const BURGER_LAYERS_DATA = [
+  { id: 'bun_bottom', nameFr: 'Pain Brioché (Bas)', emoji: '🍞', sound: 'pop' },
+  { id: 'sauce', nameFr: 'Sauce Burger & Ketchup', emoji: '🥫', sound: 'squirt' },
+  { id: 'patty', nameFr: 'Steak Haché Grillé', emoji: '🥩', sound: 'sizzle' },
+  { id: 'cheese', nameFr: 'Cheddar Fondant', emoji: '🧀', sound: 'pop' },
+  { id: 'pickle', nameFr: 'Cornichons Croquants', emoji: '🥒', sound: 'crunch' },
+  { id: 'tomato', nameFr: 'Tomates Fraîches', emoji: '🍅', sound: 'pop' },
+  { id: 'lettuce', nameFr: 'Salade Verte Frisée', emoji: '🥬', sound: 'crunch' },
+  { id: 'bun_top', nameFr: 'Pain au Sésame (Haut)', emoji: '🍞', sound: 'pop' },
+];
+
+export const HOTDOG_LAYERS_DATA = [
+  { id: 'hd_bun', nameFr: 'Pain à Hot-Dog Moelleux', emoji: '🥖', sound: 'pop' },
+  { id: 'hd_sausage', nameFr: 'Saucisse Dorée Grillée', emoji: '🌭', sound: 'sizzle' },
+  { id: 'hd_sauce', nameFr: 'Ketchup & Moutarde Douce', emoji: '🥫', sound: 'squirt' },
+  { id: 'cheese', nameFr: 'Cheddar Fondant', emoji: '🧀', sound: 'pop' },
+  { id: 'pickle', nameFr: 'Cornichons & Oignons Frits', emoji: '🥒', sound: 'crunch' },
+  { id: 'lettuce', nameFr: 'Salade Croquante', emoji: '🥬', sound: 'crunch' },
+];
+
+export function BurgerHotdogAssemblyModal({ initialType = 'burger', onClose, onRewardStar, onTeacherPrompt }) {
+  const [activeType, setActiveType] = useState(initialType);
+  const [placedLayers, setPlacedLayers] = useState([]);
+  const [bites, setBites] = useState(0);
+
+  const layersList = activeType === 'burger' ? BURGER_LAYERS_DATA : HOTDOG_LAYERS_DATA;
+  const isComplete = placedLayers.length === layersList.length;
+  const nextRequired = layersList.find((l) => !placedLayers.includes(l.id));
+
+  useEffect(() => {
+    const title = activeType === 'burger' ? 'Le Grand Burger Gourmand' : 'Le Hot-Dog Royal';
+    const msg = `Bienvenue dans l'atelier d'assemblage ! Ajoute chaque ingrédient pour préparer ${title} !`;
+    if (onTeacherPrompt) onTeacherPrompt(msg);
+    teacher.speakFrench(msg);
+  }, [activeType]);
+
+  const handleAddLayer = (layer) => {
+    if (placedLayers.includes(layer.id)) return;
+    
+    // Play sound based on ingredient type
+    if (layer.sound === 'sizzle') sounds.playCookingSizzle();
+    else if (layer.sound === 'squirt') sounds.playBloop();
+    else if (layer.sound === 'crunch') sounds.playMunch();
+    else sounds.playPop();
+
+    const nextPlaced = [...placedLayers, layer.id];
+    setPlacedLayers(nextPlaced);
+
+    if (nextPlaced.length === layersList.length) {
+      sounds.playSuccess();
+      sounds.playChime();
+      confetti({ particleCount: 90, spread: 80, origin: { y: 0.5 } });
+      if (onRewardStar) onRewardStar();
+      const cheer = `Wouah ! ${activeType === 'burger' ? 'Ton burger géant' : 'Ton hot-dog'} est prêt ! Touche pour croquer dedans !`;
+      if (onTeacherPrompt) onTeacherPrompt(cheer);
+      teacher.speakFrench(cheer);
+    }
+  };
+
+  const handleTakeBite = () => {
+    sounds.playMunch();
+    const nextBites = bites + 1;
+    setBites(nextBites);
+    confetti({ particleCount: 30, spread: 45 });
+
+    if (nextBites === 1) {
+      teacher.speakFrench("Miam ! Quel délicieux premier croc !");
+    } else if (nextBites === 2) {
+      teacher.speakFrench("Encore une bouchée ! C'est trop bon !");
+    } else {
+      sounds.playSuccess();
+      confetti({ particleCount: 75, spread: 70 });
+      if (onRewardStar) onRewardStar();
+      teacher.speakFrench("Miam miam tout mangé ! Tu es un grand chef cuisinier !");
+    }
+  };
+
+  const handleReset = () => {
+    sounds.playPop();
+    setPlacedLayers([]);
+    setBites(0);
+    teacher.speakFrench("Plateau tout propre ! C'est reparti pour un nouveau régal !");
+  };
+
+  return (
+    <div className="final-plate-modal-backdrop" onClick={onClose}>
+      <div
+        className="final-plate-dialog animate-pop"
+        onClick={(e) => e.stopPropagation()}
+        style={{ maxWidth: '580px', width: '92%', maxHeight: '90vh', overflowY: 'auto' }}
+      >
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          style={{
+            position: 'absolute',
+            top: '12px',
+            right: '12px',
+            background: '#f1f2f6',
+            border: 'none',
+            borderRadius: '50%',
+            width: '38px',
+            height: '38px',
+            fontSize: '1.2rem',
+            cursor: 'pointer',
+            fontWeight: 900,
+            color: '#57606f',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            zIndex: 10,
+          }}
+        >
+          ✕
+        </button>
+
+        {/* Modal Header */}
+        <div style={{ textAlign: 'center', marginBottom: '10px' }}>
+          <span style={{ fontSize: '2rem' }}>🍔👨‍🍳🌭</span>
+          <h2 style={{ fontSize: '1.45rem', fontWeight: 900, color: '#d35400', margin: '4px 0' }}>
+            L'Atelier d'Assemblage Gourmand
+          </h2>
+          <p style={{ fontSize: '0.85rem', color: '#636e72', fontWeight: 800, margin: 0 }}>
+            Empile les couches pour préparer ton chef-d'œuvre avec Tyanna !
+          </p>
+        </div>
+
+        {/* Switcher Burger / Hotdog */}
+        <div className="numbers-mode-switcher" style={{ marginBottom: '14px' }}>
+          <button
+            onClick={() => {
+              sounds.playPop();
+              setActiveType('burger');
+              setPlacedLayers([]);
+              setBites(0);
+            }}
+            className={`num-mode-tab-btn ${activeType === 'burger' ? 'active' : ''}`}
+          >
+            🍔 Burger Géant du Chef
+          </button>
+          <button
+            onClick={() => {
+              sounds.playPop();
+              setActiveType('hotdog');
+              setPlacedLayers([]);
+              setBites(0);
+            }}
+            className={`num-mode-tab-btn ${activeType === 'hotdog' ? 'active' : ''}`}
+          >
+            🌭 Hot-Dog Royal
+          </button>
+        </div>
+
+        {/* 3D Serving Platter with Vertical Layer Assembly */}
+        <div
+          style={{
+            width: '100%',
+            minHeight: '230px',
+            background: 'linear-gradient(180deg, #fdf6ec 0%, #faebd7 100%)',
+            borderRadius: '24px',
+            border: '3px solid #f39c12',
+            boxShadow: 'inset 0 4px 12px rgba(0,0,0,0.06), 0 8px 24px rgba(243, 156, 18, 0.2)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            padding: '20px 10px 14px 10px',
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Ceramic Serving Plate at the Bottom */}
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '10px',
+              width: '85%',
+              maxWidth: '320px',
+              height: '34px',
+              background: 'linear-gradient(180deg, #ffffff 0%, #dfe6e9 100%)',
+              borderRadius: '50%',
+              border: '3px solid #b2bec3',
+              boxShadow: '0 8px 18px rgba(0,0,0,0.25)',
+              zIndex: 1,
+            }}
+          />
+
+          {/* Empty Platter Hint */}
+          {placedLayers.length === 0 && (
+            <div
+              className="animate-bounce-soft"
+              style={{
+                zIndex: 5,
+                background: 'rgba(255,255,255,0.92)',
+                border: '2px dashed #f39c12',
+                borderRadius: '16px',
+                padding: '8px 16px',
+                marginBottom: '40px',
+                color: '#d35400',
+                fontWeight: 900,
+                fontSize: '0.85rem',
+              }}
+            >
+              👇 Touche {layersList[0].nameFr} pour commencer !
+            </div>
+          )}
+
+          {/* Rendered Food Item with Stacked Layers */}
+          <div
+            style={{
+              position: 'relative',
+              zIndex: 3,
+              display: 'flex',
+              flexDirection: 'column-reverse',
+              alignItems: 'center',
+              width: '100%',
+              maxWidth: '280px',
+              marginBottom: '16px',
+              opacity: bites >= 3 ? 0.2 : 1,
+              transition: 'opacity 0.3s ease',
+            }}
+          >
+            {/* BURGER SVG LAYERS */}
+            {activeType === 'burger' && (
+              <svg
+                viewBox="0 0 280 220"
+                style={{
+                  width: '100%',
+                  height: '200px',
+                  overflow: 'visible',
+                  filter: 'drop-shadow(0 8px 14px rgba(0,0,0,0.25))',
+                }}
+              >
+                <defs>
+                  <linearGradient id="bunTopGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#f39c12" />
+                    <stop offset="50%" stopColor="#e67e22" />
+                    <stop offset="100%" stopColor="#d35400" />
+                  </linearGradient>
+                  <linearGradient id="bunBtmGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#f8c291" />
+                    <stop offset="70%" stopColor="#e67e22" />
+                    <stop offset="100%" stopColor="#c27803" />
+                  </linearGradient>
+                  <linearGradient id="pattyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#6d4c41" />
+                    <stop offset="60%" stopColor="#4e342e" />
+                    <stop offset="100%" stopColor="#3e2723" />
+                  </linearGradient>
+                  <mask id="burgerBiteMask">
+                    <rect x="0" y="0" width="280" height="220" fill="#ffffff" />
+                    {bites >= 1 && <circle cx="230" cy="110" r="32" fill="#000000" />}
+                    {bites >= 2 && <circle cx="215" cy="85" r="30" fill="#000000" />}
+                  </mask>
+                </defs>
+
+                <g mask={bites > 0 ? 'url(#burgerBiteMask)' : undefined}>
+                  {/* LAYER 1: BUN BOTTOM */}
+                  {placedLayers.includes('bun_bottom') && (
+                    <g className="animate-pop">
+                      <ellipse cx="140" cy="182" rx="100" ry="22" fill="url(#bunBtmGrad)" stroke="#c27803" strokeWidth="2.5" />
+                      <ellipse cx="140" cy="178" rx="96" ry="17" fill="#f5cd79" />
+                    </g>
+                  )}
+
+                  {/* LAYER 2: SAUCE */}
+                  {placedLayers.includes('sauce') && (
+                    <g className="animate-pop">
+                      <path d="M 50 172 Q 85 180 140 174 Q 195 180 230 172 Q 195 168 140 170 Q 85 168 50 172" fill="#e74c3c" stroke="#c0392b" strokeWidth="1.5" />
+                      <ellipse cx="110" cy="173" rx="18" ry="4" fill="#f1c40f" />
+                      <ellipse cx="170" cy="173" rx="16" ry="4" fill="#f1c40f" />
+                    </g>
+                  )}
+
+                  {/* LAYER 3: STEAK PATTY */}
+                  {placedLayers.includes('patty') && (
+                    <g className="animate-pop">
+                      <rect x="36" y="146" width="208" height="28" rx="14" fill="url(#pattyGrad)" stroke="#2b1a13" strokeWidth="2" />
+                      <line x1="65" y1="150" x2="95" y2="170" stroke="#2b1a13" strokeWidth="3.5" strokeLinecap="round" />
+                      <line x1="110" y1="150" x2="140" y2="170" stroke="#2b1a13" strokeWidth="3.5" strokeLinecap="round" />
+                      <line x1="155" y1="150" x2="185" y2="170" stroke="#2b1a13" strokeWidth="3.5" strokeLinecap="round" />
+                      <line x1="200" y1="150" x2="225" y2="168" stroke="#2b1a13" strokeWidth="3" strokeLinecap="round" />
+                    </g>
+                  )}
+
+                  {/* LAYER 4: MELTED CHEDDAR */}
+                  {placedLayers.includes('cheese') && (
+                    <g className="animate-pop">
+                      <polygon points="40,146 240,146 230,158 200,165 180,154 140,166 110,153 70,164 50,152" fill="#f1c40f" stroke="#e67e22" strokeWidth="1.5" />
+                    </g>
+                  )}
+
+                  {/* LAYER 5: PICKLES */}
+                  {placedLayers.includes('pickle') && (
+                    <g className="animate-pop">
+                      <ellipse cx="75" cy="140" rx="24" ry="12" fill="#2ecc71" stroke="#27ae60" strokeWidth="2.5" />
+                      <ellipse cx="75" cy="140" rx="16" ry="7" fill="#a8e6cf" />
+                      <ellipse cx="140" cy="138" rx="26" ry="12" fill="#2ecc71" stroke="#27ae60" strokeWidth="2.5" />
+                      <ellipse cx="140" cy="138" rx="18" ry="7" fill="#a8e6cf" />
+                      <ellipse cx="205" cy="140" rx="24" ry="12" fill="#2ecc71" stroke="#27ae60" strokeWidth="2.5" />
+                      <ellipse cx="205" cy="140" rx="16" ry="7" fill="#a8e6cf" />
+                    </g>
+                  )}
+
+                  {/* LAYER 6: TOMATO SLICES */}
+                  {placedLayers.includes('tomato') && (
+                    <g className="animate-pop">
+                      <ellipse cx="90" cy="128" rx="38" ry="14" fill="#ff4757" stroke="#e74c3c" strokeWidth="2" />
+                      <ellipse cx="90" cy="128" rx="28" ry="8" fill="#ff6b81" opacity="0.8" />
+                      <ellipse cx="190" cy="128" rx="38" ry="14" fill="#ff4757" stroke="#e74c3c" strokeWidth="2" />
+                      <ellipse cx="190" cy="128" rx="28" ry="8" fill="#ff6b81" opacity="0.8" />
+                    </g>
+                  )}
+
+                  {/* LAYER 7: CRISPY LETTUCE */}
+                  {placedLayers.includes('lettuce') && (
+                    <g className="animate-pop">
+                      <path d="M 28 122 C 35 110 55 115 70 120 C 90 112 110 115 130 122 C 155 110 175 115 195 122 C 220 112 245 116 252 124 C 235 132 45 132 28 122 Z" fill="#2ed573" stroke="#26af5f" strokeWidth="2" />
+                    </g>
+                  )}
+
+                  {/* LAYER 8: TOP SESAME BUN */}
+                  {placedLayers.includes('bun_top') && (
+                    <g className="animate-pop">
+                      <path d="M 32 114 C 32 38 248 38 248 114 Z" fill="url(#bunTopGrad)" stroke="#c27803" strokeWidth="2.5" />
+                      <ellipse cx="110" cy="62" rx="42" ry="14" fill="#ffffff" opacity="0.32" transform="rotate(-15 110 62)" />
+                      <ellipse cx="80" cy="74" rx="3.5" ry="1.8" fill="#ffffff" transform="rotate(-20 80 74)" />
+                      <ellipse cx="115" cy="62" rx="3.5" ry="1.8" fill="#ffffff" transform="rotate(10 115 62)" />
+                      <ellipse cx="140" cy="55" rx="3.5" ry="1.8" fill="#ffffff" />
+                      <ellipse cx="170" cy="64" rx="3.5" ry="1.8" fill="#ffffff" transform="rotate(-15 170 64)" />
+                      <ellipse cx="200" cy="76" rx="3.5" ry="1.8" fill="#ffffff" transform="rotate(25 200 76)" />
+                      <ellipse cx="100" cy="90" rx="3.5" ry="1.8" fill="#ffffff" transform="rotate(15 100 90)" />
+                      <ellipse cx="145" cy="85" rx="3.5" ry="1.8" fill="#ffffff" />
+                      <ellipse cx="180" cy="92" rx="3.5" ry="1.8" fill="#ffffff" transform="rotate(-20 180 92)" />
+                    </g>
+                  )}
+                </g>
+              </svg>
+            )}
+
+            {/* HOT-DOG SVG LAYERS */}
+            {activeType === 'hotdog' && (
+              <svg
+                viewBox="0 0 280 200"
+                style={{
+                  width: '100%',
+                  height: '180px',
+                  overflow: 'visible',
+                  filter: 'drop-shadow(0 8px 14px rgba(0,0,0,0.25))',
+                }}
+              >
+                <defs>
+                  <linearGradient id="hdBunGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#f39c12" />
+                    <stop offset="70%" stopColor="#e67e22" />
+                    <stop offset="100%" stopColor="#c27803" />
+                  </linearGradient>
+                  <linearGradient id="sausageGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#e74c3c" />
+                    <stop offset="60%" stopColor="#c0392b" />
+                    <stop offset="100%" stopColor="#962d2d" />
+                  </linearGradient>
+                  <mask id="hotdogBiteMask">
+                    <rect x="0" y="0" width="280" height="200" fill="#ffffff" />
+                    {bites >= 1 && <circle cx="235" cy="115" r="32" fill="#000000" />}
+                    {bites >= 2 && <circle cx="210" cy="100" r="30" fill="#000000" />}
+                  </mask>
+                </defs>
+
+                <g mask={bites > 0 ? 'url(#hotdogBiteMask)' : undefined}>
+                  {/* LAYER 1: HOT DOG BUN */}
+                  {placedLayers.includes('hd_bun') && (
+                    <g className="animate-pop">
+                      <ellipse cx="140" cy="135" rx="115" ry="42" fill="url(#hdBunGrad)" stroke="#c27803" strokeWidth="2.5" />
+                      <ellipse cx="140" cy="128" rx="105" ry="30" fill="#f8c291" />
+                    </g>
+                  )}
+
+                  {/* LAYER 2: GRILLED SAUSAGE */}
+                  {placedLayers.includes('hd_sausage') && (
+                    <g className="animate-pop">
+                      <rect x="25" y="105" width="230" height="34" rx="17" fill="url(#sausageGrad)" stroke="#781d1d" strokeWidth="2" />
+                      <path d="M 40 108 Q 30 122 40 136" stroke="#962d2d" strokeWidth="2.5" fill="none" />
+                      <path d="M 240 108 Q 250 122 240 136" stroke="#962d2d" strokeWidth="2.5" fill="none" />
+                      <line x1="75" y1="108" x2="88" y2="134" stroke="#5c1919" strokeWidth="3" strokeLinecap="round" />
+                      <line x1="120" y1="108" x2="133" y2="134" stroke="#5c1919" strokeWidth="3" strokeLinecap="round" />
+                      <line x1="165" y1="108" x2="178" y2="134" stroke="#5c1919" strokeWidth="3" strokeLinecap="round" />
+                      <line x1="205" y1="108" x2="218" y2="134" stroke="#5c1919" strokeWidth="3" strokeLinecap="round" />
+                    </g>
+                  )}
+
+                  {/* LAYER 3: MUSTARD & KETCHUP SWIRL */}
+                  {placedLayers.includes('hd_sauce') && (
+                    <g className="animate-pop">
+                      <path d="M 38 120 Q 60 98 82 122 Q 104 98 126 122 Q 148 98 170 122 Q 192 98 214 122 Q 230 105 242 120" fill="none" stroke="#f1c40f" strokeWidth="7" strokeLinecap="round" />
+                      <path d="M 46 124 Q 68 106 90 126 Q 112 106 134 126 Q 156 106 178 126 Q 200 106 222 126" fill="none" stroke="#e74c3c" strokeWidth="5" strokeLinecap="round" />
+                    </g>
+                  )}
+
+                  {/* LAYER 4: MELTED CHEESE */}
+                  {placedLayers.includes('cheese') && (
+                    <g className="animate-pop">
+                      <ellipse cx="110" cy="118" rx="25" ry="6" fill="#ffd32a" opacity="0.9" />
+                      <ellipse cx="170" cy="118" rx="25" ry="6" fill="#ffd32a" opacity="0.9" />
+                      <path d="M 90 122 Q 100 134 96 142" stroke="#f39c12" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+                      <path d="M 180 122 Q 188 134 184 142" stroke="#f39c12" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+                    </g>
+                  )}
+
+                  {/* LAYER 5: PICKLES & CRISPY ONIONS */}
+                  {placedLayers.includes('pickle') && (
+                    <g className="animate-pop">
+                      <rect x="70" y="112" width="10" height="6" rx="2" fill="#27ae60" />
+                      <rect x="100" y="110" width="8" height="6" rx="2" fill="#d35400" />
+                      <rect x="135" y="112" width="10" height="6" rx="2" fill="#27ae60" />
+                      <rect x="160" y="110" width="8" height="6" rx="2" fill="#d35400" />
+                      <rect x="195" y="112" width="10" height="6" rx="2" fill="#27ae60" />
+                    </g>
+                  )}
+
+                  {/* LAYER 6: CRISPY LETTUCE */}
+                  {placedLayers.includes('lettuce') && (
+                    <g className="animate-pop">
+                      <path d="M 30 138 C 50 148 80 142 105 146 C 135 140 165 144 195 140 C 220 146 245 138 250 134" stroke="#2ed573" strokeWidth="8" strokeLinecap="round" fill="none" />
+                    </g>
+                  )}
+                </g>
+              </svg>
+            )}
+          </div>
+
+          {/* Bites Feedback Banner */}
+          {bites > 0 && bites < 3 && (
+            <div
+              className="animate-pop"
+              style={{
+                position: 'absolute',
+                top: '14px',
+                background: '#ff4757',
+                color: '#fff',
+                padding: '4px 14px',
+                borderRadius: '999px',
+                fontWeight: 900,
+                fontSize: '0.85rem',
+                boxShadow: '0 4px 12px rgba(255, 71, 87, 0.4)',
+                zIndex: 10,
+              }}
+            >
+              😋 Miam ! Croc numéro {bites} !
+            </div>
+          )}
+
+          {bites >= 3 && (
+            <div
+              className="animate-pop"
+              style={{
+                position: 'absolute',
+                top: '30%',
+                background: '#2ed573',
+                color: '#fff',
+                padding: '10px 20px',
+                borderRadius: '20px',
+                fontWeight: 900,
+                fontSize: '1.1rem',
+                boxShadow: '0 8px 24px rgba(46, 213, 115, 0.4)',
+                zIndex: 10,
+                textAlign: 'center',
+              }}
+            >
+              🎉 C'était délicieux ! Tout mangé ! 🌟
+            </div>
+          )}
+        </div>
+
+        {/* Action Controls when complete */}
+        {isComplete && (
+          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', margin: '14px 0 6px 0', flexWrap: 'wrap' }}>
+            {bites < 3 ? (
+              <button
+                onClick={handleTakeBite}
+                className="step-forward-btn animate-bounce-soft"
+                style={{
+                  background: 'linear-gradient(135deg, #ff4757, #ff6b81)',
+                  color: '#fff',
+                  fontSize: '1.05rem',
+                  padding: '12px 26px',
+                  border: 'none',
+                }}
+              >
+                😋 Croquer dedans ! ({bites === 0 ? 'Premier croc' : `Croc ×${bites + 1}`})
+              </button>
+            ) : (
+              <button
+                onClick={handleReset}
+                className="step-forward-btn"
+                style={{
+                  background: 'linear-gradient(135deg, #f1c40f, #e67e22)',
+                  color: '#2d3436',
+                  fontSize: '1rem',
+                  padding: '10px 20px',
+                  border: 'none',
+                }}
+              >
+                🔄 En préparer un autre !
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="step-forward-btn"
+              style={{
+                background: 'linear-gradient(135deg, #2ecc71, #10ac84)',
+                color: '#fff',
+                fontSize: '1rem',
+                padding: '10px 20px',
+                border: 'none',
+              }}
+            >
+              ✅ Retour à la Cuisine
+            </button>
+          </div>
+        )}
+
+        {/* Ingredients Drawer (Tactile 3D Buttons for Kids) */}
+        {!isComplete && (
+          <div style={{ marginTop: '14px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <span style={{ fontSize: '0.82rem', fontWeight: 900, color: '#636e72', textTransform: 'uppercase' }}>
+                Étape ({placedLayers.length} / {layersList.length}) : Touche chaque ingrédient 👇
+              </span>
+              <button
+                onClick={handleReset}
+                style={{ background: 'none', border: 'none', color: '#e74c3c', fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer' }}
+              >
+                Effacer 🔄
+              </button>
+            </div>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))',
+                gap: '8px',
+                width: '100%',
+              }}
+            >
+              {layersList.map((layer, idx) => {
+                const isPlaced = placedLayers.includes(layer.id);
+                const isNext = nextRequired?.id === layer.id;
+                return (
+                  <button
+                    key={layer.id}
+                    onClick={() => handleAddLayer(layer)}
+                    disabled={isPlaced}
+                    className={`palette-swatch-btn ${isNext ? 'active animate-bounce-soft' : ''}`}
+                    style={{
+                      minHeight: '74px',
+                      background: isPlaced ? '#f1f2f6' : isNext ? '#fff9db' : '#ffffff',
+                      border: isPlaced ? '2px solid #bdc3c7' : isNext ? '3px solid #f39c12' : '2.5px solid #dfe6e9',
+                      opacity: isPlaced ? 0.45 : 1,
+                      cursor: isPlaced ? 'default' : 'pointer',
+                      padding: '8px 4px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '4px',
+                      boxShadow: isNext ? '0 0 16px rgba(243, 156, 18, 0.4)' : undefined,
+                    }}
+                  >
+                    <span style={{ fontSize: '1.6rem' }}>{layer.emoji}</span>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 900, color: isPlaced ? '#95a5a6' : '#2d3436', textAlign: 'center', lineHeight: 1.1 }}>
+                      {layer.nameFr}
+                    </span>
+                    <span style={{ fontSize: '0.62rem', fontWeight: 800, color: isPlaced ? '#27ae60' : '#e67e22' }}>
+                      {isPlaced ? '✅ Ajouté' : isNext ? '👉 Touche !' : `Étage ${idx + 1}`}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// =========================================================================
 // MAIN KITCHEN EXPERIENCE COMPONENT
 // =========================================================================
 export default function CookingGame({ onTeacherPrompt, onRewardStar }) {
@@ -272,13 +965,21 @@ export default function CookingGame({ onTeacherPrompt, onRewardStar }) {
   const [isCabinetOpen, setIsCabinetOpen] = useState(false);
   const [isFireOn, setIsFireOn] = useState(true);
   const [showPlateModal, setShowPlateModal] = useState(false);
+  const [showAssemblyModal, setShowAssemblyModal] = useState(false);
+  const [assemblyType, setAssemblyType] = useState('burger'); // 'burger' | 'hotdog'
 
-  // Tyanna Walking State Machine
+  // Tyanna Touch & Drag State Machine
   // positions: 15% (fridge), 48% (prep counter / center), 82% (stove)
   const [tyannaX, setTyannaX] = useState(48);
   const [tyannaFacing, setTyannaFacing] = useState('right');
   const [tyannaAction, setTyannaAction] = useState('idle'); // 'idle' | 'walking' | 'carrying' | 'stirring' | 'tasting' | 'cheering'
   const [carriedItem, setCarriedItem] = useState(null);
+  const [isDraggingTyanna, setIsDraggingTyanna] = useState(false);
+
+  const kitchenArenaRef = useRef(null);
+  const dragStartXRef = useRef(0);
+  const dragStartTyannaXRef = useRef(48);
+  const lastFootstepTimeRef = useRef(0);
 
   const [dishReady, setDishReady] = useState(false);
   const [tastedTimes, setTastedTimes] = useState(0);
@@ -304,11 +1005,80 @@ export default function CookingGame({ onTeacherPrompt, onRewardStar }) {
     setIsFridgeOpen(false);
     setIsCabinetOpen(false);
 
-    const firstIng = KITCHEN_INGREDIENTS.find((i) => i.id === r.steps[0]);
+    if (r.isAssembly) {
+      setAssemblyType(r.assemblyType || 'burger');
+      setShowAssemblyModal(true);
+      const prompt = `Atelier Chef : Préparons ${r.title} ! Empile les délicieux ingrédients sur le plateau !`;
+      onTeacherPrompt(prompt);
+      teacher.speakFrench(prompt);
+      return;
+    }
+
+    const firstIng = KITCHEN_INGREDIENTS.find((i) => i.id === r.steps[0]) || { nameFr: 'les ingrédients', nameEn: 'the ingredients', location: 'fridge' };
     const where = firstIng.location === 'fridge' ? 'dans le réfrigérateur' : 'dans le placard';
     const prompt = `C'est l'heure de cuisiner ! Préparons ensemble : ${r.title} ! Tyanna va chercher ${firstIng.nameFr} ${where} !`;
     onTeacherPrompt(prompt);
     teacher.speakBilingual(prompt, `Let's cook! Let's get the ${firstIng.nameEn}!`);
+  };
+
+  // Touch and drag Tyanna anywhere across the kitchen
+  const handleTyannaPointerDown = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingTyanna(true);
+    dragStartXRef.current = e.clientX;
+    dragStartTyannaXRef.current = tyannaX;
+    sounds.playPop();
+    setTyannaAction('walking');
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch (err) {}
+  };
+
+  const handleTyannaPointerMove = (e) => {
+    if (!isDraggingTyanna) return;
+    if (!kitchenArenaRef.current) return;
+    const rect = kitchenArenaRef.current.getBoundingClientRect();
+    const deltaX = e.clientX - dragStartXRef.current;
+    const deltaPercent = (deltaX / rect.width) * 100;
+    const nextX = Math.max(12, Math.min(88, dragStartTyannaXRef.current + deltaPercent));
+
+    if (deltaX > 2) {
+      setTyannaFacing('right');
+    } else if (deltaX < -2) {
+      setTyannaFacing('left');
+    }
+    setTyannaX(nextX);
+
+    const now = Date.now();
+    if (now - lastFootstepTimeRef.current > 260) {
+      sounds.playFootstep();
+      lastFootstepTimeRef.current = now;
+    }
+  };
+
+  const handleTyannaPointerUp = (e) => {
+    if (!isDraggingTyanna) return;
+    setIsDraggingTyanna(false);
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch (err) {}
+    sounds.playPop();
+    setTyannaAction('idle');
+
+    if (tyannaX < 26) {
+      setIsFridgeOpen(true);
+      const msg = "Tyanna est devant le réfrigérateur ! Quels bons ingrédients frais veux-tu choisir ?";
+      onTeacherPrompt(msg);
+      teacher.speakFrench(msg);
+    } else if (tyannaX > 68) {
+      const msg = "Tyanna est devant la cuisinière ! Prête à faire mijoter de bons plats !";
+      onTeacherPrompt(msg);
+      teacher.speakFrench(msg);
+    } else {
+      const msg = "Tyanna est au plan de travail du chef !";
+      onTeacherPrompt(msg);
+    }
   };
 
   const handleToggleFire = () => {
@@ -486,8 +1256,31 @@ export default function CookingGame({ onTeacherPrompt, onRewardStar }) {
       {/* Recipe Checklist Bar */}
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', flexWrap: 'wrap', padding: '10px 14px', background: '#fff9db', borderRadius: '18px', border: '2px dashed #f59e0b', marginBottom: '12px' }}>
         <span style={{ fontWeight: 900, color: '#d35400', fontSize: '0.88rem' }}>
-          📋 Ingrédients à trouver :
+          📋 Ingrédients de la recette :
         </span>
+        {currentRecipe.isAssembly && (
+          <button
+            onClick={() => {
+              sounds.playPop();
+              setAssemblyType(currentRecipe.assemblyType || 'burger');
+              setShowAssemblyModal(true);
+            }}
+            className="action-button primary animate-bounce-soft"
+            style={{
+              background: 'linear-gradient(135deg, #e67e22, #d35400)',
+              color: '#ffffff',
+              padding: '6px 16px',
+              fontSize: '0.85rem',
+              borderRadius: '999px',
+              border: 'none',
+              cursor: 'pointer',
+              fontWeight: 900,
+              boxShadow: '0 4px 12px rgba(211, 84, 0, 0.4)',
+            }}
+          >
+            🍔 Assembler le Burger / Hot-Dog ! 🌭
+          </button>
+        )}
         {currentRecipe.steps.map((stepId, idx) => {
           const ing = KITCHEN_INGREDIENTS.find((i) => i.id === stepId);
           const isDone = inPot.includes(stepId);
@@ -495,7 +1288,7 @@ export default function CookingGame({ onTeacherPrompt, onRewardStar }) {
           return (
             <div
               key={stepId}
-              onClick={() => !isDone && handleFetchIngredient(ing)}
+              onClick={() => !isDone && ing && handleFetchIngredient(ing)}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -512,7 +1305,7 @@ export default function CookingGame({ onTeacherPrompt, onRewardStar }) {
                 transition: 'all 0.2s',
               }}
             >
-              <span>{ing.emoji} {ing.nameFr}</span>
+              <span>{ing?.emoji || '🍽️'} {ing?.nameFr || stepId}</span>
               <span>{isDone ? '✅' : isNext ? '👈' : '⏳'}</span>
             </div>
           );
@@ -523,6 +1316,7 @@ export default function CookingGame({ onTeacherPrompt, onRewardStar }) {
           THE FULL 2D/3D KITCHEN ROOM ENVIRONMENT WITH TYANNA WALKING
          ========================================================================= */}
       <div
+        ref={kitchenArenaRef}
         className="kitchen-room-arena"
         style={{
           width: '100%',
@@ -725,9 +1519,29 @@ export default function CookingGame({ onTeacherPrompt, onRewardStar }) {
             <span style={{ fontSize: '1rem' }}>🧂</span>
           </div>
 
-          <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#5c2e0b', marginTop: '6px' }}>
-            🥣 Préparation & Ingrédients
-          </span>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              sounds.playPop();
+              setAssemblyType('burger');
+              setShowAssemblyModal(true);
+            }}
+            style={{
+              marginTop: '4px',
+              background: 'linear-gradient(135deg, #e67e22, #d35400)',
+              color: '#ffffff',
+              border: '1.5px solid #fff',
+              borderRadius: '999px',
+              padding: '3px 8px',
+              fontSize: '0.62rem',
+              fontWeight: 900,
+              cursor: 'pointer',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+            }}
+            title="Ouvrir l'Atelier d'Assemblage Burger & Hot-Dog !"
+          >
+            🍔 Burger & Hot-Dog 🌭
+          </button>
         </div>
 
         {/* =====================================================================
@@ -901,17 +1715,48 @@ export default function CookingGame({ onTeacherPrompt, onRewardStar }) {
             TYANNA 2D ARTICULATED WALKING CHARACTER IN THE KITCHEN
            ===================================================================== */}
         <div
-          className={`tyanna-kitchen-body ${tyannaAction === 'walking' ? 'is-walking-trot' : ''}`}
+          className={`tyanna-kitchen-body ${tyannaAction === 'walking' || isDraggingTyanna ? 'is-walking-trot' : ''}`}
+          onPointerDown={handleTyannaPointerDown}
+          onPointerMove={handleTyannaPointerMove}
+          onPointerUp={handleTyannaPointerUp}
+          onPointerCancel={handleTyannaPointerUp}
           style={{
             position: 'absolute',
             bottom: '22px',
             left: `${tyannaX}%`,
             transform: `translateX(-50%) scaleX(${tyannaFacing === 'left' ? -1 : 1})`,
-            transition: 'left 0.85s cubic-bezier(0.25, 1, 0.5, 1)',
+            transition: isDraggingTyanna ? 'none' : 'left 0.85s cubic-bezier(0.25, 1, 0.5, 1)',
             zIndex: 25,
-            pointerEvents: 'none',
+            cursor: isDraggingTyanna ? 'grabbing' : 'grab',
+            touchAction: 'none',
+            userSelect: 'none',
+            pointerEvents: 'auto',
           }}
+          title="Touche et glisse Tyanna de gauche à droite dans la cuisine !"
         >
+          {/* Drag instruction badge */}
+          {!isDraggingTyanna && !carriedItem && tyannaAction === 'idle' && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '-26px',
+                left: '50%',
+                transform: `translateX(-50%) scaleX(${tyannaFacing === 'left' ? -1 : 1})`,
+                whiteSpace: 'nowrap',
+                background: '#ffeaa7',
+                color: '#d35400',
+                border: '1px solid #f39c12',
+                padding: '2px 8px',
+                borderRadius: '12px',
+                fontSize: '0.62rem',
+                fontWeight: 900,
+                boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                pointerEvents: 'none',
+              }}
+            >
+              👆 Glisse-moi !
+            </div>
+          )}
           {/* Carried Item above Tyanna's hands */}
           {carriedItem && (
             <div
@@ -1340,6 +2185,18 @@ export default function CookingGame({ onTeacherPrompt, onRewardStar }) {
             </div>
           </div>
         </div>
+      )}
+
+      {/* =====================================================================
+          BURGER & HOT-DOG POP-UP ASSEMBLY MODAL
+         ===================================================================== */}
+      {showAssemblyModal && (
+        <BurgerHotdogAssemblyModal
+          initialType={assemblyType}
+          onClose={() => setShowAssemblyModal(false)}
+          onRewardStar={onRewardStar}
+          onTeacherPrompt={onTeacherPrompt}
+        />
       )}
     </div>
   );

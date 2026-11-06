@@ -4950,6 +4950,182 @@ body {
   }
 }
 
+/* =========================================================================
+   NUMBERS & MATH 3D JUMBO TILES (MATCHING ALPHABET SIZE)
+   ========================================================================= */
+.numbers-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .numbers-grid-container {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+}
+
+@media (max-width: 420px) {
+  .numbers-grid-container {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+}
+
+.num-tile-btn {
+  min-height: 88px;
+  padding: 10px 4px;
+  border-radius: 22px;
+  border: 3.5px solid rgba(255, 255, 255, 0.85);
+  background: linear-gradient(135deg, #0984e3 0%, #00cec9 100%);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.28), 0 10px 20px rgba(0, 0, 0, 0.22);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  color: #ffffff;
+}
+
+@media (max-width: 600px) {
+  .num-tile-btn {
+    min-height: 78px;
+    padding: 8px 2px;
+    border-radius: 18px;
+  }
+}
+
+.num-tile-btn .tile-number-digit {
+  font-size: 2.2rem;
+  font-weight: 900;
+  line-height: 1;
+  color: #ffffff;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+  font-family: var(--font-family);
+}
+
+@media (max-width: 600px) {
+  .num-tile-btn .tile-number-digit {
+    font-size: 1.85rem;
+  }
+}
+
+.num-tile-btn .tile-num-fr {
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.num-tile-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 9px 0 rgba(0, 0, 0, 0.28), 0 14px 24px rgba(0, 0, 0, 0.3);
+}
+
+.num-tile-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
+}
+
+.num-tile-btn.selected {
+  border: 4px solid #ffffff;
+  box-shadow: 0 0 22px #ffd32a, 0 6px 0 rgba(0, 0, 0, 0.4);
+  transform: scale(1.06);
+  z-index: 2;
+  background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
+}
+
+/* Math Choice Buttons Jumbo 3D */
+.math-choice-btn {
+  min-width: 76px;
+  min-height: 76px;
+  border-radius: 24px;
+  border: 4px solid #ffffff;
+  background: linear-gradient(135deg, #f1c40f 0%, #e67e22 100%);
+  color: #2d3436;
+  font-size: 2.2rem;
+  font-weight: 900;
+  box-shadow: 0 6px 0 #b7791f, 0 10px 20px rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  touch-action: manipulation;
+}
+
+.math-choice-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #b7791f;
+}
+
+/* Big 3D Color Swatch Buttons for Toddlers */
+.palette-dock {
+  width: 100%;
+  background: #f8f9fa;
+  border-radius: 24px;
+  padding: 14px;
+  border: 3px solid #dfe6e9;
+  box-sizing: border-box;
+}
+
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+  gap: 10px;
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .palette-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+}
+
+.palette-swatch-btn {
+  min-height: 74px;
+  border: 3.5px solid #ffffff;
+  border-radius: 20px;
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.25), 0 8px 16px rgba(0, 0, 0, 0.18);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  touch-action: manipulation;
+}
+
+.palette-swatch-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+}
+
+.palette-swatch-btn.active {
+  transform: scale(1.08);
+  border-color: #ffffff;
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.4), 0 5px 0 rgba(0, 0, 0, 0.3);
+}
+
+.palette-swatch-btn .swatch-emoji {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.palette-swatch-btn .swatch-name {
+  font-size: 0.78rem;
+  font-weight: 900;
+  margin-top: 3px;
+}
+
+
 
 
 

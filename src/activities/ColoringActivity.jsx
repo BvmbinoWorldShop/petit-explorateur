@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { doraVoice } from '../utils/speech';
 import { sounds } from '../utils/audio';
 import confetti from 'canvas-confetti';
+import { ALPHABET_A_TO_Z } from './AlphabetActivity';
 import {
   Palette,
   RotateCcw,
@@ -100,6 +101,7 @@ export default function ColoringActivity({ onNiaSpeak, onRewardStar }) {
 
   // Free Draw State
   const canvasRef = useRef(null);
+  const canvasContainerRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [brushSize, setBrushSize] = useState(14); // 6 | 14 | 26
   const [toolMode, setToolMode] = useState('brush'); // 'brush' | 'rainbow' | 'neon' | 'eraser' | 'stamp'
@@ -115,19 +117,42 @@ export default function ColoringActivity({ onNiaSpeak, onRewardStar }) {
   const [colorTarget, setColorTarget] = useState(PALETTE[2]); // Yellow
   const [colorQuizScore, setColorQuizScore] = useState(0);
 
-  // Initialize Canvas
+  // Smooth Canvas Resizing to Match Parent Container on Mobile & Desktop
+  const resizeCanvasToContainer = () => {
+    const canvas = canvasRef.current;
+    const container = canvasContainerRef.current;
+    if (!canvas || !container) return;
+    const rect = container.getBoundingClientRect();
+    const newWidth = Math.floor(rect.width) || 400;
+    const newHeight = window.innerWidth <= 480 ? 300 : 380;
+
+    if (canvas.width !== newWidth || canvas.height !== newHeight) {
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = canvas.height;
+      const tempCtx = tempCanvas.getContext('2d');
+      if (canvas.width > 0 && canvas.height > 0) {
+        tempCtx.drawImage(canvas, 0, 0);
+      }
+
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, newWidth, newHeight);
+
+      if (tempCanvas.width > 0 && tempCanvas.height > 0) {
+        ctx.drawImage(tempCanvas, 0, 0, newWidth, newHeight);
+      }
+    }
+  };
+
+  // Initialize Canvas & Window Resize Listener
   useEffect(() => {
     if (activityMode === 'freedraw') {
-      const canvas = canvasRef.current;
-      if (canvas) {
-        const ctx = canvas.getContext('2d');
-        // Set display resolution
-        canvas.width = canvas.parentElement.clientWidth || 500;
-        canvas.height = 380;
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        saveCanvasState();
-      }
+      resizeCanvasToContainer();
+      window.addEventListener('resize', resizeCanvasToContainer);
+      return () => window.removeEventListener('resize', resizeCanvasToContainer);
     }
   }, [activityMode]);
 
@@ -162,7 +187,7 @@ export default function ColoringActivity({ onNiaSpeak, onRewardStar }) {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     const newHistory = [...undoHistory];
-    newHistory.pop(); // Remove current
+    newHistory.pop();
     const previous = newHistory[newHistory.length - 1];
     ctx.putImageData(previous, 0, 0);
     setUndoHistory(newHistory);
@@ -188,22 +213,65 @@ export default function ColoringActivity({ onNiaSpeak, onRewardStar }) {
     doraVoice.speak(msg);
   };
 
-  // Canvas Drawing Pointer Handlers (Smooth Touch & Mouse)
+  // Stamp or Draw Big Contour of Letter on Canvas for Toddler Coloring
+  const handleSelectLetterToColor = (letter) => {
+    sounds.playSuccess();
+    confetti({ particleCount: 45, spread: 60 });
+    const msg = `Voici la grande lettre ${letter.char} ! ${letter.rhyme}`;
+    onNiaSpeak(msg);
+    doraVoice.speakBilingual(msg, `Letter ${letter.char}! ${letter.wordEn}!`);
+
+    if (activityMode === 'freedraw') {
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2;
+        const fontSize = Math.min(canvas.width * 0.42, 175);
+
+        ctx.save();
+        ctx.font = `900 ${fontSize}px "Fredoka", "Nunito", sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        // Clear center area with soft white glow
+        ctx.fillStyle = '#f8f9fa';
+        ctx.fillText(letter.char, cx, cy);
+
+        // Bold black contour for kids to color inside
+        ctx.strokeStyle = '#2d3436';
+        ctx.lineWidth = 6;
+        ctx.lineJoin = 'round';
+        ctx.strokeText(letter.char, cx, cy);
+
+        // Letter emoji companion next to it
+        ctx.font = '38px sans-serif';
+        ctx.fillText(letter.emoji, cx + fontSize * 0.36, cy - fontSize * 0.35);
+        ctx.restore();
+
+        saveCanvasState();
+      }
+    }
+  };
+
+  // Canvas Drawing Pointer Handlers (Smooth Touch, Pen & Mouse)
   const getCanvasCoords = (e) => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
     const rect = canvas.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
     return {
-      x: (clientX - rect.left) * (canvas.width / rect.width),
-      y: (clientY - rect.top) * (canvas.height / rect.height)
+      x: (e.clientX - rect.left) * (canvas.width / rect.width),
+      y: (e.clientY - rect.top) * (canvas.height / rect.height)
     };
   };
 
   const handlePointerDown = (e) => {
+    e.preventDefault();
     const canvas = canvasRef.current;
     if (!canvas) return;
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch (err) {}
     const ctx = canvas.getContext('2d');
     const { x, y } = getCanvasCoords(e);
 
@@ -251,6 +319,7 @@ export default function ColoringActivity({ onNiaSpeak, onRewardStar }) {
 
   const handlePointerMove = (e) => {
     if (!isDrawing) return;
+    e.preventDefault();
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -267,9 +336,12 @@ export default function ColoringActivity({ onNiaSpeak, onRewardStar }) {
     ctx.stroke();
   };
 
-  const handlePointerUp = () => {
+  const handlePointerUp = (e) => {
     if (isDrawing) {
       setIsDrawing(false);
+      try {
+        if (e && e.currentTarget) e.currentTarget.releasePointerCapture(e.pointerId);
+      } catch (err) {}
       saveCanvasState();
     }
   };
@@ -570,6 +642,7 @@ export default function ColoringActivity({ onNiaSpeak, onRewardStar }) {
 
           {/* HTML5 Interactive Touch Canvas */}
           <div
+            ref={canvasContainerRef}
             style={{
               width: '100%',
               borderRadius: '24px',
@@ -583,14 +656,11 @@ export default function ColoringActivity({ onNiaSpeak, onRewardStar }) {
           >
             <canvas
               ref={canvasRef}
-              onMouseDown={handlePointerDown}
-              onMouseMove={handlePointerMove}
-              onMouseUp={handlePointerUp}
-              onMouseLeave={handlePointerUp}
-              onTouchStart={handlePointerDown}
-              onTouchMove={handlePointerMove}
-              onTouchEnd={handlePointerUp}
-              style={{ display: 'block', width: '100%', height: '380px' }}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerUp}
+              style={{ display: 'block', width: '100%', height: window.innerWidth <= 480 ? '300px' : '380px', touchAction: 'none' }}
             />
           </div>
 
@@ -913,6 +983,43 @@ export default function ColoringActivity({ onNiaSpeak, onRewardStar }) {
           </div>
         </div>
       )}
+
+      {/* =========================================================================
+          ALPHABET LETTER COLORING RIBBON (A TO Z JUMBO 3D TILES AT THE BOTTOM)
+         ========================================================================= */}
+      <div style={{ marginTop: '24px', background: '#f8f9fa', borderRadius: '24px', padding: '16px', border: '3px solid #dfe6e9' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
+          <div>
+            <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 900, color: '#2d3436' }}>
+              🔤 Choisis une grande lettre à colorier (A à Z) :
+            </h4>
+            <p style={{ margin: '2px 0 0 0', fontSize: '0.8rem', color: '#636e72', fontWeight: 700 }}>
+              Touche une lettre pour l'afficher sur ton dessin et l'écouter avec Tyanna !
+            </p>
+          </div>
+          <span style={{ fontSize: '0.85rem', fontWeight: 800, background: '#e3f2fd', color: '#0984e3', padding: '4px 12px', borderRadius: '999px' }}>
+            26 Lettres magiques
+          </span>
+        </div>
+
+        <div className="alphabet-grid-container">
+          {ALPHABET_A_TO_Z.map((letter) => (
+            <button
+              key={letter.char}
+              onClick={() => handleSelectLetterToColor(letter)}
+              className="letter-tile-btn animate-pop"
+              style={{
+                background: `linear-gradient(135deg, ${letter.color} 0%, #2d3436 180%)`,
+                boxShadow: `0 6px 0 rgba(0,0,0,0.25), 0 8px 16px ${letter.color}40`,
+              }}
+              title={`Colorier la lettre ${letter.char} (${letter.wordFr})`}
+            >
+              <span className="tile-letter-char">{letter.char}</span>
+              <span className="tile-word-fr">{letter.emoji} {letter.wordFr}</span>
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
