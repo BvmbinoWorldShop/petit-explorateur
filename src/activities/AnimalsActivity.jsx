@@ -937,7 +937,62 @@ export default function AnimalsActivity({ onNiaSpeak, onRewardStar }) {
             </div>
           </div>
 
-          {/* Full Grid of 36 Animals */}
+          {/* Horizontal Swiping Ribbon (Scroll Left to Right) */}
+          <div style={{ width: '100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+              <span style={{ fontSize: '0.82rem', fontWeight: 900, color: '#636e72', textTransform: 'uppercase' }}>
+                🐾 Défilement de gauche à droite ({filteredAnimals.length} animaux) ➡️
+              </span>
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                gap: '10px',
+                overflowX: 'auto',
+                padding: '6px 4px 12px 4px',
+                touchAction: 'pan-x',
+                WebkitOverflowScrolling: 'touch',
+                width: '100%',
+                boxSizing: 'border-box',
+              }}
+            >
+              {filteredAnimals.map((animal) => {
+                const isSelected = selectedAnimal.id === animal.id;
+                return (
+                  <button
+                    key={`ribbon-${animal.id}`}
+                    onClick={() => handleSelectAnimal(animal)}
+                    className="animate-pop"
+                    style={{
+                      flex: '0 0 96px',
+                      background: isSelected ? '#fff9db' : '#ffffff',
+                      border: isSelected ? '3.5px solid #f59e0b' : '2px solid #e9ecef',
+                      borderRadius: '20px',
+                      padding: '10px 4px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: '4px',
+                      cursor: 'pointer',
+                      boxShadow: isSelected
+                        ? '0 6px 14px rgba(245, 158, 11, 0.35)'
+                        : '0 4px 8px rgba(0, 0, 0, 0.05)',
+                    }}
+                  >
+                    <span style={{ fontSize: '2.3rem', lineHeight: 1 }}>{animal.emoji}</span>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 900, color: '#2d3436', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '86px' }}>
+                      {animal.nameFr}
+                    </span>
+                    <span style={{ fontSize: '0.62rem', color: '#636e72', fontWeight: 700 }}>
+                      {animal.soundFr.split(' ')[0]}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Full Grid of Animals */}
           <div
             style={{
               display: 'grid',

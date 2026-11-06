@@ -1,4 +1,5 @@
 // Web Audio API Synthesizer for Toddler Fun Sound Effects & Musical Notes
+import { haptics } from './haptics';
 
 class SoundFX {
   constructor() {
@@ -19,6 +20,7 @@ class SoundFX {
   }
 
   playPop() {
+    haptics.pop();
     if (this.isMuted) return;
     this.init();
     if (!this.ctx) return;
@@ -42,6 +44,7 @@ class SoundFX {
   }
 
   playSuccess() {
+    haptics.success();
     if (this.isMuted) return;
     this.init();
     if (!this.ctx) return;
@@ -68,27 +71,84 @@ class SoundFX {
     });
   }
 
+  // Realistic Acoustic Children's Xylophone Synthesizer (Mallet Strike + Resonant Bar Harmonics)
   playMusicalNote(freq) {
+    haptics.tap();
     if (this.isMuted) return;
     this.init();
     if (!this.ctx) return;
 
     const now = this.ctx.currentTime;
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
 
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(freq, now);
+    // 1. Mallet strike transient (wooden/rubber click noise burst)
+    try {
+      const clickBufferSize = Math.floor(this.ctx.sampleRate * 0.016);
+      const clickBuffer = this.ctx.createBuffer(1, clickBufferSize, this.ctx.sampleRate);
+      const clickData = clickBuffer.getChannelData(0);
+      for (let i = 0; i < clickBufferSize; i++) {
+        clickData[i] = (Math.random() * 2 - 1) * Math.exp(-i / (clickBufferSize * 0.28));
+      }
+      const clickSource = this.ctx.createBufferSource();
+      clickSource.buffer = clickBuffer;
 
-    // Xylophone envelope (sharp attack, metallic decay)
-    gain.gain.setValueAtTime(0.4, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+      const clickFilter = this.ctx.createBiquadFilter();
+      clickFilter.type = 'bandpass';
+      clickFilter.frequency.setValueAtTime(2800, now);
+      clickFilter.Q.setValueAtTime(2.8, now);
 
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
+      const clickGain = this.ctx.createGain();
+      clickGain.gain.setValueAtTime(0.38, now);
+      clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.016);
 
-    osc.start(now);
-    osc.stop(now + 0.5);
+      clickSource.connect(clickFilter);
+      clickFilter.connect(clickGain);
+      clickGain.connect(this.ctx.destination);
+      clickSource.start(now);
+    } catch (e) {}
+
+    // 2. Fundamental resonant wooden bar frequency
+    const osc1 = this.ctx.createOscillator();
+    const gain1 = this.ctx.createGain();
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(freq, now);
+
+    // Sharp percussive mallet attack, then natural wooden decay
+    gain1.gain.setValueAtTime(0.48, now);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.65);
+
+    osc1.connect(gain1);
+    gain1.connect(this.ctx.destination);
+    osc1.start(now);
+    osc1.stop(now + 0.65);
+
+    // 3. Characteristic Xylophone 3rd harmonic overtone (~3.0x tuned bar frequency)
+    const osc2 = this.ctx.createOscillator();
+    const gain2 = this.ctx.createGain();
+    osc2.type = 'triangle';
+    osc2.frequency.setValueAtTime(freq * 3.0, now);
+
+    // High overtone decays quickly as wooden bar absorbs vibration
+    gain2.gain.setValueAtTime(0.22, now);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+
+    osc2.connect(gain2);
+    gain2.connect(this.ctx.destination);
+    osc2.start(now);
+    osc2.stop(now + 0.18);
+
+    // 4. Bell-like strike shimmer (~5.4x overtone)
+    const osc3 = this.ctx.createOscillator();
+    const gain3 = this.ctx.createGain();
+    osc3.type = 'sine';
+    osc3.frequency.setValueAtTime(freq * 5.4, now);
+
+    gain3.gain.setValueAtTime(0.12, now);
+    gain3.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+
+    osc3.connect(gain3);
+    gain3.connect(this.ctx.destination);
+    osc3.start(now);
+    osc3.stop(now + 0.06);
   }
 
   playWaterSplash() {

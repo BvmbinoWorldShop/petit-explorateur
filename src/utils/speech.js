@@ -9,13 +9,21 @@ const MALE_VOICE_KEYWORDS = [
 ];
 
 const FEMALE_VOICE_PRIORITY = [
-  'eloise', 'éloïse', // Microsoft Neural child girl voice
-  'audrey', 'aurélie', 'aurelie', 'amélie', 'amelie', 'marie',
+  'microsoft denise online (natural)',
+  'microsoft henriette online (natural)',
+  'microsoft julie',
+  'microsoft hortense',
+  'google français',
+  'amélie', 'amelie',
+  'audrey',
+  'aurélie', 'aurelie',
+  'marie',
   'denise', 'vivienne', 'coralie', 'julie', 'hortense', 'céline', 'celine',
   'chantal', 'virginie', 'léa', 'lea', 'manon', 'camille', 'chloé', 'chloe',
-  'claire', 'pauline', 'margaux', 'victoire', 'siri', 'shelley', 'sandy', 'flo',
+  'claire', 'pauline', 'margaux', 'victoire', 'eloise', 'éloïse',
+  'siri', 'shelley', 'sandy', 'flo',
   'fr-fr-x-fra', 'fr-fr-x-frc', 'fr-fr-x-vlf', 'fr-ca-x-caa', 'fr-ca-x-cac',
-  'google français', 'female', 'femme', 'féminin', 'natural'
+  'female', 'femme', 'féminin', 'natural'
 ];
 
 function isMaleVoice(voice) {
@@ -150,20 +158,20 @@ class DoraVoiceEngine {
       utterance.lang = 'fr-FR';
     }
 
-    // Sweet, warm, cheerful female voice pitch & cadence
+    // Natural, warm human female voice pitch & cadence
     const voiceName = (this.frenchVoice?.name || '').toLowerCase();
-    if (voiceName.includes('eloise') || voiceName.includes('éloïse')) {
-      // Already a child voice
-      utterance.pitch = 1.1;
+    if (voiceName.includes('natural') || voiceName.includes('online')) {
+      utterance.pitch = 1.05;
+      utterance.rate = 0.98;
+    } else if (voiceName.includes('google')) {
+      utterance.pitch = 1.08;
       utterance.rate = 0.96;
     } else if (this.frenchVoice && isMaleVoice(this.frenchVoice)) {
-      // Fallback if device only has a male voice installed
-      utterance.pitch = 1.65;
-      utterance.rate = 0.95;
+      utterance.pitch = 1.45;
+      utterance.rate = 0.96;
     } else {
-      // Female voice tuned to sweet young girl tone
-      utterance.pitch = 1.32;
-      utterance.rate = 0.94;
+      utterance.pitch = 1.10;
+      utterance.rate = 0.97;
     }
 
     utterance.onstart = () => this.notify(true);

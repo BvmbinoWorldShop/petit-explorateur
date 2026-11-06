@@ -337,6 +337,49 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
             </div>
           </div>
 
+          {/* Horizontal Swiping Ribbon A to Z (Scroll Left to Right) */}
+          <div style={{ width: '100%', marginBottom: '4px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+              <span style={{ fontSize: '0.82rem', fontWeight: 900, color: '#636e72', textTransform: 'uppercase' }}>
+                🔤 Défilement de gauche à droite (A à Z) ➡️
+              </span>
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                gap: '8px',
+                overflowX: 'auto',
+                padding: '6px 4px 12px 4px',
+                touchAction: 'pan-x',
+                WebkitOverflowScrolling: 'touch',
+                width: '100%',
+                boxSizing: 'border-box',
+              }}
+            >
+              {ALPHABET_A_TO_Z.map((item) => {
+                const isSelected = selectedLetter.char === item.char;
+                return (
+                  <button
+                    key={`ribbon-${item.char}`}
+                    onClick={() => handleLetterClick(item)}
+                    className="letter-tile-btn animate-pop"
+                    style={{
+                      flex: '0 0 74px',
+                      minHeight: '74px',
+                      background: `linear-gradient(135deg, ${item.color} 0%, #2d3436 180%)`,
+                      border: isSelected ? '4px solid #ffffff' : '3px solid rgba(255,255,255,0.85)',
+                      transform: isSelected ? 'scale(1.06)' : undefined,
+                      padding: '6px 2px',
+                    }}
+                  >
+                    <span className="tile-letter-char" style={{ fontSize: '1.7rem' }}>{item.char}</span>
+                    <span className="tile-word-fr" style={{ fontSize: '0.7rem' }}>{item.emoji} {item.wordFr}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Full Grid of All 26 Letters */}
           <div className="alphabet-grid-container">
             {ALPHABET_A_TO_Z.map((item) => {
@@ -381,6 +424,57 @@ export default function AlphabetActivity({ onNiaSpeak, onRewardStar }) {
 
         return (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px', padding: '10px 0', width: '100%' }}>
+            {/* Horizontal Swiping Letter Selector (Scroll Left to Right) */}
+            <div
+              style={{
+                display: 'flex',
+                gap: '8px',
+                overflowX: 'auto',
+                padding: '4px 2px 8px 2px',
+                touchAction: 'pan-x',
+                WebkitOverflowScrolling: 'touch',
+                width: '100%',
+                maxWidth: '520px',
+                boxSizing: 'border-box',
+              }}
+            >
+              {ALPHABET_A_TO_Z.map((item) => {
+                const isSelected = selectedLetter.char === item.char;
+                return (
+                  <button
+                    key={`trace-pick-${item.char}`}
+                    onClick={() => {
+                      sounds.playPop();
+                      setSelectedLetter(item);
+                      setTracedPoints([]);
+                      setIsAutoRecognized(false);
+                      doraVoice.speak(`Lettre ${item.char} ! ${item.rhyme}`);
+                    }}
+                    style={{
+                      flex: '0 0 54px',
+                      height: '54px',
+                      borderRadius: '16px',
+                      border: isSelected ? '3.5px solid #ffffff' : '2px solid rgba(255,255,255,0.7)',
+                      background: isSelected ? '#ffd32a' : item.color,
+                      color: isSelected ? '#2d3436' : '#ffffff',
+                      fontSize: '1.4rem',
+                      fontWeight: 900,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: isSelected ? '0 0 12px #ffd32a' : '0 3px 6px rgba(0,0,0,0.15)',
+                      transform: isSelected ? 'scale(1.08)' : undefined,
+                    }}
+                    title={`Choisir la lettre ${item.char}`}
+                  >
+                    <span>{item.char}</span>
+                  </button>
+                );
+              })}
+            </div>
+
             <div className="mission-question-card" style={{ width: '100%', maxWidth: '520px', textAlign: 'center' }}>
               <span className="mission-badge">Traçage magique automatique :</span>
               <h3 style={{ fontSize: '1.35rem', margin: '6px 0' }}>

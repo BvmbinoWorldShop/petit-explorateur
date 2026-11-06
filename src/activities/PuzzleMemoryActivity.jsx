@@ -11,12 +11,19 @@ const ALL_PAIRS = [
   { pairId: 'lion', emoji: '🦁', nameFr: 'Lion', color: '#ffa502' },
   { pairId: 'panda', emoji: '🐼', nameFr: 'Panda', color: '#2ed573' },
   { pairId: 'unicorn', emoji: '🦄', nameFr: 'Licorne', color: '#e056fd' },
+  { pairId: 'elephant', emoji: '🐘', nameFr: 'Éléphant', color: '#a29bfe' },
+  { pairId: 'giraffe', emoji: '🦒', nameFr: 'Girafe', color: '#fdcb6e' },
+  { pairId: 'koala', emoji: '🐨', nameFr: 'Koala', color: '#636e72' },
+  { pairId: 'frog', emoji: '🐸', nameFr: 'Grenouille', color: '#00b894' },
+  { pairId: 'fox', emoji: '🦊', nameFr: 'Renard', color: '#e17055' },
+  { pairId: 'chick', emoji: '🐥', nameFr: 'Poussin', color: '#ffeaa7' },
 ];
 
 const LEVELS = [
   { id: 'easy', label: '🌟 Facile (6 cartes)', pairsCount: 3 },
   { id: 'medium', label: '⭐⭐ Moyen (8 cartes)', pairsCount: 4 },
   { id: 'hard', label: '⭐⭐⭐ Champion (12 cartes)', pairsCount: 6 },
+  { id: 'expert', label: '🏆 Super Génie (24 cartes)', pairsCount: 12 },
 ];
 
 export default function PuzzleMemoryActivity({ onNiaSpeak, onRewardStar }) {
@@ -145,8 +152,9 @@ export default function PuzzleMemoryActivity({ onNiaSpeak, onRewardStar }) {
         <div
           className="memory-cards-grid"
           style={{
-            gridTemplateColumns: level.pairsCount === 6 ? 'repeat(4, 1fr)' : level.pairsCount === 4 ? 'repeat(4, 1fr)' : 'repeat(3, 1fr)',
-            maxWidth: level.pairsCount >= 4 ? '540px' : '440px'
+            gridTemplateColumns: level.pairsCount === 12 ? 'repeat(4, 1fr)' : level.pairsCount >= 4 ? 'repeat(4, 1fr)' : 'repeat(3, 1fr)',
+            maxWidth: level.pairsCount === 12 ? '580px' : level.pairsCount >= 4 ? '540px' : '440px',
+            gap: level.pairsCount === 12 ? '8px' : '12px'
           }}
         >
           {cards.map((card, idx) => {
@@ -159,17 +167,19 @@ export default function PuzzleMemoryActivity({ onNiaSpeak, onRewardStar }) {
                 className={`memory-card-tile ${isFlipped ? 'is-revealed' : ''}`}
                 style={{
                   borderColor: isMatched ? '#10b981' : isFlipped ? card.color : '#f59e0b',
-                  background: isMatched ? '#d1fae5' : isFlipped ? '#fffdf0' : '#ffffff'
+                  background: isMatched ? '#d1fae5' : isFlipped ? '#fffdf0' : '#ffffff',
+                  minHeight: level.pairsCount === 12 ? '78px' : '100px',
+                  padding: level.pairsCount === 12 ? '4px' : '8px'
                 }}
               >
                 {isFlipped ? (
                   <div className="card-front-content animate-pop">
-                    <span className="memory-card-emoji">{card.emoji}</span>
-                    <span className="memory-card-label">{card.nameFr}</span>
+                    <span className="memory-card-emoji" style={{ fontSize: level.pairsCount === 12 ? '2rem' : '2.8rem' }}>{card.emoji}</span>
+                    <span className="memory-card-label" style={{ fontSize: level.pairsCount === 12 ? '0.65rem' : '0.8rem' }}>{card.nameFr}</span>
                   </div>
                 ) : (
                   <div className="card-back-pattern">
-                    <span className="card-paw" style={{ fontSize: '2.4rem' }}>🐾</span>
+                    <span className="card-paw" style={{ fontSize: level.pairsCount === 12 ? '1.8rem' : '2.4rem' }}>🐾</span>
                   </div>
                 )}
               </button>
